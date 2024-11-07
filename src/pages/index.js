@@ -1,115 +1,218 @@
-import Image from "next/image";
-import localFont from "next/font/local";
+import React from 'react';
+import { Facebook, Twitter, Instagram, Youtube, Play } from 'lucide-react';
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
-
-export default function Home() {
+const HomePage = () => {
   return (
     <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/pages/index.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      style={{
+        fontFamily: 'Arial, sans-serif',
+        color: '#333',
+        position: 'relative',
+        minHeight: '100vh',
+      }}>
+      {/* Social Media Sidebar */}
+      <div
+        style={{
+          position: 'fixed',
+          left: '32px',
+          top: '50%',
+          transform: 'translateY(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '24px',
+          zIndex: 50,
+        }}>
+        <a
+          href='#'
+          style={{ color: '#666' }}>
+          <Facebook size={20} />
+        </a>
+        <a
+          href='#'
+          style={{ color: '#666' }}>
+          <Twitter size={20} />
+        </a>
+        <a
+          href='#'
+          style={{ color: '#666' }}>
+          <Instagram size={20} />
+        </a>
+        <a
+          href='#'
+          style={{ color: '#666' }}>
+          <Youtube size={20} />
+        </a>
+        <div style={{ height: '96px', width: '1px', backgroundColor: '#e5e5e5', margin: '0 auto' }} />
+        <span style={{ fontSize: '14px', color: '#666', transform: 'rotate(-90deg)', whiteSpace: 'nowrap' }}>Follow Us</span>
+      </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
+      {/* Navigation */}
+      <nav
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          backgroundColor: 'white',
+          zIndex: 40,
+          borderBottom: '1px solid #e5e5e5',
+          padding: '16px 0',
+        }}>
+        <div
+          style={{
+            maxWidth: '1200px',
+            margin: '0 auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            padding: '0 16px',
+          }}>
+          <div style={{ display: 'flex', gap: '32px' }}>
+            <a
+              href='#'
+              style={{ color: '#666', textDecoration: 'none' }}>
+              Features
+            </a>
+            <a
+              href='/takaful'
+              style={{ color: '#666', textDecoration: 'none' }}>
+              Takaful
+            </a>
+            <a
+              href='/activate'
+              style={{ color: '#666', textDecoration: 'none' }}>
+              Activate
+            </a>
+            <a
+              href='#'
+              style={{ color: '#666', textDecoration: 'none' }}>
+              Blog
+            </a>
+          </div>
+          <img
+            src='https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Y6yKyDZBuguGAjgnbjwDZcIPLImLMz.png'
+            alt='TheNoor Logo'
+            style={{ height: '40px' }}
+          />
           <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
+            href='#'
+            style={{
+              backgroundColor: '#FF0099',
+              color: 'white',
+              padding: '8px 24px',
+              borderRadius: '9999px',
+              textDecoration: 'none',
+            }}>
+            GET THE APP
           </a>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </nav>
+
+      {/* Hero Section */}
+      <section style={{ paddingTop: '128px', paddingBottom: '64px', textAlign: 'center' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+          <div style={{ color: '#FF0099', fontWeight: 500, marginBottom: '16px' }}>OUR FEATURES</div>
+          <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>
+            The Ultimate Lifestyle
+            <br />
+            Muslim App
+          </h1>
+          <p style={{ maxWidth: '768px', margin: '0 auto', color: '#666', marginBottom: '48px' }}>
+            We innovate TheNoor with precision to produce the best yet functional Muslim lifestyle app that will be useful for everyone. Proudly made in Malaysia for the World.
+          </p>
+        </div>
+      </section>
+
+      {/* Video Section */}
+      <section style={{ padding: '64px 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
+          <div
+            style={{
+              backgroundColor: '#1A237E',
+              borderRadius: '24px',
+              padding: '64px',
+              color: 'white',
+              textAlign: 'center',
+            }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '32px' }}>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>Can You See The Light™</h2>
+              <div
+                style={{
+                  width: '64px',
+                  height: '64px',
+                  borderRadius: '50%',
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                <Play
+                  size={32}
+                  color='white'
+                />
+              </div>
+              <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>Vocal Matters</h2>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Focus Section */}
+      <section style={{ padding: '64px 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '48px' }}>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>Focus on what matters the most</h2>
+            <p style={{ color: '#666' }}>The world is moving fast and you have so many things to do. Just as the body requires physical needs such as food and water, the soul has spiritual needs.</p>
+          </div>
+          <div style={{ flex: 1 }}>
+            <img
+              src='https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-yEAH0jE9Q6mfBJ09ek6hjiSgIfKU2W.png'
+              alt='Focus'
+              style={{ width: '100%', borderRadius: '16px' }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Quran Player Section */}
+      <section style={{ padding: '64px 0', backgroundColor: '#f9f9f9' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '48px' }}>
+          <div style={{ flex: 1 }}>
+            <img
+              src='https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JU1xLJMTsbtPf86xNw6RhLXuHQ1qlT.png'
+              alt='App Screenshot'
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>Modern and vibrant Al-Quran media player</h2>
+            <p style={{ color: '#666', marginBottom: '24px' }}>Listen to your favorite surah by replacing your in-car entertainment or treat it as on the go player. Connect to your bluetooth or AUX devices to have a better experience.</p>
+            <img
+              src='/placeholder.svg?height=32&width=120'
+              alt='Bluetooth'
+              style={{ height: '32px' }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Wallet Section */}
+      <section style={{ padding: '64px 0' }}>
+        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '48px' }}>
+          <div style={{ flex: 1 }}>
+            <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>Wallet built with purpose</h2>
+          </div>
+          <div style={{ flex: 1 }}>
+            <img
+              src='/placeholder.svg?height=400&width=600'
+              alt='Credit Cards'
+              style={{ width: '100%', borderRadius: '16px' }}
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
-}
+};
+
+export default HomePage;
