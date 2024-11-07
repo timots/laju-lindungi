@@ -1,218 +1,180 @@
-import React from 'react';
-import { Facebook, Twitter, Instagram, Youtube, Play } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Home, Info, HandHeart, Trophy, User, Search, CheckCircle2 } from 'lucide-react';
+import CardSlider from '@/components/card/cardSlider';
+import HeaderSlider from '@/components/card/headerSlider';
+import CardList from '@/components/card/cardList';
 
-const HomePage = () => {
+export default function CharityHome() {
   return (
-    <div
-      style={{
-        fontFamily: 'Arial, sans-serif',
-        color: '#333',
-        position: 'relative',
-        minHeight: '100vh',
-      }}>
-      {/* Social Media Sidebar */}
-      <div
-        style={{
-          position: 'fixed',
-          left: '32px',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '24px',
-          zIndex: 50,
-        }}>
-        <a
-          href='#'
-          style={{ color: '#666' }}>
-          <Facebook size={20} />
-        </a>
-        <a
-          href='#'
-          style={{ color: '#666' }}>
-          <Twitter size={20} />
-        </a>
-        <a
-          href='#'
-          style={{ color: '#666' }}>
-          <Instagram size={20} />
-        </a>
-        <a
-          href='#'
-          style={{ color: '#666' }}>
-          <Youtube size={20} />
-        </a>
-        <div style={{ height: '96px', width: '1px', backgroundColor: '#e5e5e5', margin: '0 auto' }} />
-        <span style={{ fontSize: '14px', color: '#666', transform: 'rotate(-90deg)', whiteSpace: 'nowrap' }}>Follow Us</span>
-      </div>
-
-      {/* Navigation */}
-      <nav
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          backgroundColor: 'white',
-          zIndex: 40,
-          borderBottom: '1px solid #e5e5e5',
-          padding: '16px 0',
-        }}>
-        <div
-          style={{
-            maxWidth: '1200px',
-            margin: '0 auto',
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            padding: '0 16px',
-          }}>
-          <div style={{ display: 'flex', gap: '32px' }}>
-            <a
-              href='#'
-              style={{ color: '#666', textDecoration: 'none' }}>
-              Features
-            </a>
-            <a
-              href='/takaful'
-              style={{ color: '#666', textDecoration: 'none' }}>
-              Takaful
-            </a>
-            <a
-              href='/activate'
-              style={{ color: '#666', textDecoration: 'none' }}>
-              Activate
-            </a>
-            <a
-              href='#'
-              style={{ color: '#666', textDecoration: 'none' }}>
-              Blog
-            </a>
-          </div>
-          <img
-            src='https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Y6yKyDZBuguGAjgnbjwDZcIPLImLMz.png'
-            alt='TheNoor Logo'
-            style={{ height: '40px' }}
+    <div className='flex flex-col min-h-screen bg-gray-50'>
+      {/* Header */}
+      <header className='fixed top-0 w-full z-50 bg-gradient-to-r from-blue-500 to-blue-600 p-4'>
+        <div className='flex items-center gap-2 max-w-lg mx-auto'>
+          <Image
+            src='/placeholder.svg'
+            alt='LajuPeduli Logo'
+            width={40}
+            height={40}
+            className='rounded-full bg-white p-1'
           />
-          <a
-            href='#'
-            style={{
-              backgroundColor: '#FF0099',
-              color: 'white',
-              padding: '8px 24px',
-              borderRadius: '9999px',
-              textDecoration: 'none',
-            }}>
-            GET THE APP
-          </a>
+          <div className='relative flex-1'>
+            <Search className='absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4' />
+            <Input
+              className='w-full pl-10 bg-white/90 border-0'
+              placeholder='Cari campaign...'
+              type='search'
+            />
+          </div>
         </div>
-      </nav>
+      </header>
 
-      {/* Hero Section */}
-      <section style={{ paddingTop: '128px', paddingBottom: '64px', textAlign: 'center' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
-          <div style={{ color: '#FF0099', fontWeight: 500, marginBottom: '16px' }}>OUR FEATURES</div>
-          <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>
-            The Ultimate Lifestyle
-            <br />
-            Muslim App
-          </h1>
-          <p style={{ maxWidth: '768px', margin: '0 auto', color: '#666', marginBottom: '48px' }}>
-            We innovate TheNoor with precision to produce the best yet functional Muslim lifestyle app that will be useful for everyone. Proudly made in Malaysia for the World.
-          </p>
-        </div>
-      </section>
+      <main className='flex-1 max-w-lg mx-auto w-full pt-20 pb-16'>
+        {/* Hero Banner */}
+        <HeaderSlider />
 
-      {/* Video Section */}
-      <section style={{ padding: '64px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px' }}>
-          <div
-            style={{
-              backgroundColor: '#1A237E',
-              borderRadius: '24px',
-              padding: '64px',
-              color: 'white',
-              textAlign: 'center',
-            }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '32px' }}>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>Can You See The Light™</h2>
-              <div
-                style={{
-                  width: '64px',
-                  height: '64px',
-                  borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}>
-                <Play
-                  size={32}
-                  color='white'
+        {/* Category Icons */}
+        <CardSlider />
+
+        {/* Campaign Sections */}
+        <CardList />
+
+        {/* Palestine Support Section */}
+        <div className='p-4 bg-orange-50'>
+          <h2 className='text-2xl font-bold mb-2'>Kuatkan Palestina</h2>
+          <p className='text-gray-600 mb-4'>Berikan Dukungan Kemanusiaan Untuk Palestina!</p>
+          <div className='grid gap-4'>
+            <Card>
+              <CardContent className='p-3'>
+                <Image
+                  src='/placeholder.svg'
+                  alt='Palestine Campaign'
+                  width={400}
+                  height={200}
+                  className='w-full h-48 object-cover rounded-lg mb-3'
                 />
-              </div>
-              <h2 style={{ fontSize: '24px', fontWeight: 'bold' }}>Vocal Matters</h2>
+                <div className='flex items-center gap-2 mb-2'>
+                  <span className='text-sm font-medium'>Yayasan Langkah Maju Peduli</span>
+                  <CheckCircle2 className='w-4 h-4 text-blue-500' />
+                </div>
+                <h3 className='font-bold mb-2'>Yuk Jadi Orangtua Asuh Yatim Palestina</h3>
+                <div className='flex items-center justify-between text-sm'>
+                  <span className='font-bold text-orange-500'>Rp 11.029.000</span>
+                  <span className='text-gray-500'>terkumpul</span>
+                </div>
+                <div className='w-full bg-gray-200 rounded-full h-1.5 my-2'>
+                  <div
+                    className='bg-orange-500 h-1.5 rounded-full'
+                    style={{ width: '60%' }}></div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Articles Section */}
+        <div className='p-4'>
+          <h2 className='text-xl font-bold mb-4'>Kebaikanmu Terus Mengalir Hingga Penjuru Negeri!</h2>
+          <div className='grid grid-cols-2 gap-4'>
+            <Card>
+              <CardContent className='p-3'>
+                <div className='relative'>
+                  <Image
+                    src='/placeholder.svg'
+                    alt='Article'
+                    width={200}
+                    height={150}
+                    className='w-full h-32 object-cover rounded-lg'
+                  />
+                  <Badge className='absolute top-2 left-2 bg-green-500'>ARTIKEL</Badge>
+                </div>
+                <h3 className='font-bold mt-2 text-sm'>Makna Lailatul Qadar dalam Sejarah Islam</h3>
+                <p className='text-xs text-gray-500 mt-2'>November 7, 2024</p>
+                <Link
+                  href='#'
+                  className='text-green-500 text-sm font-medium mt-2 block'>
+                  READ MORE »
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <footer className='p-4 bg-white'>
+          <div className='text-center mb-6'>
+            <p className='text-sm mb-4'>Laju Peduli adalah Organisasi Sosial yang lahir dari semangat kepedulian untuk membantu masalah kemanusiaan di Indonesia dan juga di dunia islam khususnya Palestina.</p>
+            <p className='text-xs font-bold mb-4'>KEP. UPZ/020 TAHUN 2023</p>
+          </div>
+
+          <div className='mb-6'>
+            <h3 className='font-bold mb-4'>Metode Pembayaran</h3>
+            <div className='grid grid-cols-4 gap-4'>
+              {['BCA', 'Mandiri', 'BSI', 'BRI', 'BNI'].map((bank) => (
+                <div
+                  key={bank}
+                  className='bg-gray-100 p-2 rounded-lg'>
+                  <Image
+                    src='/placeholder.svg'
+                    alt={bank}
+                    width={60}
+                    height={30}
+                    className='w-full h-auto'
+                  />
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Focus Section */}
-      <section style={{ padding: '64px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '48px' }}>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>Focus on what matters the most</h2>
-            <p style={{ color: '#666' }}>The world is moving fast and you have so many things to do. Just as the body requires physical needs such as food and water, the soul has spiritual needs.</p>
+          <div className='text-center'>
+            <h3 className='font-bold mb-4'>Info Selengkapnya:</h3>
+            <div className='flex justify-center gap-4'>
+              {['Facebook', 'Instagram', 'TikTok', 'WhatsApp', 'YouTube'].map((social) => (
+                <Link
+                  key={social}
+                  href='#'
+                  className='text-blue-500'>
+                  <div className='w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center'>
+                    <Image
+                      src='/placeholder.svg'
+                      alt={social}
+                      width={24}
+                      height={24}
+                    />
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <p className='text-sm mt-4'>@LajuPeduli. All Right Reserved</p>
           </div>
-          <div style={{ flex: 1 }}>
-            <img
-              src='https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-yEAH0jE9Q6mfBJ09ek6hjiSgIfKU2W.png'
-              alt='Focus'
-              style={{ width: '100%', borderRadius: '16px' }}
-            />
-          </div>
-        </div>
-      </section>
+        </footer>
+      </main>
 
-      {/* Quran Player Section */}
-      <section style={{ padding: '64px 0', backgroundColor: '#f9f9f9' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '48px' }}>
-          <div style={{ flex: 1 }}>
-            <img
-              src='https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-JU1xLJMTsbtPf86xNw6RhLXuHQ1qlT.png'
-              alt='App Screenshot'
-              style={{ width: '100%' }}
-            />
-          </div>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>Modern and vibrant Al-Quran media player</h2>
-            <p style={{ color: '#666', marginBottom: '24px' }}>Listen to your favorite surah by replacing your in-car entertainment or treat it as on the go player. Connect to your bluetooth or AUX devices to have a better experience.</p>
-            <img
-              src='/placeholder.svg?height=32&width=120'
-              alt='Bluetooth'
-              style={{ height: '32px' }}
-            />
-          </div>
+      {/* Bottom Navigation */}
+      <nav className='fixed bottom-0 w-full bg-blue-700 border-t'>
+        <div className='max-w-lg mx-auto flex justify-around p-2'>
+          {[
+            { icon: Home, label: 'Home' },
+            { icon: Info, label: 'Info Terbaru' },
+            { icon: HandHeart, label: 'Galang Dana' },
+            { icon: Trophy, label: 'Ranking' },
+            { icon: User, label: 'Akun' },
+          ].map((item, i) => (
+            <Link
+              key={i}
+              href='#'
+              className='flex flex-col items-center gap-1 text-white hover:text-blue-500'>
+              <item.icon className='w-6 h-6' />
+              <span className='text-xs'>{item.label}</span>
+            </Link>
+          ))}
         </div>
-      </section>
-
-      {/* Wallet Section */}
-      <section style={{ padding: '64px 0' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', display: 'flex', alignItems: 'center', gap: '48px' }}>
-          <div style={{ flex: 1 }}>
-            <h2 style={{ fontSize: '36px', fontWeight: 'bold', color: '#1A237E', marginBottom: '24px' }}>Wallet built with purpose</h2>
-          </div>
-          <div style={{ flex: 1 }}>
-            <img
-              src='/placeholder.svg?height=400&width=600'
-              alt='Credit Cards'
-              style={{ width: '100%', borderRadius: '16px' }}
-            />
-          </div>
-        </div>
-      </section>
+      </nav>
     </div>
   );
-};
-
-export default HomePage;
+}
