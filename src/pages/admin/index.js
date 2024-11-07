@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, Tag, ShoppingBag, FileText, UserPlus, TagPlus, FilePlus } from 'lucide-react';
+import { Users, Tag, ShoppingBag, FileText, UserPlus, FilePlus } from 'lucide-react';
 
 export default function AdminDashboard() {
   const stats = [
@@ -15,7 +15,7 @@ export default function AdminDashboard() {
 
   const actionButtons = [
     { label: 'SET Agent', icon: <UserPlus className='h-5 w-5 mr-2' />, color: 'bg-blue-500 hover:bg-blue-600' },
-    { label: 'SET Promo', icon: <TagPlus className='h-5 w-5 mr-2' />, color: 'bg-green-500 hover:bg-green-600' },
+    { label: 'SET Promo', icon: <UserPlus className='h-5 w-5 mr-2' />, color: 'bg-green-500 hover:bg-green-600' },
     { label: 'SET Template', icon: <FilePlus className='h-5 w-5 mr-2' />, color: 'bg-yellow-500 hover:bg-yellow-600' },
   ];
 
