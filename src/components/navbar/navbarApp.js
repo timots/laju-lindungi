@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Info, HandHeart, Trophy, User } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const menuItems = [
   { id: 'home', label: 'Home', icon: Home, link: '/' },
@@ -14,6 +15,10 @@ const menuItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { t, i18n } = useTranslation();
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng);
+  };
 
   return (
     <nav className='fixed bottom-0 left-0 right-0 z-50 '>
