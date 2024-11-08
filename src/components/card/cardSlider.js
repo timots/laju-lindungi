@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const campaigns = [
   {
@@ -45,42 +46,58 @@ const campaigns = [
   },
 ];
 
-const CampaignCard = ({ campaign }) => (
-  <Link
-    href='#'
-    className='block'>
-    <div className='bg-white rounded-xl overflow-hidden shadow-lg'>
-      <div className='relative'>
-        <Image
-          src={campaign.image}
-          alt={campaign.title}
-          width={400}
-          height={200}
-          className='w-full h-48 object-cover'
-        />
-        {campaign.verified && <div className='absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded'>Verified</div>}
-      </div>
-      <div className='p-4'>
-        <h3 className='font-semibold text-gray-800 mb-2 line-clamp-2'>{campaign.title}</h3>
-        <p className='text-sm text-gray-600 mb-3'>{campaign.organization}</p>
-        <div className='space-y-2'>
-          <div className='flex justify-between text-sm'>
-            <span className='font-semibold text-orange-500'>{campaign.raised}</span>
-            <span className='text-gray-500'>terkumpul</span>
-          </div>
-          <div className='w-full bg-gray-200 rounded-full h-2'>
-            <div
-              className='bg-orange-500 h-2 rounded-full'
-              style={{ width: `${campaign.progress}%` }}
-            />
+const createSlug = (title) => {
+  return title
+    .toLowerCase()
+    .replace(/ /g, '-')
+    .replace(/[^\w-]+/g, '');
+};
+
+const CampaignCard = ({ campaign }) => {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    const slug = createSlug(campaign.title);
+    router.push(`${router.asPath}/campaign/${slug}`);
+  };
+
+  return (
+    <div
+      onClick={handleCardClick}
+      className='block cursor-pointer'>
+      <div className='bg-white rounded-xl overflow-hidden shadow-lg'>
+        <div className='relative'>
+          <Image
+            src={campaign.image}
+            alt={campaign.title}
+            width={400}
+            height={200}
+            className='w-full h-48 object-cover'
+          />
+          {campaign.verified && <div className='absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded'>Verified</div>}
+        </div>
+        <div className='p-4'>
+          <h3 className='font-semibold text-gray-800 mb-2 line-clamp-2'>{campaign.title}</h3>
+          <p className='text-sm text-gray-600 mb-3'>{campaign.organization}</p>
+          <div className='space-y-2'>
+            <div className='flex justify-between text-sm'>
+              <span className='font-semibold text-orange-500'>{campaign.raised}</span>
+              <span className='text-gray-500'>terkumpul</span>
+            </div>
+            <div className='w-full bg-gray-200 rounded-full h-2'>
+              <div
+                className='bg-orange-500 h-2 rounded-full'
+                style={{ width: `${campaign.progress}%` }}
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </Link>
-);
+  );
+};
 
-const CardSlider = () => {
+const CardSlider = ({ Header, BgColour }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const totalSlides = Math.ceil(campaigns.length / 2);
 
@@ -93,9 +110,9 @@ const CardSlider = () => {
   };
 
   return (
-    <div className='p-8 bg-gradient-to-br from-blue-500 to-blue-600'>
+    <div className={`p-8 ${BgColour}`}>
       <div className='max-w-6xl mx-auto'>
-        <h2 className='text-2xl md:text-3xl font-bold text-white mb-6 text-center'>Alirkan Pahalamu Dengan Berbagi</h2>
+        <h2 className='text-2xl md:text-3xl font-bold text-white mb-6 text-center'>{Header}</h2>
         <div className='relative'>
           <div className='overflow-hidden'>
             <div

@@ -1,5 +1,8 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 const slides = [
   {
@@ -28,7 +31,7 @@ const slides = [
   },
 ];
 
-const HeaderSlider = () => {
+export default function HeaderSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
@@ -48,8 +51,8 @@ const HeaderSlider = () => {
   };
 
   return (
-    <div className='w-full max-w-5xl mx-auto px-4'>
-      <div className='relative overflow-hidden'>
+    <div className='w-full max-w-md mx-auto mb-3 '>
+      <div className='relative overflow-hidden rounded-lg shadow-md'>
         <div
           className='flex transition-transform duration-300 ease-in-out'
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
@@ -63,15 +66,15 @@ const HeaderSlider = () => {
                   alt={`Banner ${index + 1}`}
                   width={600}
                   height={300}
-                  className='w-full h-[300px] object-cover'
+                  className='w-full h-[200px] object-cover'
                 />
-                <div className='absolute inset-0 bg-gradient-to-r from-white/90 to-transparent p-6 md:p-8'>
+                <div className='absolute inset-0 bg-gradient-to-r from-white/90 to-transparent p-4'>
                   <div className='max-w-[70%]'>
-                    <h1 className='text-2xl md:text-3xl font-bold text-orange-500 mb-1'>{slide.title}</h1>
-                    <h2 className='text-xl md:text-2xl font-bold text-orange-500 mb-1'>{slide.subtitle}</h2>
-                    <h2 className='text-xl md:text-2xl font-bold text-orange-500 mb-2'>{slide.highlight}</h2>
-                    <div className='bg-blue-500 text-white px-3 py-1 rounded-md inline-block mb-4'>{slide.tag}</div>
-                    <button className='bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-md'>{slide.buttonText}</button>
+                    <h2 className='text-lg font-bold text-orange-500 mb-1'>{slide.title}</h2>
+                    <h3 className='text-base font-bold text-orange-500 mb-1'>{slide.subtitle}</h3>
+                    <h3 className='text-base font-bold text-orange-500 mb-2'>{slide.highlight}</h3>
+                    <div className='bg-blue-500 text-white text-xs px-2 py-1 rounded-md inline-block mb-2'>{slide.tag}</div>
+                    <button className='bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1 rounded-md'>{slide.buttonText}</button>
                   </div>
                 </div>
               </div>
@@ -80,16 +83,16 @@ const HeaderSlider = () => {
         </div>
         <button
           onClick={prevSlide}
-          className='absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/50 p-2 rounded-full'>
-          &#10094;
+          className='absolute top-1/2 left-2 transform -translate-y-1/2 bg-white/50 p-1 rounded-full'>
+          <ChevronLeft className='w-4 h-4 text-gray-800' />
         </button>
         <button
           onClick={nextSlide}
-          className='absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/50 p-2 rounded-full'>
-          &#10095;
+          className='absolute top-1/2 right-2 transform -translate-y-1/2 bg-white/50 p-1 rounded-full'>
+          <ChevronRight className='w-4 h-4 text-gray-800' />
         </button>
       </div>
-      <div className='flex justify-center gap-2 mt-4'>
+      <div className='flex justify-center gap-2 '>
         {slides.map((_, index) => (
           <div
             key={index}
@@ -99,6 +102,4 @@ const HeaderSlider = () => {
       </div>
     </div>
   );
-};
-
-export default HeaderSlider;
+}
