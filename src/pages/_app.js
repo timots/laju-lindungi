@@ -3,6 +3,7 @@ import AppLayout from '@/components/layout/appLayout';
 import '@/styles/globals.css';
 import { useRouter } from 'next/router';
 import { appWithTranslation } from 'next-i18next';
+// import nextI18nextConfig from '../../next-i18next.config';
 
 function App({ Component, pageProps }) {
   const router = useRouter();
@@ -24,3 +25,4 @@ function App({ Component, pageProps }) {
 }
 
 export default appWithTranslation(App);
+// export default App;
