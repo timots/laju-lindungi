@@ -4,70 +4,60 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Home, Info, HandHeart, Trophy, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function Navbar() {
+const Navbar = () => {
   const pathname = usePathname();
-  const { i18n, t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const [isLoading, setIsLoading] = useState(true);
 
-  const onChangeLang = (e) => {
-    const lang_code = e.target.value;
-    store.set('lang', lang_code);
-    i18n.changeLanguage(lang_code);
-    window.location.reload();
-  };
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      setIsLoading(false);
+    }
+  }, [i18n]);
+
+  useEffect(() => {
+    console.log('Current language:', i18n.language);
+    console.log('Available languages:', i18n.languages);
+    console.log('Translation test:', t('nav.home'));
+  }, [i18n.language, t]);
 
   const menuItems = [
-    { id: 'home', label: t('nav:home'), icon: Home, link: '/' },
-    { id: 'info', label: t('nav:about'), icon: Info, link: '/info' },
-    { id: 'galang', label: t('nav:services'), icon: HandHeart, link: '/galang' },
-    { id: 'rekening', label: t('nav:contact'), icon: Trophy, link: '/rekening' },
-    { id: 'user', label: t('nav:profile'), icon: User, link: '/auth/login' },
+    { id: 'home', label: t('nav.home'), icon: Home, link: '/' },
+    { id: 'info', label: t('nav.infoTerbaru'), icon: Info, link: '/info' },
+    { id: 'galang', label: t('nav.Galang_dana'), icon: HandHeart, link: '/galang' },
+    { id: 'rekening', label: t('nav.rekening'), icon: Trophy, link: '/rekening' },
+    { id: 'user', label: t('nav.User'), icon: User, link: '/auth/login' },
   ];
 
-  console.log(menuItems, 'ini menu items');
-  console.log(i18n, 'ini i 18 n');
+  if (isLoading) {
+    return <div className='flex h-16 items-center justify-center'>Loading...</div>;
+  }
 
-  const handleLanguageChange = (language) => {
-    if (i18n.changeLanguage) {
-      i18n.changeLanguage(language);
-    } else {
-      console.error('changeLanguage method not available');
-    }
-  };
   return (
     <nav className='fixed bottom-0 left-0 right-0 z-50'>
-      <div className='max-w-md mx-auto px-4 bg-gradient-to-r from-blue-500 to-blue-600'>
-        <ul className='flex justify-between items-center h-16'>
+      <div className='mx-auto max-w-md bg-gradient-to-r from-blue-500 to-blue-600'>
+        <ul className='flex h-16 items-center justify-between'>
           {menuItems.map((item) => {
             const isActive = pathname === item.link;
             return (
-              <li key={item.id}>
+              <li
+                key={item.id}
+                className='flex-1'>
                 <Link
                   href={item.link}
-                  className={`flex flex-col items-center gap-1 p-2 rounded-lg transition-colors ${isActive ? 'text-blue-600 bg-blue-50' : 'text-white hover:text-blue-600 hover:bg-blue-50'}`}>
-                  <item.icon className='w-6 h-6' />
+                  className={`flex h-full w-full flex-col items-center justify-center gap-1 rounded-lg transition-colors ${isActive ? 'bg-blue-50 text-blue-600' : 'text-white hover:bg-blue-50 hover:text-blue-600'}`}>
+                  <item.icon className='h-5 w-5' />
                   <span className='text-xs font-medium'>{item.label}</span>
                 </Link>
               </li>
             );
           })}
         </ul>
-        <div className='flex items-center space-x-4'>
-          {/* Language Switcher */}
-          <div className='relative'>
-            <select
-              onChange={(e) => handleLanguageChange(e.target.value)}
-              value={i18n.language}
-              className='appearance-none bg-white border rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500'>
-              <option value='id'>Indonesia</option>
-              <option value='en'>English</option>
-              <option value='ms'>Malaysia</option>
-              <option value='ar'>العربية</option>
-            </select>
-          </div>
-        </div>
       </div>
     </nav>
   );
-}
+};
+
+export default Navbar;

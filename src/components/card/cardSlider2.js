@@ -1,76 +1,31 @@
 'use client';
 
-import React, { useState } from 'react';
-import Image from 'next/image';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-const articles = [
-  {
-    id: 1,
-    title: 'Makna Lailatul Qadar dalam Sejarah Islam',
-    image: '/placeholder.svg?height=200&width=400',
-    category: 'ARTIKEL',
-    categoryColor: 'bg-emerald-500',
-    date: 'November 7, 2024',
-    comments: 'Tidak ada komentar',
-    link: '#',
-  },
-  {
-    id: 2,
-    title: '5 Langkah Refleksi dan Evaluasi Diri di Akhir Ramadhan',
-    image: '/placeholder.svg?height=200&width=400',
-    category: 'AGAMA',
-    categoryColor: 'bg-emerald-500',
-    date: 'November 6, 2024',
-    comments: 'Tidak ada komentar',
-    link: '#',
-  },
-  {
-    id: 3,
-    title: 'Keutamaan Bersedekah di Bulan Ramadhan',
-    image: '/placeholder.svg?height=200&width=400',
-    category: 'ARTIKEL',
-    categoryColor: 'bg-emerald-500',
-    date: 'November 5, 2024',
-    comments: 'Tidak ada komentar',
-    link: '#',
-  },
-  {
-    id: 4,
-    title: 'Panduan Lengkap Zakat Fitrah',
-    image: '/placeholder.svg?height=200&width=400',
-    category: 'AGAMA',
-    categoryColor: 'bg-emerald-500',
-    date: 'November 4, 2024',
-    comments: 'Tidak ada komentar',
-    link: '#',
-  },
-];
+import axios from 'axios';
 
 const ArticleCard = ({ article }) => (
-  <div className='bg-white rounded-lg overflow-hidden shadow-sm'>
+  <div className='bg-white rounded-lg overflow-hidden shadow-sm h-full'>
     <Link
-      href={article.link}
-      className='block'>
-      <div className='relative'>
-        <Image
-          src={article.image}
-          alt={article.title}
-          width={400}
-          height={200}
-          className='w-full h-48 object-cover'
-        />
-        <span className={`absolute top-4 left-4 ${article.categoryColor} text-white text-xs px-4 py-1 rounded-full`}>{article.category}</span>
-      </div>
-      <div className='p-4'>
-        <h3 className='text-lg font-semibold text-gray-800 mb-4 line-clamp-2'>{article.title}</h3>
-        <div className='flex items-center justify-between'>
-          <Link
-            href={article.link}
-            className='text-emerald-500 text-sm font-medium hover:text-emerald-600'>
-            READ MORE »
-          </Link>
+      href={article.link || '#'}
+      passHref>
+      <div className='block'>
+        <div className='relative'>
+          <img
+            src={article.images[0]}
+            alt={article.name}
+            width={400}
+            height={200}
+            className='w-full h-48 object-cover'
+          />
+          <span className={`absolute top-4 left-4 ${article.categoryColor} text-white text-xs px-4 py-1 rounded-full`}>{article.slug}</span>
+        </div>
+        <div className='p-4 flex flex-col h-full'>
+          <h3 className='text-lg font-semibold text-gray-800 mb-4 line-clamp-2 flex-grow'>{article.name}</h3>
+          <div className='flex items-center justify-between'>
+            <span className='text-emerald-500 text-sm font-medium hover:text-emerald-600'>READ MORE »</span>
+          </div>
         </div>
       </div>
     </Link>
@@ -83,7 +38,51 @@ const ArticleCard = ({ article }) => (
 
 export default function CardSlider2() {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const totalSlides = Math.ceil(articles.length / 2);
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCampaignData = useCallback(async () => {
+    try {
+      const requestData = {
+        companyId: 'vrWcmcy7wEw1BUkQP3l9',
+        slug: 'donasi-kambing-guling',
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+      };
+
+      const response = await axios.post('/api/v1/article/read', requestData);
+      return response.data;
+    } catch (err) {
+      throw new Error(err.response?.data?.message || 'Gagal memuat data');
+    }
+  }, []);
+
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchCampaignData();
+        // Memastikan bahwa data ada sebelum diset
+        if (data?.data && Array.isArray(data.data)) {
+          setCampaigns(data.data);
+        } else {
+          setCampaigns([]); // Jika tidak ada data atau bukan array
+        }
+      } catch (err) {
+        setError(err.message);
+        setCampaigns([]); // Pastikan kampanye tetap kosong jika terjadi error
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCampaigns();
+  }, [fetchCampaignData]);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+
+  const totalSlides = Math.ceil(campaigns.length / 2);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -101,18 +100,22 @@ export default function CardSlider2() {
           <div
             className='flex transition-transform duration-300 ease-in-out'
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-            {Array.from({ length: totalSlides }).map((_, index) => (
-              <div
-                key={index}
-                className='w-full flex-shrink-0 grid grid-cols-2 gap-4'>
-                {articles.slice(index * 2, index * 2 + 2).map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                  />
-                ))}
-              </div>
-            ))}
+            {totalSlides > 0 ? (
+              Array.from({ length: totalSlides }).map((_, index) => (
+                <div
+                  key={index}
+                  className='w-full flex-shrink-0 grid grid-cols-2 gap-4'>
+                  {campaigns.slice(index * 2, index * 2 + 2).map((article) => (
+                    <ArticleCard
+                      key={article.id}
+                      article={article}
+                    />
+                  ))}
+                </div>
+              ))
+            ) : (
+              <div className='w-full text-center py-4 text-gray-500'>No articles available</div>
+            )}
           </div>
         </div>
         {currentSlide > 0 && (
@@ -131,13 +134,14 @@ export default function CardSlider2() {
         )}
       </div>
       <div className='flex justify-center gap-2 mt-6'>
-        {Array.from({ length: totalSlides }).map((_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentSlide(index)}
-            className={`w-2 h-2 rounded-full transition-colors ${currentSlide === index ? 'bg-emerald-500' : 'bg-gray-300'}`}
-          />
-        ))}
+        {totalSlides > 0 &&
+          Array.from({ length: totalSlides }).map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`w-2 h-2 rounded-full transition-colors ${currentSlide === index ? 'bg-emerald-500' : 'bg-gray-300'}`}
+            />
+          ))}
       </div>
     </div>
   );

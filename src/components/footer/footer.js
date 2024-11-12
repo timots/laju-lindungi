@@ -1,14 +1,15 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function Footer() {
+  const { t } = useTranslation();
   return (
     <footer className='w-full bg-white px-4 py-8'>
       <div className='flex flex-col items-center text-center'>
         {/* Logo */}
-        <Image
+        <img
           src='/placeholder.svg'
           alt='LajuPeduli Logo'
           width={120}
@@ -18,7 +19,7 @@ export default function Footer() {
 
         {/* Mission Statement */}
         <p className='mb-4 text-sm'>
-          <span className='font-semibold'>Laju Peduli</span> adalah Organisasi Sosial yang lahir dari semangat kepedulian untuk membantu masalah kemanusiaan di Indonesia dan juga di dunia Islam khususnya Palestina.
+          <span className='font-semibold'>Laju Peduli</span> {t('title content.organization')}
         </p>
 
         {/* Registration Number */}
@@ -26,89 +27,60 @@ export default function Footer() {
 
         {/* Anti-Corruption Statement */}
         <div className='mb-8 rounded-lg border border-dashed border-gray-300 p-4 text-sm'>
-          <p className='text-center'>
-            "Laju Peduli berkomitmen menerapkan Sistem Manajemen Anti Penyuapan sehingga tidak membolehkan segala bentuk penyuapan dan gratifikasi, serta tidak akan mendukung atau menyediakan dana/material untuk individu maupun organisasi
-            yang dapat menganjurkan, mendukung, atau terlibat dalam aktivitas melanggar hukum, kekerasan, pencucian uang ataupun terorisme."
-          </p>
+          <p className='text-center'>{t('title content.organization2')}</p>
         </div>
 
         {/* Payment Methods */}
         <div className='mb-8'>
-          <h3 className='mb-4 text-lg font-semibold'>Metode Pembayaran</h3>
+          <h3 className='mb-4 text-lg font-semibold'>{t('title content.footer')}</h3>
           <div className='grid grid-cols-4 gap-4'>
             {/* Bank logos - First row */}
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/BCA.png'
               alt='BCA'
               width={60}
               height={30}
             />
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/mandiri.png'
               alt='Mandiri'
               width={60}
               height={30}
             />
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/BNI.png'
               alt='BSI'
               width={60}
               height={30}
             />
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/BRI.png'
               alt='BRI'
               width={60}
               height={30}
             />
             {/* Bank logos - Second row */}
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/CIMB.png'
               alt='BNI'
               width={60}
               height={30}
             />
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/alfamart.png'
               alt='Bank Muamalat'
               width={60}
               height={30}
             />
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/gopay.png'
               alt='Danamon'
               width={60}
               height={30}
             />
-            <Image
-              src='/placeholder.svg'
+            <img
+              src='/payment logo/qris.png'
               alt='CIMB'
-              width={60}
-              height={30}
-            />
-            {/* E-wallet logos */}
-            <Image
-              src='/placeholder.svg'
-              alt='Gopay'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='ShopeePay'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='DANA'
-              width={60}
-              height={30}
-            />
-            {/* Retail logos */}
-            <Image
-              src='/placeholder.svg'
-              alt='Indomaret'
               width={60}
               height={30}
             />
@@ -117,33 +89,33 @@ export default function Footer() {
 
         {/* Digital Channels */}
         <div className='mb-8'>
-          <h3 className='mb-4 text-lg font-semibold'>Channel Digital Lainnya</h3>
+          <h3 className='mb-4 text-lg font-semibold'>{t('title content.footer2')}</h3>
           <div className='grid grid-cols-3 gap-4'>
-            <Image
+            <img
               src='/placeholder.svg'
               alt='Kitabisa'
               width={100}
               height={40}
             />
-            <Image
+            <img
               src='/placeholder.svg'
               alt='Amalsholeh'
               width={100}
               height={40}
             />
-            <Image
+            <img
               src='/placeholder.svg'
               alt='Bersedekah'
               width={100}
               height={40}
             />
-            <Image
+            <img
               src='/placeholder.svg'
               alt='Tokopedia'
               width={100}
               height={40}
             />
-            <Image
+            <img
               src='/placeholder.svg'
               alt='Shopee'
               width={100}
@@ -154,7 +126,7 @@ export default function Footer() {
 
         {/* Social Media Links */}
         <div>
-          <h3 className='mb-4 text-lg font-semibold'>Info Selengkapnya:</h3>
+          <h3 className='mb-4 text-lg font-semibold'>{t('title content.footer3')}:</h3>
           <div className='flex justify-center gap-4'>
             <Link
               href='#'

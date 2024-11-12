@@ -1,9 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle2 } from 'lucide-react';
 import CardSlider from '@/components/card/cardSlider';
 import HeaderSlider from '@/components/card/headerSlider';
 import CardList from '@/components/card/cardList';
@@ -11,6 +6,7 @@ import Header from '@/components/header/HeaderSearch';
 import CardSlider2 from '@/components/card/cardSlider2';
 import Footer from '@/components/footer/footer';
 import ProgramNavigation from '@/components/menu/donasiMenu';
+import '../utils/translate/i18n';
 
 export default function CharityHome() {
   return (

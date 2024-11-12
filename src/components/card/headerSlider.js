@@ -1,68 +1,83 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-
-const slides = [
-  {
-    title: 'Alirkan Pahala',
-    subtitle: 'Dengan',
-    highlight: '',
-    tag: 'Di Pelosok Negeri',
-    image: `https://i.pinimg.com/736x/19/da/10/19da108dba45f92e8eff6a04ad76239c.jpg`,
-    buttonText: 'SEDEKAH SEKARANG!',
-  },
-  {
-    title: 'Yuk Istiqomah',
-    subtitle: 'Dalam',
-    highlight: 'Berbagi Kebaikan',
-    tag: 'Bersama Laju Peduli',
-    image: '/placeholder.svg?height=300&width=600',
-    buttonText: 'DONASI SEKARANG',
-  },
-  {
-    title: 'Berbagi Berkah',
-    subtitle: 'Untuk',
-    highlight: 'Sesama',
-    tag: 'Program Sosial',
-    image: '/placeholder.svg?height=300&width=600',
-    buttonText: 'MULAI BERBAGI',
-  },
-];
+import axios from 'axios';
 
 export default function HeaderSlider() {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCampaignData = async () => {
+    try {
+      const requestData = {
+        companyId: 'vrWcmcy7wEw1BUkQP3l9',
+        slug: 'donasi-kambing-guling',
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+      };
+
+      const response = await axios.post('/api/v1/article/read', requestData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Gagal memuat data');
+    }
+  };
+
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchCampaignData();
+        if (data?.data?.length > 0) {
+          setCampaigns(data?.data);
+        } else {
+          setCampaigns([]);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCampaigns();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+      setCurrentSlide((prevSlide) => (prevSlide + 1) % campaigns.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [campaigns.length]);
 
   const nextSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length);
+    setCurrentSlide((prevSlide) => (prevSlide + 1) % campaigns.length);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prevSlide) => (prevSlide - 1 + slides.length) % slides.length);
+    setCurrentSlide((prevSlide) => (prevSlide - 1 + campaigns.length) % campaigns.length);
   };
 
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (campaigns.length === 0) return <div>Data tidak tersedia</div>;
+
   return (
-    <div className='w-full max-w-md mx-auto mb-3 '>
+    <div className='w-full max-w-md mx-auto mb-3'>
       <div className='relative overflow-hidden rounded-lg shadow-md'>
         <div
           className='flex transition-transform duration-300 ease-in-out'
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-          {slides.map((slide, index) => (
+          {campaigns.map((slide, index) => (
             <div
               key={index}
               className='w-full flex-shrink-0'>
               <div className='relative'>
-                <Image
-                  src={slide.image}
+                <img
+                  src={slide.images[0]}
                   alt={`Banner ${index + 1}`}
                   width={600}
                   height={300}
@@ -92,8 +107,8 @@ export default function HeaderSlider() {
           <ChevronRight className='w-4 h-4 text-gray-800' />
         </button>
       </div>
-      <div className='flex justify-center gap-2 '>
-        {slides.map((_, index) => (
+      <div className='flex justify-center gap-2'>
+        {campaigns.map((_, index) => (
           <div
             key={index}
             className={`w-2 h-2 rounded-full transition-colors ${currentSlide === index ? 'bg-blue-500' : 'bg-gray-300'}`}

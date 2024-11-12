@@ -1,50 +1,137 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bell, Search, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
+import useUserStore from '@/hooks/zustand';
+import * as Flags from 'country-flag-icons/react/3x2';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Header({ title = 'Laju Timothy', showBackButton = false, onBackClick }) {
   const [isSearchActive, setIsSearchActive] = useState(false);
+  const { t, i18n } = useTranslation();
+  const [isLoading, setIsLoading] = useState(true);
+  const globalState = useUserStore();
+
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      setIsLoading(false);
+    }
+  }, [i18n]);
+
+  if (isLoading) {
+    return <div className='flex justify-center items-center h-16'>Loading...</div>;
+  }
+
+  const handleLanguageChange = (language) => {
+    i18n.changeLanguage(language);
+    globalState?.setLanguageId(language);
+  };
+
+  const languageFlags = {
+    id: Flags.ID,
+    en: Flags.GB,
+    ms: Flags.MY,
+    ar: Flags.SA,
+    zh: Flags.CN,
+  };
+
+  const FlagIcon = languageFlags[i18n.language] || Flags.GB;
 
   return (
-    <header className='fixed top-0 left-0 right-0 bg-white z-50 '>
+    <header className='fixed top-0 left-0 right-0 bg-background z-100  bg-white'>
       <div className='max-w-md mx-auto px-4 h-16 flex items-center justify-between'>
-        {showBackButton ? (
-          <button
-            onClick={onBackClick}
-            className='p-2 -ml-2'>
-            <ChevronLeft className='w-6 h-6' />
-          </button>
-        ) : (
-          <Link
-            href='/'
-            className='text-xl font-bold text-blue-600'>
-            {title}
-          </Link>
-        )}
+        <div className='flex items-center'>
+          {showBackButton ? (
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={onBackClick}
+              className='-ml-2'>
+              <ChevronLeft className='h-6 w-6' />
+              <span className='sr-only'>Go back</span>
+            </Button>
+          ) : (
+            <Link
+              href='/'
+              className='text-xl font-bold text-primary'>
+              {title}
+            </Link>
+          )}
+        </div>
 
-        <div className='flex items-center space-x-4'>
+        <div className='flex items-center space-x-2'>
           {isSearchActive ? (
             <input
               type='text'
-              placeholder='Search...'
-              className='border rounded-full px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300'
+              placeholder={t('Search...')}
+              className='border rounded-full px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary'
               autoFocus
               onBlur={() => setIsSearchActive(false)}
             />
           ) : (
             <>
-              <button
-                onClick={() => setIsSearchActive(true)}
-                className='p-2'>
-                <Search className='w-5 h-5' />
-              </button>
-              <Link
-                href='/notifications'
-                className='p-2'>
-                <Bell className='w-5 h-5' />
-              </Link>
+              <Button
+                variant='ghost'
+                size='icon'
+                onClick={() => setIsSearchActive(true)}>
+                <Search className='h-5 w-5' />
+                <span className='sr-only'>Search</span>
+              </Button>
+
+              <Select
+                onValueChange={handleLanguageChange}
+                value={i18n.language}>
+                <SelectTrigger className='w-[40px] h-[40px] p-0 border-none'>
+                  <SelectValue>
+                    <FlagIcon className='h-5 w-5' />
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='id'>
+                    <div className='flex items-center'>
+                      <Flags.ID className='h-4 w-4 mr-2' />
+                      <span>Indonesia</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value='en'>
+                    <div className='flex items-center'>
+                      <Flags.GB className='h-4 w-4 mr-2' />
+                      <span>English</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value='ms'>
+                    <div className='flex items-center'>
+                      <Flags.MY className='h-4 w-4 mr-2' />
+                      <span>Malay</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value='ar'>
+                    <div className='flex items-center'>
+                      <Flags.SA className='h-4 w-4 mr-2' />
+                      <span>Arabic</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value='zh'>
+                    <div className='flex items-center'>
+                      <Flags.CN className='h-4 w-4 mr-2' />
+                      <span>Chinese</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Button
+                variant='ghost'
+                size='icon'
+                asChild>
+                <Link href='/notifications'>
+                  <Bell className='h-5 w-5' />
+                  <span className='sr-only'>Notifications</span>
+                </Link>
+              </Button>
             </>
           )}
         </div>

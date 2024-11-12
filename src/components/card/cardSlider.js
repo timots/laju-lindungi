@@ -1,63 +1,24 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
-
-const campaigns = [
-  {
-    id: 1,
-    title: 'Sedekah Subuh, Awali Hari Dengan Amalan Baik',
-    image: 'https://via.placeholder.com/400x200',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 2.150.000',
-    target: 'Rp 5.000.000',
-    progress: 43,
-    verified: true,
-  },
-  {
-    id: 2,
-    title: 'Bantu Bu Munawaroh Dapatkan Kaki Palsu',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 225.000',
-    target: 'Rp 1.000.000',
-    progress: 22,
-    verified: true,
-  },
-  {
-    id: 3,
-    title: 'Bantu Pembangunan Masjid Al-Ikhlas',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 1.750.000',
-    target: 'Rp 3.000.000',
-    progress: 58,
-    verified: true,
-  },
-  {
-    id: 4,
-    title: 'Bantu Anak Yatim Mendapatkan Pendidikan',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 3.500.000',
-    target: 'Rp 10.000.000',
-    progress: 35,
-    verified: true,
-  },
-];
-
-const createSlug = (title) => {
-  return title
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '');
-};
+import axios from 'axios';
 
 const CampaignCard = ({ campaign }) => {
+  console.log(campaign, 'ini campaign');
   const router = useRouter();
 
+  const createSlug = (title) => {
+    console.log(title);
+    return title
+      .toLowerCase()
+      .replace(/ /g, '-')
+      .replace(/[^\w-]+/g, '');
+  };
+
   const handleCardClick = () => {
-    const slug = createSlug(campaign.title);
+    console.log(campaign.name, 'ini name');
+
+    const slug = createSlug(campaign.name);
     router.push(`${router.asPath}/campaign/${slug}`);
   };
 
@@ -67,9 +28,9 @@ const CampaignCard = ({ campaign }) => {
       className='block cursor-pointer'>
       <div className='bg-white rounded-xl overflow-hidden shadow-lg'>
         <div className='relative'>
-          <Image
-            src={campaign.image}
-            alt={campaign.title}
+          <img
+            src={campaign.images[0] || '/placeholder.svg'}
+            alt={campaign.name}
             width={400}
             height={200}
             className='w-full h-48 object-cover'
@@ -77,17 +38,17 @@ const CampaignCard = ({ campaign }) => {
           {campaign.verified && <div className='absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded'>Verified</div>}
         </div>
         <div className='p-4'>
-          <h3 className='font-semibold text-gray-800 mb-2 line-clamp-2'>{campaign.title}</h3>
-          <p className='text-sm text-gray-600 mb-3'>{campaign.organization}</p>
+          <h3 className='font-semibold text-gray-800 mb-2 line-clamp-2'>{campaign.name || 'No Name'}</h3>
+          <p className='text-sm text-gray-600 mb-3'>{campaign.type}</p>
           <div className='space-y-2'>
             <div className='flex justify-between text-sm'>
-              <span className='font-semibold text-orange-500'>{campaign.raised}</span>
+              <span className='font-semibold text-orange-500'>{campaign.modal_price_int}</span>
               <span className='text-gray-500'>terkumpul</span>
             </div>
             <div className='w-full bg-gray-200 rounded-full h-2'>
               <div
                 className='bg-orange-500 h-2 rounded-full'
-                style={{ width: `${campaign.progress}%` }}
+                style={{ width: `${campaign.sale_price_int}%` }}
               />
             </div>
           </div>
@@ -99,7 +60,47 @@ const CampaignCard = ({ campaign }) => {
 
 const CardSlider = ({ Header, BgColour }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCampaignData = async () => {
+    try {
+      const requestData = {
+        companyId: 'vrWcmcy7wEw1BUkQP3l9',
+        slug: 'donasi-kambing-guling',
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+      };
+
+      const response = await axios.post('/api/v1/article/read', requestData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Gagal memuat data');
+    }
+  };
+
+  console.log(campaigns, 'ini campaign di slider');
   const totalSlides = Math.ceil(campaigns.length / 2);
+
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchCampaignData();
+        setCampaigns(data?.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCampaigns();
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
