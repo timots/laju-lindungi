@@ -46,7 +46,6 @@ export default function CardSlider2() {
     try {
       const requestData = {
         companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        slug: 'donasi-kambing-guling',
         projectId: 'HWMHbyA6S12FXzVwcru7',
       };
 

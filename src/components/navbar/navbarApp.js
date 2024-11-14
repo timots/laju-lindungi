@@ -17,23 +17,17 @@ const Navbar = () => {
     }
   }, [i18n]);
 
-  useEffect(() => {
-    console.log('Current language:', i18n.language);
-    console.log('Available languages:', i18n.languages);
-    console.log('Translation test:', t('nav.home'));
-  }, [i18n.language, t]);
-
-  const menuItems = [
-    { id: 'home', label: t('nav.home'), icon: Home, link: '/' },
-    { id: 'info', label: t('nav.infoTerbaru'), icon: Info, link: '/info' },
-    { id: 'galang', label: t('nav.Galang_dana'), icon: HandHeart, link: '/galang' },
-    { id: 'rekening', label: t('nav.rekening'), icon: Trophy, link: '/rekening' },
-    { id: 'user', label: t('nav.User'), icon: User, link: '/auth/login' },
-  ];
-
   if (isLoading) {
     return <div className='flex h-16 items-center justify-center'>Loading...</div>;
   }
+
+  const menuItems = [
+    { id: 'home', label: t('nav.home') || 'Home', icon: Home, link: '/' },
+    { id: 'info', label: t('nav.infoTerbaru') || 'Info', icon: Info, link: '/info' },
+    { id: 'galang', label: t('nav.Galang_dana') || 'Galang Dana', icon: HandHeart, link: '/galang' },
+    { id: 'rekening', label: t('nav.rekening') || 'Rekening', icon: Trophy, link: '/rekening' },
+    { id: 'user', label: t('nav.User') || 'User', icon: User, link: '/auth/login' },
+  ];
 
   return (
     <nav className='fixed bottom-0 left-0 right-0 z-50'>

@@ -6,13 +6,13 @@ import Navbar from '../navbar/navbarApp';
 const AppLayout = ({ children }) => {
   const router = useRouter();
   const fullPage = ['/auth/login', '/auth/signup', '/auth/reset-password', '/account', '/account/loyalty-program', '/account/vouchers', '/products/[id]', '/products', '/categories', '/wishlist'].includes(router.pathname);
-  console.log(router, 'ini router');
+  const noNavbar = ['/[id]/donasi-sekarang'].includes(router.pathname);
   return (
     <div>
       {!fullPage ? (
         <div className='flex flex-col min-h-screen bg-white mx-auto w-full relative max-w-md'>
           <div className='flex-grow  mb-16 overflow-y-auto'>{children}</div>
-          <Navbar />
+          {!noNavbar ? <Navbar /> : <></>}
         </div>
       ) : (
         <>{children}</>

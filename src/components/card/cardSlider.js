@@ -1,57 +1,69 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/router';
 import axios from 'axios';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 const CampaignCard = ({ campaign }) => {
-  console.log(campaign, 'ini campaign');
   const router = useRouter();
 
-  const createSlug = (title) => {
-    console.log(title);
-    return title
-      .toLowerCase()
-      .replace(/ /g, '-')
-      .replace(/[^\w-]+/g, '');
-  };
-
   const handleCardClick = () => {
-    console.log(campaign.name, 'ini name');
-
-    const slug = createSlug(campaign.name);
+    const slug = campaign.id;
     router.push(`${router.asPath}/campaign/${slug}`);
   };
 
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(number);
+  };
+
+  const progressPercentage = (campaign.amount_total / campaign.target_amount) * 100;
+
   return (
     <div
-      onClick={handleCardClick}
-      className='block cursor-pointer'>
-      <div className='bg-white rounded-xl overflow-hidden shadow-lg'>
-        <div className='relative'>
-          <img
-            src={campaign.images[0] || '/placeholder.svg'}
-            alt={campaign.name}
-            width={400}
-            height={200}
-            className='w-full h-48 object-cover'
-          />
-          {campaign.verified && <div className='absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded'>Verified</div>}
+      className='w-full max-w-sm h-[380px] cursor-pointer bg-white rounded-lg overflow-hidden shadow-md flex flex-col'
+      onClick={handleCardClick}>
+      <div className='relative h-[180px]'>
+        <img
+          src={campaign?.images?.[0]}
+          alt={campaign.name}
+          className='w-full h-full object-cover'
+        />
+        <div className='absolute bottom-0 left-0 right-0 bg-gray-500 bg-opacity-90 p-3'>
+          <h2 className='text-white font-medium text-lg leading-tight truncate'>{campaign.name}</h2>
         </div>
-        <div className='p-4'>
-          <h3 className='font-semibold text-gray-800 mb-2 line-clamp-2'>{campaign.name || 'No Name'}</h3>
-          <p className='text-sm text-gray-600 mb-3'>{campaign.type}</p>
-          <div className='space-y-2'>
-            <div className='flex justify-between text-sm'>
-              <span className='font-semibold text-orange-500'>{campaign.modal_price_int}</span>
-              <span className='text-gray-500'>terkumpul</span>
+      </div>
+
+      <div className='p-4 flex flex-col justify-between flex-1'>
+        <div className='flex items-center space-x-2 h-6'>
+          <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
+          <p className='text-gray-600 text-sm truncate'>{campaign?.vendor}</p>
+        </div>
+
+        <div className='flex justify-between items-center h-6'>
+          <span className='font-semibold text-orange-500'>{formatRupiah(campaign?.amount_total)}</span>
+          <span className='text-sm text-gray-500'>terkumpul</span>
+        </div>
+
+        <div className='w-full bg-gray-100 rounded-full h-1.5 mb-2'>
+          <div
+            className='bg-orange-500 h-1.5 rounded-full'
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </div>
+
+        <div className='flex -space-x-2 h-6'>
+          {campaign?.orders?.map((order, index) => (
+            <div
+              key={index}
+              className='w-6 h-6 rounded-full border-2 border-white flex items-center justify-center bg-gray-300 text-white text-xs font-bold'>
+              {order.contact_information?.name?.[0].toUpperCase()}
             </div>
-            <div className='w-full bg-gray-200 rounded-full h-2'>
-              <div
-                className='bg-orange-500 h-2 rounded-full'
-                style={{ width: `${campaign.sale_price_int}%` }}
-              />
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>
@@ -60,7 +72,6 @@ const CampaignCard = ({ campaign }) => {
 
 const CardSlider = ({ Header, BgColour }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -69,7 +80,7 @@ const CardSlider = ({ Header, BgColour }) => {
     try {
       const requestData = {
         companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        slug: 'donasi-kambing-guling',
+        // tags: 'sedekah',
         projectId: 'HWMHbyA6S12FXzVwcru7',
       };
 
@@ -80,15 +91,12 @@ const CardSlider = ({ Header, BgColour }) => {
     }
   };
 
-  console.log(campaigns, 'ini campaign di slider');
-  const totalSlides = Math.ceil(campaigns.length / 2);
-
   useEffect(() => {
     const loadCampaigns = async () => {
       setLoading(true);
       try {
         const data = await fetchCampaignData();
-        setCampaigns(data?.data);
+        setCampaigns(data?.data || []);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -99,8 +107,10 @@ const CardSlider = ({ Header, BgColour }) => {
     loadCampaigns();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <div className='text-center py-8'>Loading...</div>;
+  if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
+
+  const totalSlides = Math.ceil(campaigns.length / 2);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -136,37 +146,15 @@ const CardSlider = ({ Header, BgColour }) => {
           </div>
           <button
             onClick={prevSlide}
-            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-md'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-              className='w-6 h-6'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M15 19l-7-7 7-7'
-              />
-            </svg>
+            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-md'
+            aria-label='Previous slide'>
+            <ChevronLeft className='w-6 h-6' />
           </button>
           <button
             onClick={nextSlide}
-            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-md'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-              className='w-6 h-6'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M9 5l7 7-7 7'
-              />
-            </svg>
+            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-md'
+            aria-label='Next slide'>
+            <ChevronRight className='w-6 h-6' />
           </button>
         </div>
         <div className='flex justify-center gap-2 mt-6'>

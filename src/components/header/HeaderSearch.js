@@ -41,7 +41,7 @@ export default function Header({ title = 'Laju Timothy', showBackButton = false,
   const FlagIcon = languageFlags[i18n.language] || Flags.GB;
 
   return (
-    <header className='fixed top-0 left-0 right-0 bg-background z-100  bg-white'>
+    <header className='fixed top-0 left-0 right-0 bg-background z-50  bg-white'>
       <div className='max-w-md mx-auto px-4 h-16 flex items-center justify-between'>
         <div className='flex items-center'>
           {showBackButton ? (
