@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import { CheckCircle, Clock } from 'lucide-react';
+import { differenceInDays } from 'date-fns';
+import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
+import { Progress } from '@radix-ui/react-progress';
 
 const CardList = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -49,46 +52,54 @@ const CardList = () => {
           campaigns.map((campaign) => (
             <Link
               href={`/campaign/${campaign.id}`}
-              key={campaign.id}>
-              <div className='bg-white rounded-lg shadow-sm p-4 hover:shadow-md transition-shadow'>
-                <div className='flex gap-4'>
+              key={campaign.id}
+              className='block'>
+              <div className='bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow'>
+                <div className='flex gap-4 p-4'>
                   <div className='flex-shrink-0'>
                     <img
                       src={campaign?.images?.[0] || '/placeholder.svg'}
                       alt={campaign.name}
-                      width={120}
-                      height={80}
-                      className='rounded-lg object-cover w-[120px] h-[80px]'
+                      width={160}
+                      height={120}
+                      className='rounded-lg object-cover w-[160px] h-[120px]'
                     />
                   </div>
-                  <div className='flex-grow min-w-0'>
-                    <h3 className='font-semibold text-gray-900 mb-1 line-clamp-2'>{campaign.name}</h3>
-                    <div className='flex items-center gap-1 mb-2'>
+                  <div className='flex-grow min-w-0 space-y-2'>
+                    <h3 className='font-semibold text-gray-900 text-lg line-clamp-2'>{campaign.name}</h3>
+                    <div className='flex items-center gap-2'>
                       <span className='text-sm text-gray-600'>{campaign.vendor}</span>
                       {campaign.status && <CheckCircle className='w-4 h-4 text-blue-500 flex-shrink-0' />}
                     </div>
-                    <div className='flex items-center justify-between mb-2'>
-                      <span className='font-bold text-orange-500'>Rp {parseInt(campaign.amount_total || 0).toLocaleString('id-ID')}</span>
-                      <span className='text-sm text-gray-500'>terkumpul</span>
-                    </div>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex gap-1'>
-                        {campaign.orders.map((order, index) => {
-                          const initial = order.contact_information?.name?.[0] || '';
-
-                          return (
-                            <span
-                              key={index}
-                              className='w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold'>
-                              {initial}
-                            </span>
-                          );
-                        })}
+                    <div className='space-y-2'>
+                      <div className='flex items-center gap-1'>
+                        <span className='font-bold text-orange-500 text-lg'>Rp {parseInt(campaign.amount_total || 0).toLocaleString('id-ID')}</span>
+                        <span className='text-sm text-gray-500'>terkumpul</span>
                       </div>
-
-                      <div className='flex items-center text-sm text-gray-500'>
-                        <Clock className='w-4 h-4 mr-1' />
-                        <span>1 bulan, 10 hari lagi</span>
+                      <Progress
+                        value={60}
+                        className='h-2 bg-orange-100'
+                        indicatorClassName='bg-orange-500'
+                      />
+                      <div className='flex items-center justify-between pt-1'>
+                        <div className='flex -space-x-2'>
+                          {campaign.orders?.slice(0, 4).map((donor, index) => (
+                            <Avatar
+                              key={index}
+                              className='w-6 h-6 border-2 border-white'>
+                              <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0].toUpperCase()}</AvatarFallback>
+                            </Avatar>
+                          ))}
+                          {campaign.orders?.length > 4 && (
+                            <Avatar className='w-6 h-6 border-2 border-white'>
+                              <AvatarFallback className='bg-orange-500 text-[10px] text-white'>+{campaign.orders.length - 4}</AvatarFallback>
+                            </Avatar>
+                          )}
+                        </div>
+                        <div className='flex items-center gap-1 text-sm text-gray-500'>
+                          <Clock className='w-4 h-4' />
+                          <span>{campaign?.endAt?._seconds ? `${differenceInDays(new Date(campaign.endAt._seconds * 1000), new Date())} hari lagi` : '∞'}</span>
+                        </div>
                       </div>
                     </div>
                   </div>

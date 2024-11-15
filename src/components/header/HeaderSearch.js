@@ -9,7 +9,7 @@ import * as Flags from 'country-flag-icons/react/3x2';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export default function Header({ title = 'Laju Timothy', showBackButton = false, onBackClick }) {
+export default function Header({ title = 'Laju Peduli', showBackButton = false, onBackClick }) {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);

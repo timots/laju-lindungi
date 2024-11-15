@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, Clock } from 'lucide-react';
 import { useRouter } from 'next/router';
+import { Card } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const CampaignCard = ({ campaign }) => {
   const router = useRouter();
@@ -24,49 +26,50 @@ const CampaignCard = ({ campaign }) => {
   const progressPercentage = (campaign.amount_total / campaign.target_amount) * 100;
 
   return (
-    <div
-      className='w-full max-w-sm h-[380px] cursor-pointer bg-white rounded-lg overflow-hidden shadow-md flex flex-col'
+    <Card
+      className='w-[280px] bg-white rounded-xl overflow-hidden shadow-sm hover:shadow transition-shadow cursor-pointer'
       onClick={handleCardClick}>
-      <div className='relative h-[180px]'>
+      <div className='h-[140px] overflow-hidden'>
         <img
           src={campaign?.images?.[0]}
           alt={campaign.name}
           className='w-full h-full object-cover'
         />
-        <div className='absolute bottom-0 left-0 right-0 bg-gray-500 bg-opacity-90 p-3'>
-          <h2 className='text-white font-medium text-lg leading-tight truncate'>{campaign.name}</h2>
-        </div>
       </div>
 
-      <div className='p-4 flex flex-col justify-between flex-1'>
-        <div className='flex items-center space-x-2 h-6'>
-          <div className='w-2 h-2 bg-blue-500 rounded-full'></div>
-          <p className='text-gray-600 text-sm truncate'>{campaign?.vendor}</p>
+      <div className='p-4 space-y-3'>
+        <h2 className='font-medium text-[15px] leading-tight text-gray-900 line-clamp-2 min-h-[40px]'>{campaign.name}</h2>
+
+        <div className='flex items-center gap-1.5'>
+          <span className='text-gray-600 text-sm truncate max-w-[200px]'>{campaign?.vendor}</span>
+          <CheckCircle2 className='w-4 h-4 text-blue-500 flex-shrink-0' />
         </div>
 
-        <div className='flex justify-between items-center h-6'>
-          <span className='font-semibold text-orange-500'>{formatRupiah(campaign?.amount_total)}</span>
-          <span className='text-sm text-gray-500'>terkumpul</span>
-        </div>
+        <div className='space-y-2'>
+          <div className='flex items-center justify-between'>
+            <span className='text-orange-500 font-bold text-base'>{formatRupiah(campaign?.amount_total)}</span>
+            <span className='text-gray-500 text-sm'>terkumpul</span>
+          </div>
 
-        <div className='w-full bg-gray-100 rounded-full h-1.5 mb-2'>
-          <div
-            className='bg-orange-500 h-1.5 rounded-full'
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </div>
-
-        <div className='flex -space-x-2 h-6'>
-          {campaign?.orders?.map((order, index) => (
+          <div className='w-full bg-gray-100 rounded-full h-1'>
             <div
-              key={index}
-              className='w-6 h-6 rounded-full border-2 border-white flex items-center justify-center bg-gray-300 text-white text-xs font-bold'>
-              {order.contact_information?.name?.[0].toUpperCase()}
-            </div>
-          ))}
+              className='bg-orange-500 h-1 rounded-full transition-all duration-300'
+              style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+            />
+          </div>
+        </div>
+
+        <div className='flex items-center justify-between pt-1'>
+          <Avatar className='w-6 h-6 bg-orange-500 text-white text-xs'>
+            <AvatarFallback>D</AvatarFallback>
+          </Avatar>
+          <div className='flex items-center gap-1 text-sm text-gray-500'>
+            <Clock className='w-4 h-4' />
+            <span>1 bulan, 4 hari lagi</span>
+          </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 
@@ -80,7 +83,6 @@ const CardSlider = ({ Header, BgColour }) => {
     try {
       const requestData = {
         companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        // tags: 'sedekah',
         projectId: 'HWMHbyA6S12FXzVwcru7',
       };
 
@@ -122,7 +124,7 @@ const CardSlider = ({ Header, BgColour }) => {
 
   return (
     <div className={`p-8 ${BgColour}`}>
-      <div className='max-w-6xl mx-auto'>
+      <div className='max-w-[600px] mx-auto'>
         <h2 className='text-2xl md:text-3xl font-bold text-white mb-6 text-center'>{Header}</h2>
         <div className='relative'>
           <div className='overflow-hidden'>
@@ -132,36 +134,38 @@ const CardSlider = ({ Header, BgColour }) => {
               {Array.from({ length: totalSlides }).map((_, index) => (
                 <div
                   key={index}
-                  className='w-full flex-shrink-0 flex gap-6'>
+                  className='w-full flex-shrink-0 flex justify-center gap-6'>
                   {campaigns.slice(index * 2, index * 2 + 2).map((campaign) => (
-                    <div
+                    <CampaignCard
                       key={campaign.id}
-                      className='w-1/2'>
-                      <CampaignCard campaign={campaign} />
-                    </div>
+                      campaign={campaign}
+                    />
                   ))}
                 </div>
               ))}
             </div>
           </div>
+
           <button
             onClick={prevSlide}
-            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-md'
+            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors'
             aria-label='Previous slide'>
             <ChevronLeft className='w-6 h-6' />
           </button>
+
           <button
             onClick={nextSlide}
-            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-md'
+            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors'
             aria-label='Next slide'>
             <ChevronRight className='w-6 h-6' />
           </button>
         </div>
+
         <div className='flex justify-center gap-2 mt-6'>
           {Array.from({ length: totalSlides }).map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-2 rounded-full ${currentSlide === index ? 'bg-white' : 'bg-white opacity-50'}`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === index ? 'bg-white' : 'bg-white opacity-50'}`}
             />
           ))}
         </div>

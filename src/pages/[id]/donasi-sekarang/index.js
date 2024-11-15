@@ -30,6 +30,10 @@ export default function DonationPage() {
   const [totalAmount, setTotalAmount] = useState(0);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [name, setName] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
 
   const togglePaymentModal = () => {
     setShowPaymentModal(!showPaymentModal);
@@ -107,6 +111,48 @@ export default function DonationPage() {
       total += (newQuantities[variant.id] || 0) * variant.regular_price_int;
     });
     setTotalAmount(total);
+  };
+
+  const handleDonateNow = async () => {
+    const items = variants
+      .filter((variant) => quantities[variant.id] > 0)
+      .map((variant) => ({
+        productId: product.id,
+        variantId: variant.id,
+        quantity: quantities[variant.id],
+        message: '-',
+      }));
+
+    const data = {
+      format: 'crm',
+      isProduction: false,
+      payload: {
+        companyId: 'vrWcmcy7wEw1BUkQP3l9',
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+        contactId: `HWMHbyA6S12FXzVwcru7-${phoneNumber}`,
+        userId: `HWMHbyA6S12FXzVwcru7-${phoneNumber}`,
+        contact_information: {
+          name: hideIdentity ? 'Hamba Allah' : name,
+          email,
+          phone_number: phoneNumber,
+        },
+        items: items,
+        additional_data: { msg: message },
+        affilate: true,
+        affilateId: 'gading123',
+        paymentGateway: 'doku',
+        paymentService: 'em',
+        bank: 'linkaja',
+      },
+    };
+
+    console.log('Donation Data:', data);
+    try {
+      const response = await axios.post('/api/v1/orders/set', data);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Gagal memuat data');
+    }
   };
 
   if (loading) return <div className='text-center py-8'>Loading...</div>;
@@ -218,6 +264,8 @@ export default function DonationPage() {
             <input
               type='text'
               placeholder='Nama Lengkap'
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
 
@@ -233,17 +281,23 @@ export default function DonationPage() {
             <input
               type='tel'
               placeholder='No Whatsapp atau Handphone'
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
               className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
 
             <input
               type='email'
               placeholder='Email (optional)'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
 
             <textarea
               placeholder='Tuliskan pesan atau doa disini (optional)'
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
               rows={4}
               className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
@@ -253,7 +307,11 @@ export default function DonationPage() {
         {/* Total Donation Amount */}
         <div className='fixed bottom-0 left-0 right-0 z-50'>
           <div className='flex justify-center'>
-            <button className='w-full max-w-md mx-auto py-4 rounded-lg font-medium mt-6 bg-blue-600 text-white hover:bg-blue-700 transition-colors'>Sedekah Sekarang - Rp {totalAmount}</button>
+            <button
+              onClick={handleDonateNow}
+              className='w-full max-w-md mx-auto py-4 rounded-lg font-medium mt-6 bg-blue-600 text-white hover:bg-blue-700 transition-colors'>
+              Sedekah Sekarang - Rp {totalAmount}
+            </button>
           </div>
         </div>
       </div>
