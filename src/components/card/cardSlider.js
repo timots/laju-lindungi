@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, CheckCircle2, Clock } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { differenceInDays } from 'date-fns';
 
 const CampaignCard = ({ campaign }) => {
   const router = useRouter();
@@ -60,12 +61,25 @@ const CampaignCard = ({ campaign }) => {
         </div>
 
         <div className='flex items-center justify-between pt-1'>
-          <Avatar className='w-6 h-6 bg-orange-500 text-white text-xs'>
-            <AvatarFallback>D</AvatarFallback>
-          </Avatar>
+          <div className='flex -space-x-2'>
+            {campaign.orders?.slice(0, 4).map((donor, index) => (
+              <Avatar
+                key={index}
+                className='w-6 h-6 border-2 border-white'>
+                <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0].toUpperCase()}</AvatarFallback>
+              </Avatar>
+            ))}
+            {campaign.orders?.length > 4 && (
+              <Avatar className='w-6 h-6 border-2 border-white'>
+                <AvatarFallback className='bg-orange-500 text-[10px] text-white'>+{campaign.orders.length - 4}</AvatarFallback>
+              </Avatar>
+            )}
+          </div>
+        </div>
+        <div className='flex items-center justify-between pt-1'>
           <div className='flex items-center gap-1 text-sm text-gray-500'>
             <Clock className='w-4 h-4' />
-            <span>1 bulan, 4 hari lagi</span>
+            <span>{campaign?.endAt?._seconds ? `${differenceInDays(new Date(campaign.endAt._seconds * 1000), new Date())} hari lagi` : '∞'}</span>
           </div>
         </div>
       </div>

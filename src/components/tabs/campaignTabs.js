@@ -3,7 +3,7 @@
 import { ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
-export default function CampaignTabs({ donors, data }) {
+export default function CampaignTabs({ data }) {
   const [activeTab, setActiveTab] = useState('keterangan');
   const [visibleDonors, setVisibleDonors] = useState(3);
   console.log(data, 'ini data di tabs ');

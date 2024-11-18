@@ -34,6 +34,7 @@ export default function DonationPage() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
+  // console.log(router, 'ini router');
 
   const togglePaymentModal = () => {
     setShowPaymentModal(!showPaymentModal);

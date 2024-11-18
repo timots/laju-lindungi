@@ -2,28 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { MapPin, Clock, CheckCircle2 } from 'lucide-react';
+import { MapPin, Clock, CheckCircle2, Share, ChevronLeft, Home } from 'lucide-react';
 import CampaignTabs from '@/components/tabs/campaignTabs';
 import FundraiserList from '@/components/menu/fundaiserList';
 import PrayerList from '@/components/menu/doa';
 import axios from 'axios';
 import { differenceInDays } from 'date-fns';
-
-const updates = [
-  { date: 'September, 17 2024', title: 'Alhamdulillah 5 Ton Bantuan Pangan Berupa Gandum Telah Sukses Di Salurkan!' },
-  { date: 'August, 16 2024', title: 'Alhamdulillah 17 TON Gandum Palestina Sukses Di Salurkan' },
-  { date: 'July, 16 2024', title: 'PENDISTRIBUSIAN 10 TON GANDUM PALESTINA' },
-  { date: 'July, 24 2024', title: 'Pendistribusian 5 Ton Gandum' },
-  { date: 'June, 6 2024', title: 'Campaign is published' },
-];
-
-const donors = [
-  { name: 'Rosmawati', amount: 'Rp 75.000', timeAgo: '1 jam yang lalu' },
-  { name: 'Chitoj', amount: 'Rp 35.000', timeAgo: '2 jam yang lalu' },
-  { name: 'Hamba Allah', amount: 'Rp 75.000', timeAgo: '3 jam yang lalu' },
-  { name: 'Hamba Allah', amount: 'Rp 210.000', timeAgo: '3 jam yang lalu' },
-  { name: 'Digna balida', amount: 'Rp 35.000', timeAgo: '4 jam yang lalu' },
-];
+import { Button } from '@/components/ui/button';
 
 export default function CampaignDetail() {
   const router = useRouter();
@@ -85,6 +70,15 @@ export default function CampaignDetail() {
 
   return (
     <div className='w-full max-w-md mx-auto bg-white'>
+      <div className='fixed top-0  z-10'>
+        <div className='max-w-md mx-auto px-4 h-14 flex items-center'>
+          <button
+            onClick={() => router.back()}
+            className='p-2 -ml-2  bg-white'>
+            <Home className='w-6 h-6 bg' />
+          </button>
+        </div>
+      </div>
       <div className='relative'>
         <img
           src={activeCampaigns?.images?.[0] || '/placeholder.svg?height=200&width=400'}
@@ -154,10 +148,31 @@ export default function CampaignDetail() {
         <CampaignTabs
           updates={activeCampaigns?.history}
           data={activeCampaigns}
-          donors={donors}
         />
         <FundraiserList />
         <PrayerList data={activeCampaigns} />
+      </div>
+      <div className='fixed bottom-0 left-0 right-0 z-50'>
+        <div className='container flex gap-2 max-w-md mx-auto p-4 bg-white'>
+          <Button
+            variant='outline'
+            className='flex-1 gap-2 h-12 text-sm font-medium'>
+            <Share className='h-4 w-4' />
+            Bagikan
+          </Button>
+          <Button
+            className='flex-1 h-12 text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90'
+            onClick={() => {
+              router.push({
+                pathname: 'donasi-sekarang',
+                query: {
+                  id: activeCampaigns?.id,
+                },
+              });
+            }}>
+            Donasi Sekarang!
+          </Button>
+        </div>
       </div>
     </div>
   );
