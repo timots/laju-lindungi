@@ -125,7 +125,7 @@ export default function DonationPage() {
           },
           items: items,
           additional_data: { msg: message },
-          currency: 'usd',
+          currency: 'idr',
           region: 'id',
           automatic_payment_methods: true,
           affilate: true,
@@ -136,6 +136,7 @@ export default function DonationPage() {
       console.log('Donation Data:', data);
 
       const response = await axios.post('/api/public/payment/stripe/create-payment', data);
+      console.log(response, 'ini response');
 
       const clientSecret = response.data?.data?.client_secret;
       if (!clientSecret) {

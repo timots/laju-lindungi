@@ -12,10 +12,12 @@ export default function CheckoutForm() {
   const router = useRouter();
 
   console.log(router, 'ini router');
+  console.log(stripe, 'ini stripe');
 
   const stripePromise = loadStripe('pk_test_eZL2hA7uIiCkLVuxcTNIIx7I008ckE9NzV');
 
   const handleSubmit = async (e) => {
+    console.log('masuk');
     e.preventDefault();
 
     if (!stripe || !elements) {

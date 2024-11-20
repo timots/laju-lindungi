@@ -5,11 +5,15 @@ import { CheckCircle, Clock } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
 import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { Progress } from '@radix-ui/react-progress';
+import useUserStore from '@/hooks/zustand';
 
 const CardList = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [exchangeRates, setExchangeRates] = useState({}); // Menyimpan semua nilai tukar
+  const globalState = useUserStore();
+  const location = globalState?.location;
 
   const fetchCampaignData = async () => {
     try {
@@ -22,6 +26,15 @@ const CardList = () => {
       return response.data;
     } catch (error) {
       throw new Error(error.response?.data?.message || 'Gagal memuat data');
+    }
+  };
+
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await axios.get('https://api.exchangerate-api.com/v4/latest/IDR');
+      setExchangeRates(response.data.rates || {});
+    } catch (error) {
+      console.error('Failed to fetch exchange rates:', error.message);
     }
   };
 
@@ -40,6 +53,27 @@ const CardList = () => {
 
     loadCampaigns();
   }, []);
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
+
+  const formatCurrency = (amount, location) => {
+    const currencyMap = {
+      Indonesia: 'IDR',
+      Malaysia: 'MYR',
+      Amerika: 'USD',
+      // Tambahkan negara lainnya jika diperlukan
+    };
+
+    const currencyCode = currencyMap[location] || 'IDR';
+    const rate = exchangeRates[currencyCode] || 1;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount * rate);
+  };
 
   if (loading) return <div className='text-center py-8'>Loading...</div>;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
@@ -73,7 +107,7 @@ const CardList = () => {
                     </div>
                     <div className='space-y-2'>
                       <div className='flex items-center gap-1'>
-                        <span className='font-bold text-orange-500 text-lg'>Rp {parseInt(campaign.amount_total || 0).toLocaleString('id-ID')}</span>
+                        <span className='font-bold text-orange-500 text-lg'>{formatCurrency(campaign.amount_total, location)}</span>
                         <span className='text-sm text-gray-500'>terkumpul</span>
                       </div>
                       <Progress
@@ -86,7 +120,7 @@ const CardList = () => {
                           {campaign.orders?.slice(0, 4).map((donor, index) => (
                             <Avatar
                               key={index}
-                              className='w-6 h-6 border-2 border-white'>
+                              className='w-6 h-6 border-1 border-white'>
                               <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0]}</AvatarFallback>
                             </Avatar>
                           ))}

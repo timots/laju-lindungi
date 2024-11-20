@@ -149,7 +149,7 @@ export default function CampaignDetail() {
           updates={activeCampaigns?.history}
           data={activeCampaigns}
         />
-        <FundraiserList />
+        {/* <FundraiserList /> */}
         <PrayerList data={activeCampaigns} />
       </div>
       <div className='fixed bottom-0 left-0 right-0 z-50'>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import CardSlider from '@/components/card/cardSlider';
 import HeaderSlider from '@/components/card/headerSlider';
 import CardList from '@/components/card/cardList';

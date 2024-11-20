@@ -23,9 +23,8 @@ function App({ Component, pageProps }) {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
         const data = await response.json();
         const country = data.address.country || 'Unknown';
-        globalState?.setLocation(country); // Set the location using global state
+        globalState?.setLocation(country); 
 
-        // Call handleLanguageChange based on the country
         if (country === 'Indonesia' || country === 'Malaysia') {
           i18n.changeLanguage('id'); // Set language to 'id' for Indonesia or Malaysia
           globalState?.setLanguageId('id');
