@@ -6,7 +6,7 @@ import Navbar from '../navbar/navbarApp';
 const AppLayout = ({ children }) => {
   const router = useRouter();
   const fullPage = ['/auth/login', '/auth/signup', '/auth/reset-password', '/account', '/account/loyalty-program', '/account/vouchers', '/products/[id]', '/products', '/categories', '/wishlist'].includes(router.pathname);
-  const noNavbar = ['/[id]/donasi-sekarang', '/[id]/[slug]'].includes(router.pathname);
+  const noNavbar = ['/[id]/donasi-sekarang', '/[id]/donasi-sekarang/payment', '/[id]/[slug]'].includes(router.pathname);
   return (
     <div>
       {!fullPage ? (

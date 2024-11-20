@@ -3,21 +3,6 @@ import { ChevronLeft, X } from 'lucide-react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 
-const paymentMethods = [
-  { id: 'bsi', name: 'VA Bank Syariah Indonesia', type: 'virtual' },
-  { id: 'bca', name: 'VA Bank BCA', type: 'virtual' },
-  { id: 'mandiri', name: 'VA Bank Mandiri', type: 'virtual' },
-  { id: 'bni', name: 'VA Bank BNI', type: 'virtual' },
-  { id: 'bri', name: 'VA Bank BRI', type: 'virtual' },
-  { id: 'muamalat', name: 'VA Bank Muamalat', type: 'virtual' },
-  { id: 'cimb', name: 'VA Bank CIMB Niaga', type: 'virtual' },
-  { id: 'permata', name: 'VA Permata Bank', type: 'virtual' },
-  { id: 'danamon', name: 'VA Bank Danamon', type: 'virtual' },
-  { id: 'agi', name: 'VA Bank Artha Graha Internasional', type: 'virtual' },
-  { id: 'flip', name: 'Flip Transfer', type: 'transfer' },
-  { id: 'bsi_transfer', name: 'Transfer Bank Syariah Indonesia', type: 'transfer' },
-];
-
 export default function DonationPage() {
   const router = useRouter();
   const [selectedSalutation, setSelectedSalutation] = useState('Bapak');
@@ -115,44 +100,54 @@ export default function DonationPage() {
   };
 
   const handleDonateNow = async () => {
-    const items = variants
-      .filter((variant) => quantities[variant.id] > 0)
-      .map((variant) => ({
-        productId: product.id,
-        variantId: variant.id,
-        quantity: quantities[variant.id],
-        message: '-',
-      }));
-
-    const data = {
-      format: 'crm',
-      isProduction: false,
-      payload: {
-        companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        projectId: 'HWMHbyA6S12FXzVwcru7',
-        contactId: `HWMHbyA6S12FXzVwcru7-${phoneNumber}`,
-        userId: `HWMHbyA6S12FXzVwcru7-${phoneNumber}`,
-        contact_information: {
-          name: hideIdentity ? 'Hamba Allah' : name,
-          email,
-          phone_number: phoneNumber,
-        },
-        items: items,
-        additional_data: { msg: message },
-        affilate: true,
-        affilateId: 'gading123',
-        paymentGateway: 'doku',
-        paymentService: 'em',
-        bank: 'linkaja',
-      },
-    };
-
-    console.log('Donation Data:', data);
     try {
-      const response = await axios.post('/api/v1/orders/set', data);
-      return response.data;
+      const items = variants
+        .filter((variant) => quantities[variant.id] > 0)
+        .map((variant) => ({
+          productId: product.id,
+          variantId: variant.id,
+          quantity: quantities[variant.id],
+          message: '-',
+        }));
+
+      const data = {
+        format: 'stripe',
+        isProduction: false,
+        payload: {
+          companyId: 'vrWcmcy7wEw1BUkQP3l9',
+          projectId: 'HWMHbyA6S12FXzVwcru7',
+          contactId: `HWMHbyA6S12FXzVwcru7-${phoneNumber}`,
+          userId: `HWMHbyA6S12FXzVwcru7-${phoneNumber}`,
+          contact_information: {
+            name: hideIdentity ? 'Hamba Allah' : name,
+            email,
+            phone_number: phoneNumber,
+          },
+          items: items,
+          additional_data: { msg: message },
+          currency: 'usd',
+          region: 'id',
+          automatic_payment_methods: true,
+          affilate: true,
+          affilateId: 'gading123',
+        },
+      };
+
+      console.log('Donation Data:', data);
+
+      const response = await axios.post('/api/public/payment/stripe/create-payment', data);
+
+      const clientSecret = response.data?.data?.client_secret;
+      if (!clientSecret) {
+        throw new Error('Client secret not found in response');
+      }
+      router.push({
+        pathname: `${router.asPath}/payment`,
+        query: { clientSecret },
+      });
     } catch (error) {
-      throw new Error(error.response?.data?.message || 'Gagal memuat data');
+      console.error('Error initiating payment:', error);
+      setError(error.response?.data?.message || 'Failed to process donation.');
     }
   };
 
@@ -230,23 +225,6 @@ export default function DonationPage() {
 
         {/* Donation Form */}
         <div className='bg-white rounded-lg p-4 shadow-sm'>
-          <div className='flex items-center justify-between mb-4'>
-            <div className='flex items-center gap-2'>
-              <img
-                src='/bank-icon.png'
-                alt='Bank Icon'
-                width={24}
-                height={24}
-              />
-              <span className='text-gray-700'>Metode Pembayaran</span>
-            </div>
-            <button
-              onClick={togglePaymentModal}
-              className='text-blue-600 px-4 py-2 border border-blue-600 rounded-lg'>
-              {selectedPaymentMethod ? selectedPaymentMethod.name : 'Pilih'}
-            </button>
-          </div>
-
           <div className='mb-4'>
             <p className='mb-2'>Sapaan :</p>
             <div className='flex gap-2'>
@@ -316,57 +294,6 @@ export default function DonationPage() {
           </div>
         </div>
       </div>
-
-      {showPaymentModal && (
-        <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-          <div className='bg-white rounded-lg w-full max-w-md mx-4'>
-            <div className='flex justify-between items-center p-4 border-b'>
-              <h2 className='text-lg font-semibold'>Metode Pembayaran</h2>
-              <button onClick={togglePaymentModal}>
-                <X className='w-6 h-6' />
-              </button>
-            </div>
-            <div className='p-4 max-h-[70vh] overflow-y-auto'>
-              <h3 className='font-semibold mb-2'>Virtual Account (Verifikasi Otomatis)</h3>
-              {paymentMethods
-                .filter((method) => method.type === 'virtual')
-                .map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => selectPaymentMethod(method)}
-                    className='w-full text-left py-2 px-4 hover:bg-gray-100 flex items-center'>
-                    <img
-                      src={`/${method.id}-logo.png`}
-                      alt={method.name}
-                      width={40}
-                      height={40}
-                      className='mr-4'
-                    />
-                    {method.name}
-                  </button>
-                ))}
-              <h3 className='font-semibold mb-2 mt-4'>Transfer Bank (Verifikasi Manual 1x24jam)</h3>
-              {paymentMethods
-                .filter((method) => method.type === 'transfer')
-                .map((method) => (
-                  <button
-                    key={method.id}
-                    onClick={() => selectPaymentMethod(method)}
-                    className='w-full text-left py-2 px-4 hover:bg-gray-100 flex items-center'>
-                    <img
-                      src={`/${method.id}-logo.png`}
-                      alt={method.name}
-                      width={40}
-                      height={40}
-                      className='mr-4'
-                    />
-                    {method.name}
-                  </button>
-                ))}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

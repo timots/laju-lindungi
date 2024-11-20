@@ -62,14 +62,14 @@ const CampaignCard = ({ campaign }) => {
 
         <div className='flex items-center justify-between pt-1'>
           <div className='flex -space-x-2'>
-            {campaign.orders?.slice(0, 4).map((donor, index) => (
+            {campaign?.orders?.slice(0, 4).map((donor, index) => (
               <Avatar
                 key={index}
                 className='w-6 h-6 border-2 border-white'>
-                <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0].toUpperCase()}</AvatarFallback>
+                <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor?.contact_information?.name?.[0]}</AvatarFallback>
               </Avatar>
             ))}
-            {campaign.orders?.length > 4 && (
+            {campaign?.orders?.length > 4 && (
               <Avatar className='w-6 h-6 border-2 border-white'>
                 <AvatarFallback className='bg-orange-500 text-[10px] text-white'>+{campaign.orders.length - 4}</AvatarFallback>
               </Avatar>

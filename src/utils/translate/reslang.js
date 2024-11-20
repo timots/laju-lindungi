@@ -8,6 +8,13 @@ const resLang = {
         rekening: 'Rekening',
         User: 'Pengguna',
       },
+
+      menu: {
+        button1: 'donasi kemanusiaan',
+        button2: 'Sedekah Rutin',
+        button3: 'Zakat',
+        button4: 'Semua Program Kebaikan',
+      },
       'title content': {
         footer: 'Metode Pembayaran',
         footer2: 'Channel Digital Lainnya',
@@ -39,6 +46,12 @@ const resLang = {
         rekening: 'Account',
         User: 'User',
       },
+      menu: {
+        button1: 'humanitarian donation',
+        button2: 'regular charity',
+        button3: 'Zakat',
+        button4: 'All Goodness Programs',
+      },
       'title content': {
         footer: 'Payment Methods',
         footer2: 'Other Digital Channels',
@@ -60,7 +73,7 @@ const resLang = {
       },
     },
   },
-  ms: {
+  my: {
     translation: {
       nav: {
         home: 'Laman Utama',
@@ -68,6 +81,12 @@ const resLang = {
         Galang_dana: 'Pengumpulan Dana',
         rekening: 'Akaun',
         User: 'Pengguna',
+      },
+      menu: {
+        button1: 'derma kemanusiaan',
+        button2: 'sedekah berkala',
+        button3: 'Zakat',
+        button4: 'Semua Program Kebaikan',
       },
       'title content': {
         footer: 'Kaedah Pembayaran',
@@ -100,6 +119,12 @@ const resLang = {
         rekening: '账户',
         User: '用户',
       },
+      menu: {
+        button1: '人道主义捐赠',
+        button2: '定期捐赠',
+        button3: '天课',
+        button4: '所有善行项目',
+      },
       'title content': {
         footer: '支付方式',
         footer2: '其他数字渠道',
@@ -128,6 +153,12 @@ const resLang = {
         Galang_dana: 'جمع التبرعات',
         rekening: 'الحساب',
         User: 'المستخدم',
+      },
+      menu: {
+        button1: 'التبرع الإنساني',
+        button2: 'الصدقة المنتظمة',
+        button3: 'الزكاة',
+        button4: 'جميع برامج الخير',
       },
       'title content': {
         footer: 'طرق الدفع',

@@ -1,4 +1,3 @@
-
 import { create } from 'zustand';
 
 const useUserStore = create((set) => ({
@@ -7,10 +6,17 @@ const useUserStore = create((set) => ({
   projectId: '',
   companyId: '',
   languageId: 'en',
+  location: '',
+  stripePublicKey: '',
 
   setProjectId: (data) => {
     set({
       projectId: data,
+    });
+  },
+  setStripePublicKey: (data) => {
+    set({
+      stripePublicKey: data,
     });
   },
 
@@ -35,6 +41,11 @@ const useUserStore = create((set) => ({
   setLanguageId: (data) => {
     set({
       languageId: data,
+    });
+  },
+  setLocation: (data) => {
+    set({
+      location: data,
     });
   },
 }));

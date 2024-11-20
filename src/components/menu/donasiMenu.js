@@ -2,44 +2,47 @@
 
 import { Heart, Repeat, Coins, Grid } from 'lucide-react';
 import { useRouter } from 'next/router';
-
-const programs = [
-  {
-    id: 1,
-    title: 'Donasi Kemanusiaan',
-    icon: Heart,
-    href: '/donasi-kemanusiaan',
-    color: 'bg-blue-500',
-  },
-  {
-    id: 2,
-    title: 'Sedekah Rutin',
-    icon: Repeat,
-    href: '/sedekah-rutin',
-    color: 'bg-blue-500',
-  },
-  {
-    id: 3,
-    title: 'Zakat',
-    icon: Coins,
-    href: '/zakat',
-    color: 'bg-orange-500',
-  },
-  {
-    id: 4,
-    title: 'Semua Program Kebaikan',
-    icon: Grid,
-    href: '/semua-program',
-    color: 'bg-blue-500',
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function ProgramNavigation() {
   const router = useRouter();
+  const { t, i18n } = useTranslation();
 
   const handleOpenProgram = (href) => {
     router.push(href);
   };
+
+  const programs = [
+    {
+      id: 1,
+      title: t('menu.button1'),
+      icon: Heart,
+      href: '/donasi-kemanusiaan',
+      color: 'bg-blue-500',
+    },
+    {
+      id: 2,
+      title: t('menu.button2'),
+      icon: Repeat,
+      href: '/sedekah-rutin',
+      color: 'bg-blue-500',
+    },
+    {
+      id: 3,
+      title: t('menu.button3'),
+
+      icon: Coins,
+      href: '/zakat',
+      color: 'bg-orange-500',
+    },
+    {
+      id: 4,
+      title: t('menu.button4'),
+      icon: Grid,
+      href: '/semua-program',
+      color: 'bg-blue-500',
+    },
+  ];
 
   return (
     <div className='mx-auto w-full max-w-md px-4 py-6'>

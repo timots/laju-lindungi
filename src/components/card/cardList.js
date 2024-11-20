@@ -87,7 +87,7 @@ const CardList = () => {
                             <Avatar
                               key={index}
                               className='w-6 h-6 border-2 border-white'>
-                              <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0].toUpperCase()}</AvatarFallback>
+                              <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0]}</AvatarFallback>
                             </Avatar>
                           ))}
                           {campaign.orders?.length > 4 && (

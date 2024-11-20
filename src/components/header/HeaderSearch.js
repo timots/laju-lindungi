@@ -33,7 +33,7 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
   const languageFlags = {
     id: Flags.ID,
     en: Flags.GB,
-    ms: Flags.MY,
+    my: Flags.MY,
     ar: Flags.SA,
     zh: Flags.CN,
   };
@@ -56,8 +56,13 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
           ) : (
             <Link
               href='/'
-              className='text-xl font-bold text-primary'>
-              {title}
+              className='text-xl font-bold text-primary bg-blue-400'>
+              <img
+                src='/payment logo/Laju_peduli_logo.png'
+                alt='Laju Peduli'
+                width={150}
+                height={50}
+              />
             </Link>
           )}
         </div>
@@ -102,7 +107,7 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
                       <span>English</span>
                     </div>
                   </SelectItem>
-                  <SelectItem value='ms'>
+                  <SelectItem value='my'>
                     <div className='flex items-center'>
                       <Flags.MY className='h-4 w-4 mr-2' />
                       <span>Malay</span>
