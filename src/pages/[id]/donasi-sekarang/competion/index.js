@@ -1,3 +1,4 @@
+import { loadStripe } from '@stripe/stripe-js';
 import { useEffect, useState } from 'react';
 
 function Completion() {
