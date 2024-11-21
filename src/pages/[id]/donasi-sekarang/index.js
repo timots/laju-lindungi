@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react';
 import { ChevronLeft, X } from 'lucide-react';
 import { useRouter } from 'next/router';
 import axios from 'axios';
+import useUserStore from '@/hooks/zustand';
+import { LoadingScreen } from '@/components/loading/loadingScreen';
 
 export default function DonationPage() {
   const router = useRouter();
+  const globalState = useUserStore();
   const [selectedSalutation, setSelectedSalutation] = useState('Bapak');
   const [hideIdentity, setHideIdentity] = useState(false);
   const [variants, setVariants] = useState([]);
@@ -125,7 +128,7 @@ export default function DonationPage() {
           },
           items: items,
           additional_data: { msg: message },
-          currency: 'idr',
+          currency: globalState?.currency,
           region: 'id',
           automatic_payment_methods: true,
           affilate: true,
@@ -152,7 +155,9 @@ export default function DonationPage() {
     }
   };
 
-  if (loading) return <div className='text-center py-8'>Loading...</div>;
+  // if (loading) return <div className='text-center py-8'>Loading...</div>;
+  if (loading) return <LoadingScreen />;
+
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
 
   return (

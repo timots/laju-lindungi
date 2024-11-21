@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { ChevronLeft, ChevronRight, CheckCircle2, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle2, Clock, Loader } from 'lucide-react';
 import { useRouter } from 'next/router';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -123,7 +123,17 @@ const CardSlider = ({ Header, BgColour }) => {
     loadCampaigns();
   }, []);
 
-  if (loading) return <div className='text-center py-8'>Loading...</div>;
+  // if (loading) return <div className='text-center py-8'>Loading...</div>;
+  if (loading) {
+    return (
+      <div className={`p-8 ${BgColour} flex items-center justify-center`}>
+        <div className='text-white text-center'>
+          <Loader className='w-12 h-12 animate-spin mx-auto mb-4' />
+          <p className='text-lg'>Loading campaigns...</p>
+        </div>
+      </div>
+    );
+  }
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
 
   const totalSlides = Math.ceil(campaigns.length / 2);
@@ -148,7 +158,7 @@ const CardSlider = ({ Header, BgColour }) => {
               {Array.from({ length: totalSlides }).map((_, index) => (
                 <div
                   key={index}
-                  className='w-full flex-shrink-0 flex justify-center gap-6'>
+                  className='w-full flex-shrink-0 flex  gap-6'>
                   {campaigns.slice(index * 2, index * 2 + 2).map((campaign) => (
                     <CampaignCard
                       key={campaign.id}

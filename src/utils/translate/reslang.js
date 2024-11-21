@@ -78,7 +78,7 @@ const resLang = {
       nav: {
         home: 'Laman Utama',
         infoTerbaru: 'Info Terkini',
-        Galang_dana: 'Pengumpulan Dana',
+        Galang_dana: 'Ambil Dana',
         rekening: 'Akaun',
         User: 'Pengguna',
       },

@@ -10,7 +10,7 @@ export default function Footer() {
       <div className='flex flex-col items-center text-center'>
         {/* Logo */}
         <img
-          src='/placeholder.svg'
+          src='/payment logo/laju_peduli.png'
           alt='LajuPeduli Logo'
           width={120}
           height={40}
@@ -88,7 +88,7 @@ export default function Footer() {
         </div>
 
         {/* Digital Channels */}
-        <div className='mb-8'>
+        {/* <div className='mb-8'>
           <h3 className='mb-4 text-lg font-semibold'>{t('title content.footer2')}</h3>
           <div className='grid grid-cols-3 gap-4'>
             <img
@@ -122,7 +122,7 @@ export default function Footer() {
               height={40}
             />
           </div>
-        </div>
+        </div> */}
 
         {/* Social Media Links */}
         <div>

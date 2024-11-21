@@ -9,6 +9,7 @@ import PrayerList from '@/components/menu/doa';
 import axios from 'axios';
 import { differenceInDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
+import { LoadingScreen } from '@/components/loading/loadingScreen';
 
 export default function CampaignDetail() {
   const router = useRouter();
@@ -63,7 +64,8 @@ export default function CampaignDetail() {
     }
   }, [router?.query?.slug]);
 
-  if (loading) return <div className='text-center py-8'>Loading...</div>;
+  // if (loading) return <div className='text-center py-8'>Loading...</div>;
+  if (loading) return <LoadingScreen />;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
 
   console.log(activeCampaigns, 'ini campaign active');
@@ -129,7 +131,7 @@ export default function CampaignDetail() {
         <div className='mt-6 border-t pt-4'>
           <div className='flex items-center gap-3'>
             <img
-              src='/placeholder.svg?height=50&width=50'
+              src='/payment logo/laju_peduli.png'
               alt='Yayasan Logo'
               width={50}
               height={50}

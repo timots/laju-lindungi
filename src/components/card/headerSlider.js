@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader } from 'lucide-react';
 import axios from 'axios';
 
 export default function HeaderSlider() {
@@ -61,7 +61,17 @@ export default function HeaderSlider() {
     setCurrentSlide((prevSlide) => (prevSlide - 1 + campaigns.length) % campaigns.length);
   };
 
-  if (loading) return <div className='text-center py-8'>Loading...</div>;
+  // if (loading) return <div className='text-center py-8'>Loading...</div>;
+  if (loading) {
+    return (
+      <div className={`p-8  flex items-center justify-center`}>
+        <div className='text-white text-center'>
+          <Loader className='w-12 h-12 animate-spin mx-auto mb-4' />
+          <p className='text-lg'>Loading campaigns...</p>
+        </div>
+      </div>
+    );
+  }
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
   if (campaigns.length === 0) return <div className='text-center py-8'>Data tidak tersedia</div>;
 
@@ -78,7 +88,8 @@ export default function HeaderSlider() {
               <div className='relative h-[300px]'>
                 <img
                   src={slide?.images?.[0]}
-                  alt={`Banner ${index + 1}`}
+                  // alt={`Banner ${index + 1}`}
+                  alt={slide.name}
                   className='w-full h-full object-cover'
                 />
               </div>

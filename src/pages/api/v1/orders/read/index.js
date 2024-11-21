@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   }
 
   // Define the base URL and JWT token
-  const baseUrl = 'http://172.16.20.136:3000/api/v1/platform/laju-peduli/orders';
+  const baseUrl = 'https://deoapp.com/api/v1/platform/laju-peduli/orders';
   const jwt = 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImYwOGU2ZTNmNzg4ZDYwMTk0MDA1ZGJiYzE5NDc0YmY5Mjg5ZDM5ZWEiLCJ0eXAiOiJKV1QifQ...';
 
   // Extract the request data from the body

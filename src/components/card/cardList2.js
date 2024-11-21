@@ -33,15 +33,15 @@ function CampaignCard({ campaign }) {
       <div className='flex gap-4 p-4'>
         <div className='w-[120px] h-[120px] flex-shrink-0'>
           <img
-            src={campaign.images?.[0] || '/placeholder.svg'}
+            src={campaign.images?.[0]}
             alt={campaign.name}
             className='w-full h-full object-cover rounded-lg'
           />
         </div>
         <div className='flex-1 min-w-0'>
-          <h3 className='font-semibold text-base text-gray-900 mb-1 line-clamp-2'>{campaign.name}</h3>
+          <h3 className='font-semibold text-base text-gray-900 mb-1 line-clamp-2'>{campaign.name || 'Item Name Not Seet'}</h3>
           <div className='flex items-center gap-1 mb-3'>
-            <span className='text-gray-600 text-sm'>{campaign.vendor}</span>
+            <span className='text-gray-600 text-sm'>{campaign.vendor || ' vendor not set'}</span>
             <CheckCircle2 className='w-4 h-4 text-blue-500' />
           </div>
           <div className='space-y-2'>

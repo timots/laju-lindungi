@@ -3,9 +3,9 @@ import axios from 'axios';
 import Link from 'next/link';
 import { CheckCircle, Clock } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
-import { Avatar, AvatarFallback } from '@radix-ui/react-avatar';
 import { Progress } from '@radix-ui/react-progress';
 import useUserStore from '@/hooks/zustand';
+import { Avatar, AvatarFallback } from '../ui/avatar';
 
 const CardList = () => {
   const [campaigns, setCampaigns] = useState([]);
@@ -92,7 +92,7 @@ const CardList = () => {
                 <div className='flex gap-4 p-4'>
                   <div className='flex-shrink-0'>
                     <img
-                      src={campaign?.images?.[0] || '/placeholder.svg'}
+                      src={campaign?.images?.[0]}
                       alt={campaign.name}
                       width={160}
                       height={120}
@@ -100,9 +100,9 @@ const CardList = () => {
                     />
                   </div>
                   <div className='flex-grow min-w-0 space-y-2'>
-                    <h3 className='font-semibold text-gray-900 text-lg line-clamp-2'>{campaign.name}</h3>
+                    <h3 className='font-semibold text-gray-900 text-lg line-clamp-2'>{campaign.name || 'item Name not Set'}</h3>
                     <div className='flex items-center gap-2'>
-                      <span className='text-sm text-gray-600'>{campaign.vendor}</span>
+                      <span className='text-sm text-gray-600'>{campaign.vendor || 'Vendor Not Set'}</span>
                       {campaign.status && <CheckCircle className='w-4 h-4 text-blue-500 flex-shrink-0' />}
                     </div>
                     <div className='space-y-2'>
