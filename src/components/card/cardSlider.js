@@ -13,7 +13,7 @@ const CampaignCard = ({ campaign }) => {
 
   const handleCardClick = () => {
     const slug = campaign.id;
-    router.push(`${router.asPath}/campaign/${slug}`);
+    router.push(`/campaign/${slug}`);
   };
 
   const formatRupiah = (number) => {
