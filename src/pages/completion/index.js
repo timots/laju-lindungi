@@ -26,8 +26,6 @@ function Completion() {
     });
   }, [stripePromise]);
 
-  console.log(paymentInfo, 'ini payment info');
-
   return (
     <div className='min-h-screen  flex items-center justify-center p-4'>
       <Card className='w-full max-w-2xl'>

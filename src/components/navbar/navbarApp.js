@@ -5,11 +5,60 @@ import Link from 'next/link';
 import { Home, Info, HandHeart, Trophy, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
+import useUserStore from '@/hooks/zustand';
 
 const Navbar = () => {
   const pathname = usePathname();
+  const globalState = useUserStore();
   const { t, i18n } = useTranslation();
   const [isLoading, setIsLoading] = useState(true);
+
+  const getLocation = async () => {
+    if ('geolocation' in navigator) {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        const { latitude, longitude } = position.coords;
+
+        // Mendapatkan negara berdasarkan koordinat
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+        const data = await response.json();
+        const country = data.address.country || 'Unknown';
+        globalState?.setLocation(country);
+
+        // Mendapatkan kode mata uang berdasarkan negara
+        const currencyResponse = await fetch(`https://restcountries.com/v3.1/name/${country}`);
+        const currencyData = await currencyResponse.json();
+        const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
+        globalState?.setCurrency(currencyCode);
+
+        console.log(`Country: ${country}, Currency: ${currencyCode}`);
+
+        // Menentukan bahasa berdasarkan negara
+        if (country === 'Indonesia') {
+          i18n.changeLanguage('id');
+          globalState?.setLanguageId('id');
+        } else if (country === 'Malaysia') {
+          i18n.changeLanguage('my');
+          globalState?.setLanguageId('my');
+        } else {
+          i18n.changeLanguage('en');
+          globalState?.setLanguageId('en');
+        }
+      } catch (error) {
+        console.error('Error getting location:', error);
+      }
+    } else {
+      console.log('Geolocation tidak didukung di browser Anda.');
+    }
+  };
+
+  useEffect(() => {
+    if (!globalState?.location) {
+      getLocation();
+    }
+  }, [globalState?.location]);
 
   useEffect(() => {
     if (i18n.isInitialized) {
