@@ -24,7 +24,7 @@ function Completion() {
         setPaymentInfo(paymentIntent);
       }
     });
-  }, []);
+  }, [stripePromise]);
 
   console.log(paymentInfo, 'ini payment info');
 

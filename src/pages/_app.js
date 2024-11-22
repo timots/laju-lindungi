@@ -5,14 +5,14 @@ import { useRouter } from 'next/router';
 import { appWithTranslation, useTranslation } from 'next-i18next';
 import { useEffect } from 'react';
 import useUserStore from '@/hooks/zustand';
-import { useState } from 'react';
-import { LoadingScreen } from '@/components/loading/loadingScreen';
 
 function App({ Component, pageProps }) {
   const router = useRouter();
   const { i18n } = useTranslation();
   const globalState = useUserStore();
   const isAdminRoute = router.pathname.startsWith('/admin');
+
+  console.log(i18n, 'ini i18n');
 
   const getLocation = async () => {
     if ('geolocation' in navigator) {
