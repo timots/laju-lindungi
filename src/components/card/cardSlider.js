@@ -7,22 +7,57 @@ import { useRouter } from 'next/router';
 import { Card } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { differenceInDays } from 'date-fns';
+import useUserStore from '@/hooks/zustand';
+import { LoadingScreen } from '../loading/loadingScreen';
 
 const CampaignCard = ({ campaign }) => {
   const router = useRouter();
+  const [exchangeRates, setExchangeRates] = useState({});
+  const globalState = useUserStore();
+
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await axios.get('/api/public/exchangeRate');
+      console.log(response, 'ini response');
+      setExchangeRates(response.data.rates || {});
+    } catch (error) {
+      console.error('Failed to fetch exchange rates:', error.message);
+    }
+  };
 
   const handleCardClick = () => {
     const slug = campaign.id;
     router.push(`/campaign/${slug}`);
   };
 
-  const formatRupiah = (number) => {
-    return new Intl.NumberFormat('id-ID', {
+  // const formatRupiah = (number) => {
+  //   return new Intl.NumberFormat('id-ID', {
+  //     style: 'currency',
+  //     currency: 'IDR',
+  //     minimumFractionDigits: 0,
+  //   }).format(number);
+  // };
+
+  const formatCurrency = (amount, location) => {
+    const currencyMap = {
+      Indonesia: 'IDR',
+      Malaysia: 'MYR',
+      Amerika: 'USD',
+      // Tambahkan negara lainnya jika diperlukan
+    };
+
+    const currencyCode = currencyMap[location] || 'IDR';
+    const rate = exchangeRates[currencyCode] || 1;
+
+    return new Intl.NumberFormat('en-US', {
       style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(number);
+      currency: currencyCode,
+    }).format(amount * rate);
   };
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
 
   const progressPercentage = (campaign.amount_total / campaign.target_amount) * 100;
 
@@ -48,8 +83,13 @@ const CampaignCard = ({ campaign }) => {
 
         <div className='space-y-2'>
           <div className='flex items-center justify-between'>
-            <span className='text-orange-500 font-bold text-base'>{formatRupiah(campaign?.amount_total)}</span>
             <span className='text-gray-500 text-sm'>terkumpul</span>
+          </div>
+          <div className='flex items-center justify-between'>
+            <span className='text-orange-500 font-bold text-base'>
+              {/* {formatRupiah(campaign?.amount_total)} */}
+              {formatCurrency(campaign.amount_total, globalState?.location)}
+            </span>
           </div>
 
           <div className='w-full bg-gray-100 rounded-full h-1'>
@@ -60,8 +100,8 @@ const CampaignCard = ({ campaign }) => {
           </div>
         </div>
 
-        <div className='flex items-center justify-between pt-1'>
-          <div className='flex -space-x-2'>
+        <div className='space-y-2'>
+          <div className='flex -space-x-2 min-h-[24px]'>
             {campaign?.orders?.slice(0, 4).map((donor, index) => (
               <Avatar
                 key={index}
@@ -75,8 +115,6 @@ const CampaignCard = ({ campaign }) => {
               </Avatar>
             )}
           </div>
-        </div>
-        <div className='flex items-center justify-between pt-1'>
           <div className='flex items-center gap-1 text-sm text-gray-500'>
             <Clock className='w-4 h-4' />
             <span>{campaign?.endAt?._seconds ? `${differenceInDays(new Date(campaign.endAt._seconds * 1000), new Date())} hari lagi` : '∞'}</span>
@@ -124,16 +162,18 @@ const CardSlider = ({ Header, BgColour }) => {
   }, []);
 
   // if (loading) return <div className='text-center py-8'>Loading...</div>;
-  if (loading) {
-    return (
-      <div className={`p-8 ${BgColour} flex items-center justify-center`}>
-        <div className='text-white text-center'>
-          <Loader className='w-12 h-12 animate-spin mx-auto mb-4' />
-          <p className='text-lg'>Loading campaigns...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className={`p-8 ${BgColour} flex items-center justify-center`}>
+  //       <div className='text-white text-center'>
+  //         <Loader className='w-12 h-12 animate-spin mx-auto mb-4' />
+  //         <p className='text-lg'>Loading campaigns...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+
+  if (loading) return <LoadingScreen />;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
 
   const totalSlides = Math.ceil(campaigns.length / 2);

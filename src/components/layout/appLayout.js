@@ -4,6 +4,7 @@ import React from 'react';
 import Navbar from '../navbar/navbarApp';
 
 const AppLayout = ({ children }) => {
+  
   const router = useRouter();
   const fullPage = ['/auth/login', '/auth/signup', '/auth/reset-password', '/account', '/account/loyalty-program', '/account/vouchers', '/products/[id]', '/products', '/categories', '/wishlist'].includes(router.pathname);
   const noNavbar = ['/[id]/donasi-sekarang', '/[id]/donasi-sekarang/payment', '/completion', '/[id]/[slug]'].includes(router.pathname);

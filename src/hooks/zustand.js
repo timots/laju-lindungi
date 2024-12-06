@@ -6,6 +6,7 @@ const useUserStore = create((set) => ({
   projectId: '',
   companyId: '',
   languageId: 'en',
+  countryCode: 'id',
   location: '',
   currency: '',
   stripePublicKey: '',
@@ -13,6 +14,11 @@ const useUserStore = create((set) => ({
   setProjectId: (data) => {
     set({
       projectId: data,
+    });
+  },
+  setCountryCode: (data) => {
+    set({
+      countryCode: data,
     });
   },
   setStripePublicKey: (data) => {

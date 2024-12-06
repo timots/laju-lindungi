@@ -4,39 +4,114 @@ import { useRouter } from 'next/router';
 import axios from 'axios';
 import useUserStore from '@/hooks/zustand';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
+import { useTranslation } from 'react-i18next';
 
 export default function DonationPage() {
   const router = useRouter();
   const globalState = useUserStore();
+  const { t, i18n } = useTranslation();
   const [selectedSalutation, setSelectedSalutation] = useState('Bapak');
   const [hideIdentity, setHideIdentity] = useState(false);
   const [variants, setVariants] = useState([]);
+  const [customVariants, setCustomVariants] = useState([]);
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantities, setQuantities] = useState({});
   const [totalAmount, setTotalAmount] = useState(0);
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+  const [showInputPrice, setShowInputPrice] = useState(false);
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
-  // console.log(router, 'ini router');
+  const [customVariantAmounts, setCustomVariantAmounts] = useState({});
 
-  const togglePaymentModal = () => {
-    setShowPaymentModal(!showPaymentModal);
+  const getLocation = async () => {
+    if ('geolocation' in navigator) {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        const { latitude, longitude } = position.coords;
+
+        // Mendapatkan negara berdasarkan koordinat
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+        const data = await response.json();
+        console.log(data, 'ini data get country nya');
+        const country = data.address.country || 'Unknown';
+        globalState?.setLocation(country);
+
+        // Mendapatkan kode mata uang berdasarkan negara
+        const currencyResponse = await fetch(`https://restcountries.com/v3.1/name/${country}`);
+        const currencyData = await currencyResponse.json();
+        const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
+        globalState?.setCurrency(currencyCode);
+
+        console.log(`Country: ${country}, Currency: ${currencyCode}`);
+
+        // Menentukan bahasa berdasarkan negara
+        if (country === 'Indonesia') {
+          i18n.changeLanguage('id');
+          globalState?.setLanguageId('id');
+        } else if (country === 'Malaysia') {
+          i18n.changeLanguage('my');
+          globalState?.setLanguageId('my');
+        } else {
+          i18n.changeLanguage('en');
+          globalState?.setLanguageId('en');
+        }
+      } catch (error) {
+        console.error('Error getting location:', error);
+      }
+    } else {
+      console.log('Geolocation tidak didukung di browser Anda.');
+    }
   };
 
-  const selectPaymentMethod = (method) => {
-    setSelectedPaymentMethod(method);
-    setShowPaymentModal(false);
+  useEffect(() => {
+    if (!globalState?.location) {
+      getLocation();
+    }
+  }, [globalState?.location]);
+
+  useEffect(() => {
+    if (i18n.isInitialized) {
+      setLoading(false);
+    }
+  }, [i18n]);
+
+  const formatPrice = (currency, amount) => {
+    // Mapping for custom currency symbols
+    const currencySymbols = {
+      IDR: 'Rp.',
+      MYR: 'RM ',
+      USD: '$ ',
+    };
+
+    const symbol = currencySymbols[currency] || ''; // Default to empty string if currency is not mapped
+
+    const formatter = new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 0,
+    });
+
+    // Format amount and replace the default currency symbol with our custom symbol
+    return formatter
+      .format(amount)
+      .replace(/^\D+/g, symbol) // Replace leading currency symbol (if any) with our custom symbol
+      .trim();
   };
 
   const handleGetVariants = async (id) => {
     try {
       if (!id) return;
-      const response = await axios.post('/api/v1/variants/read', { productId: id });
+
+      const country = globalState?.location?.toLowerCase() || '';
+      const response = await axios.post('/api/v1/variants/read', {
+        productId: id,
+        country,
+      });
       return response.data;
     } catch (error) {
       console.error(error.message);
@@ -60,11 +135,26 @@ export default function DonationPage() {
     try {
       const variants = await handleGetVariants(router?.query?.id);
       const product = await handleGetCampaigns(router?.query?.id);
-      setVariants(variants?.data || []);
       setProduct(product?.data || {});
 
-      // Initialize quantities
-      const initialQuantities = (variants?.data || []).reduce((acc, variant) => {
+      const validVariants = [];
+      const customVariants = [];
+
+      // Split variants based on regular_price_int
+      (variants?.data || []).forEach((variant) => {
+        if (variant.regular_price_int === 0) {
+          customVariants.push(variant); // If regular_price_int is 0, add to customVariants
+        } else {
+          validVariants.push(variant); // Otherwise, add to validVariants
+        }
+      });
+
+      // Set the appropriate state
+      setVariants(validVariants);
+      setCustomVariants(customVariants);
+
+      // Initialize quantities for valid variants
+      const initialQuantities = validVariants.reduce((acc, variant) => {
         acc[variant.id] = 0;
         return acc;
       }, {});
@@ -76,35 +166,88 @@ export default function DonationPage() {
     }
   };
 
-  useEffect(() => {
-    if (router?.query?.id) {
-      loadCampaigns();
-    }
-  }, [router?.query?.id]);
+  const addCustomVariantAmount = (id) => {
+    setShowInputPrice(true);
+    updateTotalAmount(null);
+    setCustomVariantAmounts((prev) => ({
+      ...prev,
+      [id]: 0, // Default value
+    }));
+  };
 
-  const addItem = (id) => {
-    updateQuantity(id, 1); // Start with a quantity of 1
+  const handleCustomAmountChange = (id, value) => {
+    // Ensure the value is a number and not negative
+    const newValue = Math.max(0, parseInt(value) || 0);
+
+    setCustomVariantAmounts((prev) => {
+      const updatedAmounts = { ...prev, [id]: newValue };
+      updateTotalAmount(null, updatedAmounts);
+      console.log(updatedAmounts, 'ini amount update');
+      return updatedAmounts;
+    });
+  };
+
+  const addItem = (id, price) => {
+    setShowInputPrice(false);
+    console.log(price, 'ini harga item');
+    updateQuantity(id, 1);
   };
 
   const updateQuantity = (id, change) => {
     setQuantities((prev) => {
       const newQuantities = { ...prev, [id]: Math.max(0, (prev[id] || 0) + change) };
-      updateTotalAmount(newQuantities);
+      updateTotalAmount(newQuantities, null);
       return newQuantities;
     });
   };
 
-  const updateTotalAmount = (newQuantities) => {
+  const updateTotalAmount = (newQuantities = {}, customAmounts = {}) => {
+    console.log(newQuantities, 'ini new quantities');
+    console.log(customAmounts, 'ini custom amounts');
     let total = 0;
-    variants.forEach((variant) => {
-      total += (newQuantities[variant.id] || 0) * variant.regular_price_int;
-    });
+
+    // Jika newQuantities tersedia, atur semua value di customVariantAmounts menjadi 0
+    if (newQuantities) {
+      setCustomVariantAmounts((prev) => {
+        const resetCustomAmounts = Object.keys(prev).reduce((acc, key) => {
+          acc[key] = 0;
+          return acc;
+        }, {});
+        return resetCustomAmounts;
+      });
+
+      // Hitung total untuk regular variants
+      variants.forEach((variant) => {
+        total += (newQuantities[variant.id] || 0) * variant.regular_price_int;
+      });
+    }
+
+    // Jika customAmounts tersedia, atur semua value di quantities menjadi 0
+    if (customAmounts) {
+      setQuantities((prev) => {
+        const resetQuantities = Object.keys(prev).reduce((acc, key) => {
+          acc[key] = 0;
+          return acc;
+        }, {});
+        return resetQuantities;
+      });
+
+      // Tambahkan total untuk custom variants
+      Object.keys(customAmounts).forEach((id) => {
+        const amount = customAmounts[id] || 0;
+        const variant = customVariants.find((v) => v.id === id);
+        if (variant) {
+          total += amount;
+        }
+      });
+    }
+
     setTotalAmount(total);
   };
 
   const handleDonateNow = async () => {
     try {
-      const items = variants
+      const variantItems = variants
         .filter((variant) => quantities[variant.id] > 0)
         .map((variant) => ({
           productId: product.id,
@@ -112,6 +255,18 @@ export default function DonationPage() {
           quantity: quantities[variant.id],
           message: '-',
         }));
+
+      const customVariantItems = customVariants
+        .filter((variant) => customVariantAmounts[variant.id] > 0)
+        .map((variant) => ({
+          productId: product.id,
+          variantId: variant.id,
+          quantity: 1,
+          message: '-',
+        }));
+
+      // Gabungkan semua items
+      const items = [...variantItems, ...customVariantItems];
 
       const data = {
         format: 'stripe',
@@ -129,10 +284,11 @@ export default function DonationPage() {
           items: items,
           additional_data: { msg: message },
           currency: globalState?.currency,
-          region: 'id',
+          region: 'my',
           automatic_payment_methods: true,
           affilate: true,
           affilateId: 'gading123',
+          total_amount: totalAmount,
         },
       };
 
@@ -155,7 +311,12 @@ export default function DonationPage() {
     }
   };
 
-  // if (loading) return <div className='text-center py-8'>Loading...</div>;
+  useEffect(() => {
+    if (router?.query?.id) {
+      loadCampaigns();
+    }
+  }, [router?.query?.id]);
+
   if (loading) return <LoadingScreen />;
 
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
@@ -202,7 +363,8 @@ export default function DonationPage() {
               />
               <div className='ml-4 flex-1'>
                 <h3 className='font-medium'>{variant.name}</h3>
-                <p className='text-gray-900 font-medium mt-1'>Rp {variant.regular_price_int}</p>
+                <p className='text-gray-900 font-medium mt-1'>{formatPrice(globalState?.currency || 'IDR', variant.regular_price_int)}</p>
+
                 {quantities[variant.id] > 0 ? (
                   <div className='flex items-center mt-2'>
                     <button
@@ -219,7 +381,46 @@ export default function DonationPage() {
                   </div>
                 ) : (
                   <button
-                    onClick={() => addItem(variant.id)}
+                    onClick={() => addItem(variant.id, variant?.regular_price_int)}
+                    className='bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors mt-2'>
+                    + Add
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+
+          {customVariants.map((variant) => (
+            <div
+              key={variant.id}
+              className='bg-white rounded-lg p-4 flex items-center shadow-sm'>
+              <img
+                src={variant.image}
+                alt={variant.name}
+                width={100}
+                height={100}
+                className='w-24 h-24 rounded-lg object-cover'
+              />
+              <div className='ml-4 flex-1'>
+                <h3 className='font-medium'>{variant.name}</h3>
+
+                {showInputPrice ? (
+                  <div className='mt-3'>
+                    <div className='relative'>
+                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'>{globalState?.currency}</span>
+                      <input
+                        type='number'
+                        min='0'
+                        placeholder='Masukkan Nominal Yang Di Inginkan'
+                        value={customVariantAmounts[variant.id] || ''}
+                        onChange={(e) => handleCustomAmountChange(variant.id, e.target.value)}
+                        className='w-full pl-12 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600'
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => addCustomVariantAmount(variant.id)}
                     className='bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors mt-2'>
                     + Add
                   </button>
@@ -295,7 +496,7 @@ export default function DonationPage() {
             <button
               onClick={handleDonateNow}
               className='w-full max-w-md mx-auto py-4 rounded-lg font-medium mt-6 bg-blue-600 text-white hover:bg-blue-700 transition-colors'>
-              Sedekah Sekarang - Rp {totalAmount}
+              Sedekah Sekarang <span>{formatPrice(globalState?.currency || 'IDR', totalAmount)}</span>
             </button>
           </div>
         </div>

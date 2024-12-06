@@ -10,13 +10,25 @@ import axios from 'axios';
 import { differenceInDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
+import useUserStore from '@/hooks/zustand';
 
 export default function CampaignDetail() {
   const router = useRouter();
   const [activeCampaigns, setActiveCampaigns] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log(router, 'ini rputer');
+  const [exchangeRates, setExchangeRates] = useState({});
+  const globalState = useUserStore();
+
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await axios.get('/api/public/exchangeRate');
+      console.log(response, 'ini response');
+      setExchangeRates(response.data.rates || {});
+    } catch (error) {
+      console.error('Failed to fetch exchange rates:', error.message);
+    }
+  };
 
   const formatRupiah = (number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -57,6 +69,28 @@ export default function CampaignDetail() {
       setLoading(false);
     }
   };
+
+  const formatCurrency = (amount, location) => {
+    const currencyMap = {
+      Indonesia: 'IDR',
+      Malaysia: 'MYR',
+      Amerika: 'USD',
+      Singapore: 'SGD',
+      // Tambahkan negara lainnya jika diperlukan
+    };
+
+    const currencyCode = currencyMap[location] || 'IDR';
+    const rate = exchangeRates[currencyCode] || 1;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount * rate);
+  };
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
 
   useEffect(() => {
     if (router?.query?.slug) {
@@ -110,8 +144,14 @@ export default function CampaignDetail() {
             />
           </div>
           <div className='flex justify-between text-sm'>
-            <span className='font-semibold text-orange-500'>{formatRupiah(activeCampaigns?.amount_total || 0)}</span>
-            <span className='text-gray-500'>terkumpul dari {formatRupiah(activeCampaigns?.target_amount || 0)}</span>
+            <span className='font-semibold text-orange-500'>
+              {/* {formatRupiah(activeCampaigns?.amount_total || 0)} */}
+              {formatCurrency(activeCampaigns?.amount_total, globalState?.location)}
+            </span>
+            <span className='text-gray-500'>
+              {/* terkumpul dari {formatRupiah(activeCampaigns?.target_amount || 0)} */}
+              {formatCurrency(activeCampaigns?.target_amount, globalState?.location)}
+            </span>
           </div>
         </div>
 

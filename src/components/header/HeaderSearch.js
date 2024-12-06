@@ -42,7 +42,7 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
 
   return (
     <header className='fixed top-0 left-0 right-0 bg-background z-50  bg-white'>
-      <div className='max-w-md mx-auto px-4 h-16 flex items-center justify-between'>
+      <div className='max-w-md mx-auto px-4 h-16 flex items-center justify-between bg-gradient-to-br from-blue-500 to-blue-600'>
         <div className='flex items-center'>
           {showBackButton ? (
             <Button
@@ -56,7 +56,7 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
           ) : (
             <Link
               href='/'
-              className='text-xl font-bold text-primary bg-blue-400'>
+              className='text-xl font-bold text-primary '>
               <img
                 src='/payment logo/Laju_peduli_logo.png'
                 alt='Laju Peduli'
@@ -128,7 +128,7 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
                 </SelectContent>
               </Select>
 
-              <Button
+              {/* <Button
                 variant='ghost'
                 size='icon'
                 asChild>
@@ -136,7 +136,7 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
                   <Bell className='h-5 w-5' />
                   <span className='sr-only'>Notifications</span>
                 </Link>
-              </Button>
+              </Button> */}
             </>
           )}
         </div>

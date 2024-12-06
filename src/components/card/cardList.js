@@ -31,12 +31,15 @@ const CardList = () => {
 
   const fetchExchangeRates = async () => {
     try {
-      const response = await axios.get('https://api.exchangerate-api.com/v4/latest/IDR');
+      const response = await axios.get('/api/public/exchangeRate');
+      console.log(response, 'ini response');
       setExchangeRates(response.data.rates || {});
     } catch (error) {
       console.error('Failed to fetch exchange rates:', error.message);
     }
   };
+
+  console.log(exchangeRates, 'ini exchange rates');
 
   useEffect(() => {
     const loadCampaigns = async () => {

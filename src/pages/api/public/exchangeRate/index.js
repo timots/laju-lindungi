@@ -7,28 +7,25 @@ export const config = {
 
 export default async function handler(req, res) {
   await NextCors(req, res, {
-    methods: ['POST'],
+    methods: ['GET'],
     origin: '*',
     optionsSuccessStatus: 200,
   });
 
-  if (req.method !== 'POST') {
+  if (req.method !== 'GET') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  // Define the base URL
-  const baseUrl = 'https://deoapp.com/api/public/service/payment/doku/checkout';
-
-  const requestData = req.body;
+  const baseUrl = 'https://deoapp.com/api/public/service/rates/currency';
 
   try {
-    const response = await axios.post(baseUrl, requestData, {
+    const response = await axios.get(baseUrl, {
       headers: {
         'Content-Type': 'application/json',
       },
     });
 
-    res.status(200).json(response.data);
+    res.status(200).json(response.data.data.rates);
   } catch (error) {
     console.error('Request failed:', error);
     const status = error.response ? error.response.status : 500;

@@ -8,21 +8,57 @@ import { differenceInDays } from 'date-fns';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import useUserStore from '@/hooks/zustand';
+import { LoadingScreen } from '../loading/loadingScreen';
 
 function CampaignCard({ campaign }) {
   const router = useRouter();
+  const [exchangeRates, setExchangeRates] = useState({});
+  const globalState = useUserStore();
 
-  const createSlug = (title) => {
-    return title
-      .toLowerCase()
-      .replace(/ /g, '-')
-      .replace(/[^\w-]+/g, '');
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await axios.get('/api/public/exchangeRate');
+      console.log(response, 'ini response');
+      setExchangeRates(response.data.rates || {});
+    } catch (error) {
+      console.error('Failed to fetch exchange rates:', error.message);
+    }
   };
+
+  // const createSlug = (title) => {
+  //   return title
+  //     .toLowerCase()
+  //     .replace(/ /g, '-')
+  //     .replace(/[^\w-]+/g, '');
+  // };
 
   const handleCardClick = () => {
-    const slug = createSlug(campaign.name);
+    // const slug = createSlug(campaign.name);
+    const slug = campaign?.id;
     router.push(`${router.asPath}/${slug}`);
   };
+
+  const formatCurrency = (amount, location) => {
+    const currencyMap = {
+      Indonesia: 'IDR',
+      Malaysia: 'MYR',
+      Amerika: 'USD',
+      // Tambahkan negara lainnya jika diperlukan
+    };
+
+    const currencyCode = currencyMap[location] || 'IDR';
+    const rate = exchangeRates[currencyCode] || 1;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount * rate);
+  };
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
 
   const progressPercentage = (campaign.amount_total / campaign.target_amount) * 100;
 
@@ -46,7 +82,7 @@ function CampaignCard({ campaign }) {
           </div>
           <div className='space-y-2'>
             <div className='flex items-baseline justify-between'>
-              <span className='font-bold text-orange-500 text-lg'>Rp {campaign.amount_total?.toLocaleString('id-ID') || 0}</span>
+              <span className='font-bold text-orange-500 text-lg'>{formatCurrency(campaign.amount_total, globalState?.location)}</span>
               <span className='text-sm text-gray-500'>terkumpul</span>
             </div>
             <Progress
@@ -117,7 +153,8 @@ function CampaignListCard() {
     loadCampaigns();
   }, []);
 
-  if (loading) return <div className='text-center py-8'>Loading...</div>;
+  // if (loading) return <div className='text-center py-8'>Loading...</div>;
+  if (loading) return <LoadingScreen />;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
 
   const loadMore = () => {
