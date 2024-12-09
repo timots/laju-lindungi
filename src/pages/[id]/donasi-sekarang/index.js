@@ -5,6 +5,7 @@ import axios from 'axios';
 import useUserStore from '@/hooks/zustand';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
 import { useTranslation } from 'react-i18next';
+import { addFacebookPixel } from '@/utils/pixelUtil';
 
 export default function DonationPage() {
   const router = useRouter();
@@ -25,54 +26,6 @@ export default function DonationPage() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [customVariantAmounts, setCustomVariantAmounts] = useState({});
-
-  const getLocation = async () => {
-    if ('geolocation' in navigator) {
-      try {
-        const position = await new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(resolve, reject);
-        });
-        const { latitude, longitude } = position.coords;
-
-        // Mendapatkan negara berdasarkan koordinat
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-        const data = await response.json();
-        console.log(data, 'ini data get country nya');
-        const country = data.address.country || 'Unknown';
-        globalState?.setLocation(country);
-
-        // Mendapatkan kode mata uang berdasarkan negara
-        const currencyResponse = await fetch(`https://restcountries.com/v3.1/name/${country}`);
-        const currencyData = await currencyResponse.json();
-        const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
-        globalState?.setCurrency(currencyCode);
-
-        console.log(`Country: ${country}, Currency: ${currencyCode}`);
-
-        // Menentukan bahasa berdasarkan negara
-        if (country === 'Indonesia') {
-          i18n.changeLanguage('id');
-          globalState?.setLanguageId('id');
-        } else if (country === 'Malaysia') {
-          i18n.changeLanguage('my');
-          globalState?.setLanguageId('my');
-        } else {
-          i18n.changeLanguage('en');
-          globalState?.setLanguageId('en');
-        }
-      } catch (error) {
-        console.error('Error getting location:', error);
-      }
-    } else {
-      console.log('Geolocation tidak didukung di browser Anda.');
-    }
-  };
-
-  useEffect(() => {
-    if (!globalState?.location) {
-      getLocation();
-    }
-  }, [globalState?.location]);
 
   useEffect(() => {
     if (i18n.isInitialized) {
@@ -247,6 +200,14 @@ export default function DonationPage() {
 
   const handleDonateNow = async () => {
     try {
+      if (window.fbq) {
+        window.fbq('track', 'InitiateCheckout', {
+          content_name: product?.name,
+          content_ids: [product?.id],
+          value: totalAmount,
+          currency: globalState?.currency || 'IDR',
+        });
+      }
       const variantItems = variants
         .filter((variant) => quantities[variant.id] > 0)
         .map((variant) => ({
@@ -284,7 +245,7 @@ export default function DonationPage() {
           items: items,
           additional_data: { msg: message },
           currency: globalState?.currency,
-          region: 'my',
+          region: globalState?.countryCode,
           automatic_payment_methods: true,
           affilate: true,
           affilateId: 'gading123',
@@ -296,6 +257,15 @@ export default function DonationPage() {
 
       const response = await axios.post('/api/public/payment/stripe/create-payment', data);
       console.log(response, 'ini response');
+
+      if (window.fbq) {
+        window.fbq('track', 'Purchase', {
+          content_name: product?.name,
+          content_ids: [product?.id],
+          value: totalAmount,
+          currency: globalState?.currency || 'IDR',
+        });
+      }
 
       const clientSecret = response.data?.data?.client_secret;
       if (!clientSecret) {

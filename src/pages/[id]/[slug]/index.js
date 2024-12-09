@@ -2,23 +2,76 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { MapPin, Clock, CheckCircle2, Share, ChevronLeft, Home } from 'lucide-react';
+import { Clock, CheckCircle2, Share, Home } from 'lucide-react';
 import CampaignTabs from '@/components/tabs/campaignTabs';
-import FundraiserList from '@/components/menu/fundaiserList';
 import PrayerList from '@/components/menu/doa';
 import axios from 'axios';
 import { differenceInDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
 import useUserStore from '@/hooks/zustand';
+import { addFacebookPixel } from '@/utils/pixelUtil';
 
 export default function CampaignDetail() {
+  const FACEBOOK_PIXEL_ID = '504746292586955';
+  // const TIKTOK_PIXEL_ID = 'YOUR_TIKTOK_PIXEL_ID';
+  // const GOOGLE_GTM_ID = 'GTM-XXXXXXX';
   const router = useRouter();
   const [activeCampaigns, setActiveCampaigns] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exchangeRates, setExchangeRates] = useState({});
   const globalState = useUserStore();
+
+  const getLocation = async () => {
+    if ('geolocation' in navigator) {
+      try {
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        const { latitude, longitude } = position.coords;
+
+        // Mendapatkan negara berdasarkan koordinat
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+        const data = await response.json();
+        console.log(data, 'ini data get country nya');
+        const country = data.address.country || 'Unknown';
+        const CountryCode = data.address.country_code || 'Unknown';
+        globalState?.setLocation(country);
+        globalState?.setCountryCode(CountryCode);
+
+        // Mendapatkan kode mata uang berdasarkan negara
+        const currencyResponse = await fetch(`https://restcountries.com/v3.1/name/${country}`);
+        const currencyData = await currencyResponse.json();
+        const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
+        globalState?.setCurrency(currencyCode);
+
+        console.log(`Country: ${country}, Currency: ${currencyCode}`);
+
+        // Menentukan bahasa berdasarkan negara
+        if (country === 'Indonesia') {
+          i18n.changeLanguage('id');
+          globalState?.setLanguageId('id');
+        } else if (country === 'Malaysia') {
+          i18n.changeLanguage('my');
+          globalState?.setLanguageId('my');
+        } else {
+          i18n.changeLanguage('en');
+          globalState?.setLanguageId('en');
+        }
+      } catch (error) {
+        console.error('Error getting location:', error);
+      }
+    } else {
+      console.log('Geolocation tidak didukung di browser Anda.');
+    }
+  };
+
+  useEffect(() => {
+    if (!globalState?.location) {
+      getLocation();
+    }
+  }, [globalState?.location]);
 
   const fetchExchangeRates = async () => {
     try {
@@ -87,9 +140,29 @@ export default function CampaignDetail() {
       currency: currencyCode,
     }).format(amount * rate);
   };
+  const handleDonateNow = () => {
+    // Track Facebook Pixel event for donation button click
+    if (window.fbq) {
+      window.fbq('track', 'InitiateCheckout', {
+        content_name: activeCampaigns?.name || 'Campaign',
+        content_ids: [activeCampaigns?.id],
+        value: activeCampaigns?.amount_total || 0,
+        currency: 'IDR',
+      });
+    }
+
+    // Navigate to donation page
+    router.push({
+      pathname: 'donasi-sekarang',
+      query: {
+        id: activeCampaigns?.id,
+      },
+    });
+  };
 
   useEffect(() => {
     fetchExchangeRates();
+    addFacebookPixel(FACEBOOK_PIXEL_ID);
   }, []);
 
   useEffect(() => {
@@ -98,7 +171,6 @@ export default function CampaignDetail() {
     }
   }, [router?.query?.slug]);
 
-  // if (loading) return <div className='text-center py-8'>Loading...</div>;
   if (loading) return <LoadingScreen />;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
 
@@ -157,14 +229,7 @@ export default function CampaignDetail() {
 
         <button
           className='w-full bg-orange-500 text-white py-3 rounded-lg font-medium hover:bg-orange-600 transition-colors'
-          onClick={() => {
-            router.push({
-              pathname: 'donasi-sekarang',
-              query: {
-                id: activeCampaigns?.id,
-              },
-            });
-          }}>
+          onClick={handleDonateNow}>
           Donasi Sekarang
         </button>
 
