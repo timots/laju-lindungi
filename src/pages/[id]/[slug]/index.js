@@ -13,7 +13,7 @@ import useUserStore from '@/hooks/zustand';
 import { addFacebookPixel } from '@/utils/pixelUtil';
 
 export default function CampaignDetail() {
-  const FACEBOOK_PIXEL_ID = '504746292586955';
+  const FACEBOOK_PIXEL_ID = '2340318182830705';
   // const TIKTOK_PIXEL_ID = 'YOUR_TIKTOK_PIXEL_ID';
   // const GOOGLE_GTM_ID = 'GTM-XXXXXXX';
   const router = useRouter();
