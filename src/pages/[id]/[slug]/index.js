@@ -10,18 +10,17 @@ import { differenceInDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
 import useUserStore from '@/hooks/zustand';
-import { addFacebookPixel } from '@/utils/pixelUtil';
+import { trackPixelEvents } from '@/utils/pixelUtil';
 
 export default function CampaignDetail() {
-  const FACEBOOK_PIXEL_ID = '2340318182830705';
-  // const TIKTOK_PIXEL_ID = 'YOUR_TIKTOK_PIXEL_ID';
-  // const GOOGLE_GTM_ID = 'GTM-XXXXXXX';
   const router = useRouter();
   const [activeCampaigns, setActiveCampaigns] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [exchangeRates, setExchangeRates] = useState({});
   const globalState = useUserStore();
+
+  console.log(activeCampaigns, 'ini active campaigns');
 
   const getLocation = async () => {
     if ('geolocation' in navigator) {
@@ -34,7 +33,6 @@ export default function CampaignDetail() {
         // Mendapatkan negara berdasarkan koordinat
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
         const data = await response.json();
-        console.log(data, 'ini data get country nya');
         const country = data.address.country || 'Unknown';
         const CountryCode = data.address.country_code || 'Unknown';
         globalState?.setLocation(country);
@@ -45,8 +43,6 @@ export default function CampaignDetail() {
         const currencyData = await currencyResponse.json();
         const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
         globalState?.setCurrency(currencyCode);
-
-        console.log(`Country: ${country}, Currency: ${currencyCode}`);
 
         // Menentukan bahasa berdasarkan negara
         if (country === 'Indonesia') {
@@ -76,7 +72,6 @@ export default function CampaignDetail() {
   const fetchExchangeRates = async () => {
     try {
       const response = await axios.get('/api/public/exchangeRate');
-      console.log(response, 'ini response');
       setExchangeRates(response.data.rates || {});
     } catch (error) {
       console.error('Failed to fetch exchange rates:', error.message);
@@ -141,17 +136,6 @@ export default function CampaignDetail() {
     }).format(amount * rate);
   };
   const handleDonateNow = () => {
-    // Track Facebook Pixel event for donation button click
-    if (window.fbq) {
-      window.fbq('track', 'InitiateCheckout', {
-        content_name: activeCampaigns?.name || 'Campaign',
-        content_ids: [activeCampaigns?.id],
-        value: activeCampaigns?.amount_total || 0,
-        currency: 'IDR',
-      });
-    }
-
-    // Navigate to donation page
     router.push({
       pathname: 'donasi-sekarang',
       query: {
@@ -162,7 +146,6 @@ export default function CampaignDetail() {
 
   useEffect(() => {
     fetchExchangeRates();
-    addFacebookPixel(FACEBOOK_PIXEL_ID);
   }, []);
 
   useEffect(() => {
@@ -171,10 +154,22 @@ export default function CampaignDetail() {
     }
   }, [router?.query?.slug]);
 
+  useEffect(() => {
+    if (activeCampaigns?.id) {
+      trackPixelEvents({
+        eventName: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
+        eventData: {
+          content_name: activeCampaigns?.name,
+          content_ids: [activeCampaigns?.id],
+          currency: globalState?.currency || 'IDR',
+        },
+        dynamicTagPixels: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
+      });
+    }
+  }, [activeCampaigns?.id]);
+
   if (loading) return <LoadingScreen />;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
-
-  console.log(activeCampaigns, 'ini campaign active');
 
   return (
     <div className='w-full max-w-md mx-auto bg-white'>
@@ -182,21 +177,24 @@ export default function CampaignDetail() {
         <div className='max-w-md mx-auto px-4 h-14 flex items-center'>
           <button
             onClick={() => router.back()}
-            className='p-2 -ml-2  bg-white'>
-            <Home className='w-6 h-6 bg' />
+            className='flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/80 text-white'>
+            <Home className='w-6 h-6' />
+            <span>Home</span>
           </button>
         </div>
       </div>
-      <div className='relative'>
+      <div className='relative group overflow-hidden rounded-lg shadow-lg'>
         <img
           src={activeCampaigns?.images?.[0] || '/placeholder.svg?height=200&width=400'}
           alt={activeCampaigns?.name || 'Data tidak tersedia'}
           width={400}
           height={200}
-          className='w-full h-[200px] object-cover'
+          className='w-full h-[200px] object-cover transition-transform duration-300 group-hover:scale-105'
         />
-        <div className='absolute inset-0 bg-gradient-to-t from-black/60 to-transparent' />
-        <h2 className='absolute bottom-4 left-4 text-2xl font-bold text-white'>{activeCampaigns?.name || 'Data tidak tersedia'}</h2>
+        <div className='absolute inset-0 bg-gradient-to-t from-black/70 to-transparent group-hover:from-black/50 transition-colors duration-300'></div>
+        <div className='absolute bottom-4 left-4 text-white'>
+          <h2 className='text-2xl font-bold'>{activeCampaigns?.name || 'Data tidak tersedia'}</h2>
+        </div>
       </div>
 
       <div className='p-4 space-y-4'>

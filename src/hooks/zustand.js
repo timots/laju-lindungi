@@ -10,10 +10,16 @@ const useUserStore = create((set) => ({
   location: '',
   currency: '',
   stripePublicKey: '',
+  webConfig: '',
 
   setProjectId: (data) => {
     set({
       projectId: data,
+    });
+  },
+  setWebConfig: (data) => {
+    set({
+      webConfig: data,
     });
   },
   setCountryCode: (data) => {

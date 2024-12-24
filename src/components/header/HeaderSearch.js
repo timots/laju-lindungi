@@ -78,23 +78,23 @@ export default function Header({ title = 'Laju Peduli', showBackButton = false, 
             />
           ) : (
             <>
-              <Button
+              {/* <Button
                 variant='ghost'
                 size='icon'
                 onClick={() => setIsSearchActive(true)}>
                 <Search className='h-5 w-5' />
                 <span className='sr-only'>Search</span>
-              </Button>
+              </Button> */}
 
               <Select
                 onValueChange={handleLanguageChange}
                 value={i18n.language}>
-                <SelectTrigger className='w-[40px] h-[40px] p-0 border-none'>
+                <SelectTrigger className='w-[40px] h-[40px] p-0 border-none '>
                   <SelectValue>
                     <FlagIcon className='h-5 w-5' />
                   </SelectValue>
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className='bg-white'>
                   <SelectItem value='id'>
                     <div className='flex items-center'>
                       <Flags.ID className='h-4 w-4 mr-2' />

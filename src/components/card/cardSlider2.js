@@ -1,20 +1,26 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import axios from 'axios';
+import { useRouter } from 'next/router';
 
-const ArticleCard = ({ article }) => (
-  <div className='bg-white rounded-lg overflow-hidden shadow-sm h-full'>
-    <Link
-      href={article.link || '#'}
-      passHref>
+const ArticleCard = ({ article }) => {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push(`/article/${article?.id}`);
+  };
+
+  return (
+    <div
+      className='bg-white rounded-lg overflow-hidden shadow-sm h-full cursor-pointer'
+      onClick={handleCardClick}>
       <div className='block'>
         <div className='relative'>
           <img
-            src={article.images[0]}
-            alt={article.name}
+            src={article?.thumbnail_image}
+            alt={article.title}
             width={400}
             height={200}
             className='w-full h-48 object-cover'
@@ -28,58 +34,24 @@ const ArticleCard = ({ article }) => (
           </div>
         </div>
       </div>
-    </Link>
-    <div className='px-4 pb-4 text-sm text-gray-500 flex items-center justify-between'>
-      <span>{article.date}</span>
-      <span>{article.comments}</span>
+      <div className='px-4 pb-4 text-sm text-gray-500 flex items-center justify-between'>
+        <span>{article.date}</span>
+        <span>{article.comments}</span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
-export default function CardSlider2() {
+export default function CardSlider2(Header, articleCard) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [campaigns, setCampaigns] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchCampaignData = useCallback(async () => {
-    try {
-      const requestData = {
-        companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        projectId: 'HWMHbyA6S12FXzVwcru7',
-      };
-
-      const response = await axios.post('/api/v1/article/read', requestData);
-      return response.data;
-    } catch (err) {
-      throw new Error(err.response?.data?.message || 'Gagal memuat data');
-    }
-  }, []);
+  console.log(Header, 'ini campaign selected');
 
   useEffect(() => {
-    const loadCampaigns = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchCampaignData();
-        // Memastikan bahwa data ada sebelum diset
-        if (data?.data && Array.isArray(data.data)) {
-          setCampaigns(data.data);
-        } else {
-          setCampaigns([]); // Jika tidak ada data atau bukan array
-        }
-      } catch (err) {
-        setError(err.message);
-        setCampaigns([]); // Pastikan kampanye tetap kosong jika terjadi error
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCampaigns();
-  }, [fetchCampaignData]);
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+    if (Header?.articleCard) {
+      setCampaigns(Header?.articleCard); // Pastikan data diteruskan dari props ke state
+    }
+  }, [Header?.articleCard]);
 
   const totalSlides = Math.ceil(campaigns.length / 2);
 
@@ -93,7 +65,7 @@ export default function CardSlider2() {
 
   return (
     <div className='w-full max-w-md mx-auto px-4'>
-      <h2 className='text-xl font-bold text-gray-800 mb-6'>Kebaikanmu Terus Mengalir Hingga Penjuru Negeri!</h2>
+      <h2 className='text-xl font-bold text-gray-800 mb-6'>{Header?.Header}</h2>
       <div className='relative'>
         <div className='overflow-hidden'>
           <div

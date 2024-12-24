@@ -5,7 +5,7 @@ import axios from 'axios';
 import useUserStore from '@/hooks/zustand';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
 import { useTranslation } from 'react-i18next';
-import { addFacebookPixel } from '@/utils/pixelUtil';
+import { trackPixelEvents } from '@/utils/pixelUtil';
 
 export default function DonationPage() {
   const router = useRouter();
@@ -17,6 +17,7 @@ export default function DonationPage() {
   const [customVariants, setCustomVariants] = useState([]);
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(true);
+  const [donationLoading, setDonationLoading] = useState(false);
   const [error, setError] = useState(null);
   const [quantities, setQuantities] = useState({});
   const [totalAmount, setTotalAmount] = useState(0);
@@ -120,6 +121,18 @@ export default function DonationPage() {
   };
 
   const addCustomVariantAmount = (id) => {
+    const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.selectVariantButton || 'initiate_checkout';
+
+    trackPixelEvents({
+      eventName: paymentButtonEvent,
+      eventData: {
+        content_name: product?.name,
+        content_ids: product?.id,
+        currency: globalState?.currency || 'IDR',
+        payment_method: 'stripe',
+      },
+      dynamicTagPixels: paymentButtonEvent,
+    });
     setShowInputPrice(true);
     updateTotalAmount(null);
     setCustomVariantAmounts((prev) => ({
@@ -141,6 +154,18 @@ export default function DonationPage() {
   };
 
   const addItem = (id, price) => {
+    const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.selectVariantButton || 'initiate_checkout';
+
+    trackPixelEvents({
+      eventName: paymentButtonEvent,
+      eventData: {
+        content_name: product?.name,
+        content_ids: product?.id,
+        currency: globalState?.currency || 'IDR',
+        payment_method: 'stripe',
+      },
+      dynamicTagPixels: paymentButtonEvent,
+    });
     setShowInputPrice(false);
     console.log(price, 'ini harga item');
     updateQuantity(id, 1);
@@ -199,15 +224,8 @@ export default function DonationPage() {
   };
 
   const handleDonateNow = async () => {
+    setDonationLoading(true);
     try {
-      if (window.fbq) {
-        window.fbq('track', 'InitiateCheckout', {
-          content_name: product?.name,
-          content_ids: [product?.id],
-          value: totalAmount,
-          currency: globalState?.currency || 'IDR',
-        });
-      }
       const variantItems = variants
         .filter((variant) => quantities[variant.id] > 0)
         .map((variant) => ({
@@ -224,6 +242,7 @@ export default function DonationPage() {
           variantId: variant.id,
           quantity: 1,
           message: '-',
+          regular_price_int: totalAmount,
         }));
 
       // Gabungkan semua items
@@ -249,35 +268,46 @@ export default function DonationPage() {
           automatic_payment_methods: true,
           affilate: true,
           affilateId: 'gading123',
-          total_amount: totalAmount,
         },
       };
 
       console.log('Donation Data:', data);
+      const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.paymentButton || 'initiate_checkout';
 
-      const response = await axios.post('/api/public/payment/stripe/create-payment', data);
-      console.log(response, 'ini response');
-
-      if (window.fbq) {
-        window.fbq('track', 'Purchase', {
+      trackPixelEvents({
+        eventName: paymentButtonEvent,
+        eventData: {
           content_name: product?.name,
-          content_ids: [product?.id],
+          content_ids: product?.id,
           value: totalAmount,
           currency: globalState?.currency || 'IDR',
-        });
+          payment_method: 'stripe',
+        },
+        dynamicTagPixels: paymentButtonEvent,
+      });
+
+      const response = await axios.post('/api/public/payment/stripe/create-payment', data);
+      console.log(response.data.data, 'ini response');
+
+      if (response?.data?.status === true && response?.data?.data) {
+        window.open(response.data.data, '_blank');
+      } else {
+        setError('Unable to process payment. Please try again.');
       }
 
-      const clientSecret = response.data?.data?.client_secret;
-      if (!clientSecret) {
-        throw new Error('Client secret not found in response');
-      }
-      router.push({
-        pathname: `${router.asPath}/payment`,
-        query: { clientSecret },
-      });
+      // const clientSecret = response.data?.data?.client_secret;
+      // if (!clientSecret) {
+      //   throw new Error('Client secret not found in response');
+      // }
+      // router.push({
+      //   pathname: `${router.asPath}/payment`,
+      //   query: { clientSecret },
+      // });
     } catch (error) {
       console.error('Error initiating payment:', error);
       setError(error.response?.data?.message || 'Failed to process donation.');
+    } finally {
+      setDonationLoading(false);
     }
   };
 
@@ -286,6 +316,21 @@ export default function DonationPage() {
       loadCampaigns();
     }
   }, [router?.query?.id]);
+
+  useEffect(() => {
+    const checkoutPageEvent = globalState?.webConfig?.aditionalDataPixels?.checkoutPage || 'InitiateCheckout';
+
+    // Track pixel events when page loads
+    trackPixelEvents({
+      eventName: checkoutPageEvent,
+      eventData: {
+        content_name: product?.name,
+        content_ids: product?.id,
+        currency: globalState?.currency || 'IDR',
+      },
+      dynamicTagPixels: checkoutPageEvent,
+    });
+  }, [product?.id]);
 
   if (loading) return <LoadingScreen />;
 
@@ -307,15 +352,17 @@ export default function DonationPage() {
 
       <div className='max-w-md mx-auto px-4 py-4'>
         {/* Campaign Banner */}
-        <div className='mb-6'>
-          <img
-            src={product?.images?.[0]}
-            alt='Campaign Banner'
-            width={400}
-            height={200}
-            className='w-full rounded-lg'
-          />
-          <h2 className='text-xl font-bold mt-4'>{product?.name}</h2>
+        <div className='flex flex-col sm:flex-row gap-4 mb-6 bg-white rounded-lg p-4 shadow-sm'>
+          <div className='w-full sm:w-[120px] h-[120px] flex-shrink-0'>
+            <img
+              src={product?.images?.[0]}
+              alt='Campaign Banner'
+              className='w-full h-full object-cover rounded-lg'
+            />
+          </div>
+          <div className='flex flex-col justify-center'>
+            <h2 className='text-lg font-semibold text-[#000000] line-clamp-2'>{product?.name}</h2>
+          </div>
         </div>
 
         {/* Donation Options */}
@@ -460,13 +507,37 @@ export default function DonationPage() {
           </div>
         </div>
 
-        {/* Total Donation Amount */}
         <div className='fixed bottom-0 left-0 right-0 z-50'>
           <div className='flex justify-center'>
             <button
               onClick={handleDonateNow}
-              className='w-full max-w-md mx-auto py-4 rounded-lg font-medium mt-6 bg-blue-600 text-white hover:bg-blue-700 transition-colors'>
-              Sedekah Sekarang <span>{formatPrice(globalState?.currency || 'IDR', totalAmount)}</span>
+              disabled={donationLoading}
+              className={`w-full max-w-md mx-auto py-4 rounded-lg font-medium mt-6 transition-colors ${donationLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
+              {donationLoading ? (
+                <span className='flex items-center justify-center'>
+                  <svg
+                    className='w-5 h-5 mr-2 text-blue-600 animate-spin'
+                    xmlns='http://www.w3.org/2000/svg'
+                    fill='none'
+                    viewBox='0 0 24 24'>
+                    <circle
+                      className='opacity-25'
+                      cx='12'
+                      cy='12'
+                      r='10'
+                      stroke='currentColor'
+                      strokeWidth='4'></circle>
+                    <path
+                      className='opacity-75'
+                      fill='currentColor'
+                      d='M4 12a8 8 0 018-8v8z'></path>
+                  </svg>
+                </span>
+              ) : (
+                <>
+                  Sedekah Sekarang <span>{formatPrice(globalState?.currency || 'IDR', totalAmount)}</span>
+                </>
+              )}
             </button>
           </div>
         </div>

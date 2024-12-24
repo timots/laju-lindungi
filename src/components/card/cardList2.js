@@ -26,13 +26,6 @@ function CampaignCard({ campaign }) {
     }
   };
 
-  // const createSlug = (title) => {
-  //   return title
-  //     .toLowerCase()
-  //     .replace(/ /g, '-')
-  //     .replace(/[^\w-]+/g, '');
-  // };
-
   const handleCardClick = () => {
     // const slug = createSlug(campaign.name);
     const slug = campaign?.id;
@@ -44,7 +37,6 @@ function CampaignCard({ campaign }) {
       Indonesia: 'IDR',
       Malaysia: 'MYR',
       Amerika: 'USD',
-      // Tambahkan negara lainnya jika diperlukan
     };
 
     const currencyCode = currencyMap[location] || 'IDR';
@@ -55,6 +47,8 @@ function CampaignCard({ campaign }) {
       currency: currencyCode,
     }).format(amount * rate);
   };
+
+  console.log(campaign, 'ini campaign');
 
   useEffect(() => {
     fetchExchangeRates();
@@ -96,7 +90,7 @@ function CampaignCard({ campaign }) {
                   <Avatar
                     key={index}
                     className='w-6 h-6 border-2 border-white'>
-                    <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0].toUpperCase()}</AvatarFallback>
+                    <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0]?.toUpperCase()}</AvatarFallback>
                   </Avatar>
                 ))}
                 {campaign.orders?.length > 4 && (

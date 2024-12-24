@@ -16,7 +16,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const baseUrl = 'https://deoapp.com/api/public/service/payment/stripe/create-orders';
+  // const baseUrl = 'https://deoapp.com/api/public/service/payment/stripe/create-orders';
+  const baseUrl = 'https://deoapp.com//api/public/platform/laju-peduli/create-invoice';
 
   const requestData = req.body;
 

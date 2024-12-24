@@ -7,59 +7,34 @@ import { Progress } from '@radix-ui/react-progress';
 import useUserStore from '@/hooks/zustand';
 import { Avatar, AvatarFallback } from '../ui/avatar';
 
-const CardList = () => {
-  const [campaigns, setCampaigns] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [exchangeRates, setExchangeRates] = useState({}); // Menyimpan semua nilai tukar
+const CardList = (Header, campaignsSelected) => {
+  const [campaigns, setCampaigns] = useState(campaignsSelected?.campaignsSelected || []);
+  const [exchangeRates, setExchangeRates] = useState({});
   const globalState = useUserStore();
   const location = globalState?.location;
 
-  const fetchCampaignData = async () => {
-    try {
-      const requestData = {
-        companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        projectId: 'HWMHbyA6S12FXzVwcru7',
-      };
+  // const fetchCampaignData = async () => {
+  //   try {
+  //     const requestData = {
+  //       companyId: 'vrWcmcy7wEw1BUkQP3l9',
+  //       projectId: 'HWMHbyA6S12FXzVwcru7',
+  //     };
 
-      const response = await axios.post('/api/v1/article/read', requestData);
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Gagal memuat data');
-    }
-  };
+  //     const response = await axios.post('/api/v1/article/read', requestData);
+  //     return response.data;
+  //   } catch (error) {
+  //     throw new Error(error.response?.data?.message || 'Gagal memuat data');
+  //   }
+  // };
 
   const fetchExchangeRates = async () => {
     try {
       const response = await axios.get('/api/public/exchangeRate');
-      console.log(response, 'ini response');
       setExchangeRates(response.data.rates || {});
     } catch (error) {
       console.error('Failed to fetch exchange rates:', error.message);
     }
   };
-
-  console.log(exchangeRates, 'ini exchange rates');
-
-  useEffect(() => {
-    const loadCampaigns = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchCampaignData();
-        setCampaigns(data?.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCampaigns();
-  }, []);
-
-  useEffect(() => {
-    fetchExchangeRates();
-  }, []);
 
   const formatCurrency = (amount, location) => {
     const currencyMap = {
@@ -78,12 +53,34 @@ const CardList = () => {
     }).format(amount * rate);
   };
 
-  if (loading) return <div className='text-center py-8'>Loading...</div>;
-  if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
+  // useEffect(() => {
+  //   const loadCampaigns = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const data = await fetchCampaignData();
+  //       setCampaigns(data?.data);
+  //     } catch (err) {
+  //       setError(err.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   loadCampaigns();
+  // }, []);
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
+  useEffect(() => {
+    if (campaignsSelected?.campaigns) {
+      setCampaigns(campaignsSelected.campaigns);
+    }
+  }, [campaignsSelected]);
 
   return (
     <div className='max-w-3xl mx-auto p-4'>
-      <h2 className='text-2xl font-bold mb-6'>Luaskan Pedulimu</h2>
+      <h2 className='text-2xl font-bold mb-6'>{Header?.Header}</h2>
       <div className='space-y-4'>
         {Array.isArray(campaigns) && campaigns.length > 0 ? (
           campaigns.map((campaign) => (

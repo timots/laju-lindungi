@@ -24,7 +24,6 @@ const Navbar = () => {
         // Mendapatkan negara berdasarkan koordinat
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
         const data = await response.json();
-        console.log(data, 'ini data get country nya');
         const country = data.address.country || 'Unknown';
         globalState?.setLocation(country);
 

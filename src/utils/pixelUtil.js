@@ -1,5 +1,58 @@
 //ini fungsi pixel
 
+export const trackPixelEvents = (eventConfig) => {
+  console.log(eventConfig, 'ini event config');
+  const { eventName = 'initiate_checkout', eventData = {}, dynamicTagPixels } = eventConfig;
+
+  // Ensure we have a minimum set of event data
+  const defaultEventData = {
+    content_type: 'product',
+    currency: 'IDR',
+    ...eventData,
+  };
+
+  // Check if window and tracking methods exist
+  const canTrack = typeof window !== 'undefined';
+
+  if (canTrack) {
+    // Facebook Pixel Tracking
+    if (window.fbq) {
+      try {
+        window.fbq('track', eventName, defaultEventData);
+      } catch (error) {
+        console.error('Facebook Pixel tracking error:', error);
+      }
+    }
+
+    if (window.ttq) {
+      try {
+        window.ttq.track(eventName, defaultEventData);
+      } catch (error) {
+        console.error('TikTok Pixel tracking error:', error);
+      }
+    }
+
+    if (window.dataLayer) {
+      try {
+        window.dataLayer.push({
+          event: eventName,
+          ...defaultEventData,
+        });
+      } catch (error) {
+        console.error('Google Tag Manager tracking error:', error);
+      }
+    }
+
+    if (window.analytics) {
+      try {
+        window.analytics.track(eventName, defaultEventData);
+      } catch (error) {
+        console.error('Segment Analytics tracking error:', error);
+      }
+    }
+  }
+};
+
 export function addFacebookPixel(pixelId) {
   console.log(pixelId, 'ini pixel id');
   // Create a script element

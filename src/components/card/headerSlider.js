@@ -2,55 +2,27 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Loader } from 'lucide-react';
-import axios from 'axios';
 
-export default function HeaderSlider() {
+export default function HeaderSlider(campaignsSelected) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [campaigns, setCampaigns] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState(campaignsSelected?.campaignsSelected || []);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchCampaignData = async () => {
-    try {
-      const requestData = {
-        companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        // tags: 'sedekah',
-        projectId: 'HWMHbyA6S12FXzVwcru7',
-      };
-
-      const response = await axios.post('/api/v1/article/read', requestData);
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Gagal memuat data');
+  useEffect(() => {
+    if (campaignsSelected?.campaigns) {
+      setCampaigns(campaignsSelected.campaigns);
     }
-  };
+  }, [campaignsSelected]);
 
   useEffect(() => {
-    const loadCampaigns = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchCampaignData();
-        if (data?.data?.length > 0) {
-          setCampaigns(data.data);
-        } else {
-          setCampaigns([]);
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (campaigns.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentSlide((prevSlide) => (prevSlide + 1) % campaigns.length);
+      }, 5000);
 
-    loadCampaigns();
-  }, []);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % campaigns.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [campaigns.length]);
 
   const nextSlide = () => {
@@ -61,10 +33,9 @@ export default function HeaderSlider() {
     setCurrentSlide((prevSlide) => (prevSlide - 1 + campaigns.length) % campaigns.length);
   };
 
-  // if (loading) return <div className='text-center py-8'>Loading...</div>;
   if (loading) {
     return (
-      <div className={`p-8  flex items-center justify-center`}>
+      <div className='p-8 flex items-center justify-center'>
         <div className='text-white text-center'>
           <Loader className='w-12 h-12 animate-spin mx-auto mb-4' />
           <p className='text-lg'>Loading campaigns...</p>
@@ -72,8 +43,10 @@ export default function HeaderSlider() {
       </div>
     );
   }
+
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
-  if (campaigns.length === 0) return <div className='text-center py-8'>Data tidak tersedia</div>;
+
+  if (campaigns.length === 0) return null;
 
   return (
     <div className='w-full relative max-w-4xl mx-auto mb-3 mt-3 z-0'>
@@ -81,14 +54,13 @@ export default function HeaderSlider() {
         <div
           className='flex transition-transform duration-300 ease-in-out'
           style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-          {campaigns?.map((slide, index) => (
+          {campaigns.map((slide, index) => (
             <div
               key={index}
               className='w-full flex-shrink-0'>
               <div className='relative h-[300px]'>
                 <img
                   src={slide?.images?.[0]}
-                  // alt={`Banner ${index + 1}`}
                   alt={slide.name}
                   className='w-full h-full object-cover'
                 />
@@ -98,12 +70,12 @@ export default function HeaderSlider() {
         </div>
         <button
           onClick={prevSlide}
-          className='absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition duration-300'>
+          className='absolute top-1/2 left-4 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition duration-300  border-none focus:outline-none'>
           <ChevronLeft className='w-6 h-6 text-orange-500' />
         </button>
         <button
           onClick={nextSlide}
-          className='absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition duration-300'>
+          className='absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80 p-2 rounded-full shadow-md hover:bg-white transition duration-300  border-none focus:outline-none'>
           <ChevronRight className='w-6 h-6 text-orange-500' />
         </button>
         <div className='absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-3 transition duration-300'>

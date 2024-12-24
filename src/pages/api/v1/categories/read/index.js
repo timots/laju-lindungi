@@ -16,16 +16,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const baseUrl = 'https://deoapp.com/api/public/platform/laju-peduli/products';
-  // const baseUrl = 'https://deoapp.com/api/public/platform/laju-peduli/products';
-  const jwt = 'eyJhbGciOiJSUzI1NiIsImtpZCI6ImYwOGU2ZTNmNzg4ZDYwMTk0MDA1ZGJiYzE5NDc0YmY5Mjg5ZDM5ZWEiLCJ0eXAiOiJKV1QifQ...';
+  const baseUrl = 'https://deoapp.com/api/public/platform/laju-peduli/product-categories';
 
-  const requestData = req.body; // The data sent in the POST request body
+  const requestData = req.body;
 
   try {
     const response = await axios.post(baseUrl, requestData, {
       headers: {
-        Authorization: `Bearer ${jwt}`,
         'Content-Type': 'application/json',
       },
     });

@@ -3,59 +3,46 @@ import AppLayout from '@/components/layout/appLayout';
 import '@/styles/globals.css';
 import { useRouter } from 'next/router';
 import { appWithTranslation } from 'next-i18next';
+import useUserStore from '@/hooks/zustand';
+import { addFacebookPixel, addGoogleTagManager } from '@/utils/pixelUtil';
+import { useEffect } from 'react';
+import axios from 'axios';
 
 function App({ Component, pageProps }) {
   const router = useRouter();
-  // const { i18n } = useTranslation();
-  // const globalState = useUserStore();
+  const globalState = useUserStore();
   const isAdminRoute = router.pathname.startsWith('/admin');
 
-  // const getLocation = async () => {
-  //   if ('geolocation' in navigator) {
-  //     try {
-  //       const position = await new Promise((resolve, reject) => {
-  //         navigator.geolocation.getCurrentPosition(resolve, reject);
-  //       });
-  //       const { latitude, longitude } = position.coords;
+  const getData = async () => {
+    console.log('masuk get config');
 
-  //       // Mendapatkan negara berdasarkan koordinat
-  //       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-  //       const data = await response.json();
-  //       const country = data.address.country || 'Unknown';
-  //       globalState?.setLocation(country);
+    try {
+      const res = await axios.post('/api/public/config/read', {
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+      });
 
-  //       // Mendapatkan kode mata uang berdasarkan negara
-  //       const currencyResponse = await fetch(`https://restcountries.com/v3.1/name/${country}`);
-  //       const currencyData = await currencyResponse.json();
-  //       const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
-  //       globalState?.setCurrency(currencyCode);
+      if (res?.data?.data.length > 0) {
+        globalState.setWebConfig(res?.data?.data[0]);
 
-  //       console.log(`Country: ${country}, Currency: ${currencyCode}`);
+        // tambah facebook pixel kalo ada
+        if (res?.data?.data[0]?.pixels?.facebook) {
+          addFacebookPixel(res?.data?.data[0].pixels.facebook || '2340318182830705');
+        }
+        // tambah google tag manager kalo ada
+        if (res?.data?.data[0]?.pixels?.['tag-manager']) {
+          addGoogleTagManager(res?.data?.data[0].pixels?.['tag-manager'] || 'GTM-T386H9R');
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
-  //       // Menentukan bahasa berdasarkan negara
-  //       if (country === 'Indonesia') {
-  //         i18n.changeLanguage('id');
-  //         globalState?.setLanguageId('id');
-  //       } else if (country === 'Malaysia') {
-  //         i18n.changeLanguage('my');
-  //         globalState?.setLanguageId('my');
-  //       } else {
-  //         i18n.changeLanguage('en');
-  //         globalState?.setLanguageId('en');
-  //       }
-  //     } catch (error) {
-  //       console.error('Error getting location:', error);
-  //     }
-  //   } else {
-  //     console.log('Geolocation tidak didukung di browser Anda.');
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (!globalState?.location) {
-  //     getLocation();
-  //   }
-  // }, [globalState?.location]);
+  useEffect(() => {
+    // if (globalState?.webConfig === ' ') {
+    getData();
+    // }
+  }, []);
 
   return (
     <>

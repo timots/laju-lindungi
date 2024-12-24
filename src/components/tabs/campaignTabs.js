@@ -6,19 +6,17 @@ import { useState } from 'react';
 export default function CampaignTabs({ data }) {
   const [activeTab, setActiveTab] = useState('keterangan');
   const [visibleDonors, setVisibleDonors] = useState(3);
-  console.log(data, 'ini data di tabs ');
   const updates = data?.history;
   const orders = data?.orders;
+
   function formatDateToIndonesian(createdAt) {
-    const date = new Date(createdAt._seconds * 1000); // Konversi detik ke milidetik
+    const date = new Date(createdAt._seconds * 1000);
     return date.toLocaleDateString('id-ID', {
       day: 'numeric',
       month: 'long',
       year: 'numeric',
     });
   }
-
-  console.log(orders, 'ini  orders');
 
   const loadMoreDonors = () => {
     setVisibleDonors((prev) => prev + 5);
@@ -27,21 +25,17 @@ export default function CampaignTabs({ data }) {
   return (
     <div className='mt-6 min-h-96'>
       <div className='flex border-b'>
-        <button
-          onClick={() => setActiveTab('keterangan')}
-          className={`px-4 py-2 -mb-px ${activeTab === 'keterangan' ? 'text-blue-500 border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}>
-          Keterangan
-        </button>
-        <button
-          onClick={() => setActiveTab('kabar')}
-          className={`px-4 py-2 -mb-px ${activeTab === 'kabar' ? 'text-blue-500 border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}>
-          Kabar ({updates?.length || 0})
-        </button>
-        <button
-          onClick={() => setActiveTab('donatur')}
-          className={`px-4 py-2 -mb-px ${activeTab === 'donatur' ? 'text-blue-500 border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}>
-          Donatur ({orders?.length || '0'})
-        </button>
+        {['keterangan', 'kabar', 'donatur'].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`px-4 py-2 -mb-px transition-all duration-200 focus:outline-none
+              ${activeTab === tab ? 'text-blue-500 border-b-2 border-blue-500 font-medium' : 'text-gray-500 hover:text-blue-500'}`}>
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            {tab === 'kabar' && ` (${updates?.length || 0})`}
+            {tab === 'donatur' && ` (${orders?.length || '0'})`}
+          </button>
+        ))}
       </div>
 
       <div className='mt-4'>
@@ -78,7 +72,7 @@ export default function CampaignTabs({ data }) {
             {visibleDonors < orders.length && (
               <button
                 onClick={loadMoreDonors}
-                className='w-full py-2.5 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium'>
+                className='w-full py-2.5 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium focus:outline-none'>
                 Loadmore
               </button>
             )}

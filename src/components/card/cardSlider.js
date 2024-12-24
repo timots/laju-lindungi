@@ -18,7 +18,6 @@ const CampaignCard = ({ campaign }) => {
   const fetchExchangeRates = async () => {
     try {
       const response = await axios.get('/api/public/exchangeRate');
-      console.log(response, 'ini response');
       setExchangeRates(response.data.rates || {});
     } catch (error) {
       console.error('Failed to fetch exchange rates:', error.message);
@@ -63,7 +62,7 @@ const CampaignCard = ({ campaign }) => {
 
   return (
     <Card
-      className='w-[280px] bg-white rounded-xl overflow-hidden shadow-sm hover:shadow transition-shadow cursor-pointer'
+      className='w-[180px] bg-white rounded-xl overflow-hidden shadow-sm hover:shadow transition-shadow cursor-pointer border-none'
       onClick={handleCardClick}>
       <div className='h-[140px] overflow-hidden'>
         <img
@@ -125,56 +124,16 @@ const CampaignCard = ({ campaign }) => {
   );
 };
 
-const CardSlider = ({ Header, BgColour }) => {
+const CardSlider = ({ Header, BgImage, campaignsSelected }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [campaigns, setCampaigns] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [campaigns, setCampaigns] = useState(campaignsSelected || []);
   const [error, setError] = useState(null);
 
-  const fetchCampaignData = async () => {
-    try {
-      const requestData = {
-        companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        projectId: 'HWMHbyA6S12FXzVwcru7',
-      };
-
-      const response = await axios.post('/api/v1/article/read', requestData);
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Gagal memuat data');
-    }
-  };
-
   useEffect(() => {
-    const loadCampaigns = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchCampaignData();
-        setCampaigns(data?.data || []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCampaigns();
-  }, []);
-
-  // if (loading) return <div className='text-center py-8'>Loading...</div>;
-  // if (loading) {
-  //   return (
-  //     <div className={`p-8 ${BgColour} flex items-center justify-center`}>
-  //       <div className='text-white text-center'>
-  //         <Loader className='w-12 h-12 animate-spin mx-auto mb-4' />
-  //         <p className='text-lg'>Loading campaigns...</p>
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
-  if (loading) return <LoadingScreen />;
-  if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
+    if (campaignsSelected?.campaigns) {
+      setCampaigns(campaignsSelected.campaigns);
+    }
+  }, [campaignsSelected]);
 
   const totalSlides = Math.ceil(campaigns.length / 2);
 
@@ -187,7 +146,13 @@ const CardSlider = ({ Header, BgColour }) => {
   };
 
   return (
-    <div className={`p-8 ${BgColour}`}>
+    <div
+      className='p-8'
+      style={{
+        backgroundImage: BgImage ? `url(${BgImage})` : 'linear-gradient(to right, #1e3a8a, #2563eb)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}>
       <div className='max-w-[600px] mx-auto'>
         <h2 className='text-2xl md:text-3xl font-bold text-white mb-6 text-center'>{Header}</h2>
         <div className='relative'>
@@ -198,13 +163,16 @@ const CardSlider = ({ Header, BgColour }) => {
               {Array.from({ length: totalSlides }).map((_, index) => (
                 <div
                   key={index}
-                  className='w-full flex-shrink-0 flex  gap-6'>
-                  {campaigns.slice(index * 2, index * 2 + 2).map((campaign) => (
-                    <CampaignCard
-                      key={campaign.id}
-                      campaign={campaign}
-                    />
-                  ))}
+                  className='w-full flex-shrink-0 flex justify-start gap-6'>
+                  {' '}
+                  <div className='flex gap-6'>
+                    {campaigns.slice(index * 2, index * 2 + 2).map((campaign) => (
+                      <CampaignCard
+                        key={campaign.id}
+                        campaign={campaign}
+                      />
+                    ))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -212,14 +180,14 @@ const CardSlider = ({ Header, BgColour }) => {
 
           <button
             onClick={prevSlide}
-            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors'
+            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors border-none focus:outline-none'
             aria-label='Previous slide'>
             <ChevronLeft className='w-6 h-6' />
           </button>
 
           <button
             onClick={nextSlide}
-            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors'
+            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4  rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors  border-none focus:outline-none'
             aria-label='Next slide'>
             <ChevronRight className='w-6 h-6' />
           </button>
