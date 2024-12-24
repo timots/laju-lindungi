@@ -9,7 +9,7 @@ const ArticleCard = ({ article }) => {
   const router = useRouter();
 
   const handleCardClick = () => {
-    router.push(`/campaign/${article?.id}`);
+    router.push(`/article/${article?.id}`);
   };
 
   return (
