@@ -61,8 +61,8 @@ const CampaignCard = ({ campaign }) => {
   const progressPercentage = (campaign.amount_total / campaign.target_amount) * 100;
 
   return (
-    <Card
-      className='w-[180px] bg-white rounded-xl overflow-hidden shadow-sm hover:shadow transition-shadow cursor-pointer border-none'
+    <div
+      className='bg-white rounded-lg overflow-hidden shadow-sm h-full cursor-pointer'
       onClick={handleCardClick}>
       <div className='h-[140px] overflow-hidden'>
         <img
@@ -120,7 +120,7 @@ const CampaignCard = ({ campaign }) => {
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
@@ -160,12 +160,11 @@ const CardSlider = ({ Header, BgImage, campaignsSelected }) => {
             <div
               className='flex transition-transform duration-300 ease-in-out'
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-              {Array.from({ length: totalSlides }).map((_, index) => (
-                <div
-                  key={index}
-                  className='w-full flex-shrink-0 flex justify-start gap-6'>
-                  {' '}
-                  <div className='flex gap-6'>
+              {totalSlides > 0 ? (
+                Array.from({ length: totalSlides }).map((_, index) => (
+                  <div
+                    key={index}
+                    className='w-full flex-shrink-0 grid grid-cols-2 gap-4'>
                     {campaigns.slice(index * 2, index * 2 + 2).map((campaign) => (
                       <CampaignCard
                         key={campaign.id}
@@ -173,8 +172,10 @@ const CardSlider = ({ Header, BgImage, campaignsSelected }) => {
                       />
                     ))}
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div className='w-full text-center py-4 text-gray-500'>No articles available</div>
+              )}
             </div>
           </div>
 
