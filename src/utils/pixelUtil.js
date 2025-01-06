@@ -1,10 +1,8 @@
-//ini fungsi pixel
 
 export const trackPixelEvents = (eventConfig) => {
   console.log(eventConfig, 'ini event config');
   const { eventName = 'initiate_checkout', eventData = {}, dynamicTagPixels } = eventConfig;
 
-  // Ensure we have a minimum set of event data
   const defaultEventData = {
     content_type: 'product',
     currency: 'IDR',
