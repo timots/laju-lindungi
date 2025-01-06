@@ -2,16 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Clock, CheckCircle2, Share, Home } from 'lucide-react';
-import CampaignTabs from '@/components/tabs/campaignTabs';
-import PrayerList from '@/components/menu/doa';
+import { Send, Share, User } from 'lucide-react';
 import axios from 'axios';
-import { differenceInDays, format } from 'date-fns';
+import { format } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
 import useUserStore from '@/hooks/zustand';
 import { trackPixelEvents } from '@/utils/pixelUtil';
 import Header from '@/components/header/HeaderSearch';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 
 export default function ArticlePage() {
   const router = useRouter();
@@ -19,6 +19,8 @@ export default function ArticlePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const globalState = useUserStore();
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState({ name: '', email: '', content: '' });
 
   const getLocation = async () => {
     if ('geolocation' in navigator) {
@@ -95,6 +97,19 @@ export default function ArticlePage() {
     }
   };
 
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+    if (!newComment.name || !newComment.email || !newComment.content) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    // Here you would typically send the comment to your backend API
+    // For this example, we'll just add it to the local state
+    setComments([...comments, { ...newComment, createdAt: new Date() }]);
+    setNewComment({ name: '', email: '', content: '' });
+  };
+
   useEffect(() => {
     if (router?.query?.id) {
       loadCampaigns();
@@ -122,7 +137,7 @@ export default function ArticlePage() {
     <div>
       <Header />
       <main className='mt-16'>
-        <div className='w-full max-w-md mx-auto bg-white'>
+        <div className='w-full max-w-md mx-auto bg-white  space-y-5'>
           <h1 className='text-3xl font-bold'>{activeCampaigns?.title}</h1>
 
           <div className='flex items-center text-sm text-gray-500 space-x-4'>
@@ -144,6 +159,69 @@ export default function ArticlePage() {
               <Share className='w-5 h-5' />
               Share
             </Button>
+          </div>
+          <div className='mt-8'>
+            <h2 className='text-2xl font-bold mb-4'>Comments</h2>
+
+            {/* New Comment Form */}
+            <div className='bg-gray-50 p-6 mt-8'>
+              <h2 className='text-2xl font-bold mb-6 text-gray-900'>Comments</h2>
+
+              {/* Existing Comments */}
+              <div className='space-y-6 mb-8'>
+                {comments.map((comment, index) => (
+                  <div
+                    key={index}
+                    className='bg-white p-4 rounded-lg shadow-sm'>
+                    <div className='flex items-center mb-2'>
+                      <User className='w-6 h-6 text-gray-400 mr-2' />
+                      <span className='font-semibold text-gray-700'>{comment.name}</span>
+                      <span className='text-sm text-gray-500 ml-auto'>{format(comment.createdAt, 'MMMM d, yyyy')}</span>
+                    </div>
+                    <p className='text-gray-600'>{comment.content}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* New Comment Form */}
+              <form
+                onSubmit={handleCommentSubmit}
+                className='bg-white p-6 rounded-lg shadow-sm'>
+                <h3 className='text-xl font-semibold mb-4 text-gray-900'>Leave a comment</h3>
+                <div className='grid grid-cols-1 gap-4 md:grid-cols-2 mb-4'>
+                  <Input
+                    type='text'
+                    placeholder='Your Name'
+                    value={newComment.name}
+                    onChange={(e) => setNewComment({ ...newComment, name: e.target.value })}
+                    required
+                    className='w-full'
+                  />
+                  <Input
+                    type='email'
+                    placeholder='Your Email'
+                    value={newComment.email}
+                    onChange={(e) => setNewComment({ ...newComment, email: e.target.value })}
+                    required
+                    className='w-full'
+                  />
+                </div>
+                <Textarea
+                  placeholder='Your Comment'
+                  value={newComment.content}
+                  onChange={(e) => setNewComment({ ...newComment, content: e.target.value })}
+                  required
+                  className='w-full mb-4'
+                  rows={4}
+                />
+                <Button
+                  type='submit'
+                  className='w-full md:w-auto'>
+                  <Send className='w-4 h-4 mr-2' />
+                  Submit Comment
+                </Button>
+              </form>
+            </div>
           </div>
         </div>
       </main>
