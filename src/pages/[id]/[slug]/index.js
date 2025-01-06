@@ -44,7 +44,6 @@ export default function CampaignDetail() {
         const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
         globalState?.setCurrency(currencyCode);
 
-        // Menentukan bahasa berdasarkan negara
         if (country === 'Indonesia') {
           i18n.changeLanguage('id');
           globalState?.setLanguageId('id');
@@ -76,14 +75,6 @@ export default function CampaignDetail() {
     } catch (error) {
       console.error('Failed to fetch exchange rates:', error.message);
     }
-  };
-
-  const formatRupiah = (number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(number);
   };
 
   const progressPercentage = (activeCampaigns.amount_total / activeCampaigns.target_amount) * 100;
@@ -143,6 +134,36 @@ export default function CampaignDetail() {
       },
     });
   };
+
+  const getData = async () => {
+    console.log('masuk get config');
+
+    try {
+      const res = await axios.post('/api/public/config/read', {
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+      });
+
+      if (res?.data?.data.length > 0) {
+        globalState.setWebConfig(res?.data?.data[0]);
+
+        // tambah facebook pixel kalo ada
+        if (res?.data?.data[0]?.pixels?.facebook) {
+          addFacebookPixel(res?.data?.data[0].pixels.facebook || '2340318182830705');
+        }
+        // tambah google tag manager kalo ada
+        if (res?.data?.data[0]?.pixels?.['tag-manager']) {
+          addGoogleTagManager(res?.data?.data[0].pixels?.['tag-manager'] || 'GTM-T386H9R');
+        }
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  useEffect(() => {
+    getData();
+    // }
+  }, []);
 
   useEffect(() => {
     fetchExchangeRates();
