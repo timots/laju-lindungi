@@ -10,7 +10,7 @@ import { differenceInDays } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
 import useUserStore from '@/hooks/zustand';
-import { trackPixelEvents } from '@/utils/pixelUtil';
+import { isTrackingReady, trackPixelEvents } from '@/utils/pixelUtil';
 
 export default function CampaignDetail() {
   const router = useRouter();
@@ -135,36 +135,6 @@ export default function CampaignDetail() {
     });
   };
 
-  const getData = async () => {
-    console.log('masuk get config');
-
-    try {
-      const res = await axios.post('/api/public/config/read', {
-        projectId: 'HWMHbyA6S12FXzVwcru7',
-      });
-
-      if (res?.data?.data.length > 0) {
-        globalState.setWebConfig(res?.data?.data[0]);
-
-        // tambah facebook pixel kalo ada
-        if (res?.data?.data[0]?.pixels?.facebook) {
-          addFacebookPixel(res?.data?.data[0].pixels.facebook || '2340318182830705');
-        }
-        // tambah google tag manager kalo ada
-        if (res?.data?.data[0]?.pixels?.['tag-manager']) {
-          addGoogleTagManager(res?.data?.data[0].pixels?.['tag-manager'] || 'GTM-T386H9R');
-        }
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  useEffect(() => {
-    getData();
-    // }
-  }, []);
-
   useEffect(() => {
     fetchExchangeRates();
   }, []);
@@ -177,6 +147,7 @@ export default function CampaignDetail() {
 
   useEffect(() => {
     if (activeCampaigns?.id) {
+      console.log('ini masuk ke events');
       trackPixelEvents({
         eventName: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
         eventData: {
@@ -188,6 +159,25 @@ export default function CampaignDetail() {
       });
     }
   }, [activeCampaigns?.id]);
+
+  // useEffect(() => {
+  //   if (activeCampaigns?.id && isTrackingReady()) {
+  //     console.log('ini masuk ke events');
+  //     try {
+  //       trackPixelEvents({
+  //         eventName: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
+  //         eventData: {
+  //           content_name: activeCampaigns?.name,
+  //           content_ids: [activeCampaigns?.id],
+  //           currency: globalState?.currency || 'IDR',
+  //         },
+  //         dynamicTagPixels: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
+  //       });
+  //     } catch (error) {
+  //       console.error('Error tracking campaign view:', error);
+  //     }
+  //   }
+  // }, [activeCampaigns?.id]);
 
   if (loading) return <LoadingScreen />;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
