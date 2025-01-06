@@ -19,7 +19,7 @@ const ArticleCard = ({ article }) => {
       <div className='block'>
         <div className='relative'>
           <img
-            src={article?.thumbnail_image}
+            src={article?.thumbnail_image || 'https://via.placeholder.com/600x400'}
             alt={article.title}
             width={400}
             height={200}

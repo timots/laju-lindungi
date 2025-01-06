@@ -60,7 +60,7 @@ export default function HeaderSlider(campaignsSelected) {
               className='w-full flex-shrink-0'>
               <div className='relative h-[300px]'>
                 <img
-                  src={slide?.images?.[0]}
+                  src={slide?.images?.[0] || 'https://picsum.photos/600/400'}
                   alt={slide.name}
                   className='w-full h-full object-cover'
                 />
