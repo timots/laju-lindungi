@@ -66,9 +66,9 @@ const Navbar = () => {
     }
   }, [i18n]);
 
-  if (isLoading) {
-    return <div className='flex h-16 items-center justify-center'>Loading...</div>;
-  }
+  // if (isLoading) {
+  //   return <div className='flex h-16 items-center justify-center'>Loading...</div>;
+  // }
 
   const menuItems = [
     { id: 'home', label: t('nav.home') || 'Home', icon: Home, link: '/' },
