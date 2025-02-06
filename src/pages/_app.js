@@ -7,6 +7,7 @@ import useUserStore from '@/hooks/zustand';
 import { addFacebookPixel, addGoogleTagManager } from '@/utils/pixelUtil';
 import { useEffect } from 'react';
 import axios from 'axios';
+import '@/utils/translate/i18n';
 
 function App({ Component, pageProps }) {
   const router = useRouter();
@@ -14,7 +15,6 @@ function App({ Component, pageProps }) {
   const isAdminRoute = router.pathname.startsWith('/admin');
 
   const getData = async () => {
-    console.log('masuk get config');
 
     try {
       const res = await axios.post('/api/public/config/read', {

@@ -22,10 +22,7 @@ export const isTrackingReady = () => {
 };
 
 export const trackPixelEvents = (eventConfig) => {
-  console.log(eventConfig, 'ini event pixels');
   const { eventName = 'initiate_checkout', eventData = {}, dynamicTagPixels } = eventConfig;
-
-  console.log(window, 'ini window nya');
 
   if (typeof window === 'undefined') return;
 
@@ -54,22 +51,18 @@ export const trackPixelEvents = (eventConfig) => {
     try {
       if (canTrackFacebook) {
         window.fbq('track', eventName, defaultEventData);
-        console.log('Facebook tracking successful');
       }
       if (canTrackTikTok) {
         window.ttq.track(eventName, defaultEventData);
-        console.log('TikTok tracking successful');
       }
       if (canTrackGTM) {
         window.dataLayer.push({
           event: eventName,
           ...defaultEventData,
         });
-        console.log('GTM tracking successful');
       }
       if (canTrackSegment) {
         window.analytics.track(eventName, defaultEventData);
-        console.log('Segment tracking successful');
       }
     } catch (error) {
       console.error('Tracking error:', error);
@@ -110,8 +103,6 @@ export function addFacebookPixel(pixelId) {
     img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
     noScript.appendChild(img);
     document.body.appendChild(noScript);
-
-    console.log('Facebook Pixel initialized successfully');
   } catch (error) {
     console.error('Error initializing Facebook Pixel:', error);
   }
@@ -142,7 +133,6 @@ export function addTikTokPixel(pixelId) {
       ttq.page();
     `;
     document.head.appendChild(script);
-    console.log('TikTok Pixel initialized successfully');
   } catch (error) {
     console.error('Error initializing TikTok Pixel:', error);
   }
@@ -168,7 +158,6 @@ export function addGoogleTagManager(gtmId) {
       })(window,document,'script','dataLayer','${gtmId}');
     `;
     document.head.appendChild(gTagScript);
-    console.log('GTM initialized successfully');
   } catch (error) {
     console.error('Error initializing GTM:', error);
   }

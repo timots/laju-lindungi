@@ -33,9 +33,6 @@ const Navbar = () => {
         const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
         globalState?.setCurrency(currencyCode);
 
-        console.log(`Country: ${country}, Currency: ${currencyCode}`);
-
-        // Menentukan bahasa berdasarkan negara
         if (country === 'Indonesia') {
           i18n.changeLanguage('id');
           globalState?.setLanguageId('id');
@@ -46,11 +43,15 @@ const Navbar = () => {
           i18n.changeLanguage('en');
           globalState?.setLanguageId('en');
         }
+
+        setIsLoading(false);
       } catch (error) {
         console.error('Error getting location:', error);
+        setIsLoading(false);
       }
     } else {
       console.log('Geolocation tidak didukung di browser Anda.');
+      setIsLoading(false);
     }
   };
 
@@ -58,24 +59,43 @@ const Navbar = () => {
     if (!globalState?.location) {
       getLocation();
     }
-  }, [globalState?.location]);
+  }, []);
+
+  // useEffect(() => {
+  //   if (i18n.isInitialized) {
+  //     setIsLoading(false);
+  //   }
+  // }, [i18n]);
 
   useEffect(() => {
     if (i18n.isInitialized) {
       setIsLoading(false);
+    } else {
+      const interval = setInterval(() => {
+        if (i18n.isInitialized) {
+          setIsLoading(false);
+          clearInterval(interval);
+        }
+      }, 100);
+
+      return () => clearInterval(interval);
     }
   }, [i18n]);
 
-  // if (isLoading) {
-  //   return <div className='flex h-16 items-center justify-center'>Loading...</div>;
-  // }
+  if (isLoading) {
+    return <div className='flex h-16 items-center justify-center'>Loading...</div>;
+  }
+
+  if (!i18n.isInitialized) {
+    return <div className='flex h-16 items-center justify-center'>Loading translations...</div>;
+  }
 
   const menuItems = [
     { id: 'home', label: t('nav.home') || 'Home', icon: Home, link: '/' },
     { id: 'info', label: t('nav.infoTerbaru') || 'Info', icon: Info, link: '/info' },
-    { id: 'galang', label: t('nav.Galang_dana') || 'Galang Dana', icon: HandHeart, link: '/galang' },
-    { id: 'rekening', label: t('nav.rekening') || 'Rekening', icon: Trophy, link: '/rekening' },
-    { id: 'user', label: t('nav.User') || 'User', icon: User, link: '/auth/login' },
+    // { id: 'galang', label: t('nav.Galang_dana') || 'Galang Dana', icon: HandHeart, link: '/galang' },
+    // { id: 'rekening', label: t('nav.rekening') || 'Rekening', icon: Trophy, link: '/rekening' },
+    // { id: 'user', label: t('nav.User') || 'User', icon: User, link: '/auth/login' },
   ];
 
   return (

@@ -20,8 +20,6 @@ export default function CampaignDetail() {
   const [exchangeRates, setExchangeRates] = useState({});
   const globalState = useUserStore();
 
-  console.log(activeCampaigns, 'ini active campaigns');
-
   const getLocation = async () => {
     if ('geolocation' in navigator) {
       try {
@@ -147,7 +145,6 @@ export default function CampaignDetail() {
 
   useEffect(() => {
     if (activeCampaigns?.id) {
-      console.log('ini masuk ke events');
       trackPixelEvents({
         eventName: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
         eventData: {
@@ -159,25 +156,6 @@ export default function CampaignDetail() {
       });
     }
   }, [activeCampaigns?.id]);
-
-  // useEffect(() => {
-  //   if (activeCampaigns?.id && isTrackingReady()) {
-  //     console.log('ini masuk ke events');
-  //     try {
-  //       trackPixelEvents({
-  //         eventName: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
-  //         eventData: {
-  //           content_name: activeCampaigns?.name,
-  //           content_ids: [activeCampaigns?.id],
-  //           currency: globalState?.currency || 'IDR',
-  //         },
-  //         dynamicTagPixels: globalState?.webConfig?.aditionalDataPixels?.productViewPage || 'initiateCheckout',
-  //       });
-  //     } catch (error) {
-  //       console.error('Error tracking campaign view:', error);
-  //     }
-  //   }
-  // }, [activeCampaigns?.id]);
 
   if (loading) return <LoadingScreen />;
   if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;

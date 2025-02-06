@@ -148,7 +148,6 @@ export default function DonationPage() {
     setCustomVariantAmounts((prev) => {
       const updatedAmounts = { ...prev, [id]: newValue };
       updateTotalAmount(null, updatedAmounts);
-      console.log(updatedAmounts, 'ini amount update');
       return updatedAmounts;
     });
   };
@@ -167,7 +166,6 @@ export default function DonationPage() {
       dynamicTagPixels: paymentButtonEvent,
     });
     setShowInputPrice(false);
-    console.log(price, 'ini harga item');
     updateQuantity(id, 1);
   };
 
@@ -180,8 +178,7 @@ export default function DonationPage() {
   };
 
   const updateTotalAmount = (newQuantities = {}, customAmounts = {}) => {
-    console.log(newQuantities, 'ini new quantities');
-    console.log(customAmounts, 'ini custom amounts');
+
     let total = 0;
 
     // Jika newQuantities tersedia, atur semua value di customVariantAmounts menjadi 0
@@ -271,7 +268,6 @@ export default function DonationPage() {
         },
       };
 
-      console.log('Donation Data:', data);
       const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.paymentButton || 'initiate_checkout';
 
       trackPixelEvents({
@@ -287,7 +283,6 @@ export default function DonationPage() {
       });
 
       const response = await axios.post('/api/public/payment/stripe/create-payment', data);
-      console.log(response.data.data, 'ini response');
 
       if (response?.data?.status === true && response?.data?.data) {
         window.open(response.data.data, '_blank');
@@ -449,7 +444,7 @@ export default function DonationPage() {
 
         {/* Donation Form */}
         <div className='bg-white rounded-lg p-4 shadow-sm'>
-          <div className='mb-4'>
+          {/* <div className='mb-4'>
             <p className='mb-2'>Sapaan :</p>
             <div className='flex gap-2'>
               {['Bapak', 'Ibu', 'Kak'].map((salutation) => (
@@ -461,7 +456,7 @@ export default function DonationPage() {
                 </button>
               ))}
             </div>
-          </div>
+          </div> */}
 
           <div className='space-y-4'>
             <input

@@ -45,7 +45,6 @@ const ArticleCard = ({ article }) => {
 export default function CardSlider2(Header, articleCard) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [campaigns, setCampaigns] = useState([]);
-  console.log(Header, 'ini campaign selected');
 
   useEffect(() => {
     if (Header?.articleCard) {

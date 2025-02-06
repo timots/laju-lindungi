@@ -44,7 +44,6 @@ export default function InfoPage() {
   };
 
   const getArticles = async () => {
-    console.log('masuk get article');
     try {
       const res = await axios.post('/api/v1/blogArticle/read', {
         companyId: 'vrWcmcy7wEw1BUkQP3l9',
@@ -56,7 +55,6 @@ export default function InfoPage() {
       } else {
         setArticleCard([]);
       }
-      console.log(res, 'ini res article');
     } catch (error) {
       console.error(error.message);
     }

@@ -124,7 +124,7 @@ const CampaignCard = ({ campaign }) => {
   );
 };
 
-const CardSlider = ({ Header, BgImage, campaignsSelected }) => {
+const CardSlider = ({ Header, Data, campaignsSelected }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [campaigns, setCampaigns] = useState(campaignsSelected || []);
   const [error, setError] = useState(null);
@@ -145,16 +145,17 @@ const CardSlider = ({ Header, BgImage, campaignsSelected }) => {
     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
   };
 
+
   return (
     <div
       className='p-8'
       style={{
-        backgroundImage: BgImage ? `url(${BgImage})` : 'linear-gradient(to right, #1e3a8a, #2563eb)',
+        backgroundImage: Data?.image ? `url(${encodeURI(Data?.image?.trim())})` : 'linear-gradient(to right, #1e3a8a, #2563eb)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }}>
       <div className='max-w-[600px] mx-auto'>
-        <h2 className='text-2xl md:text-3xl font-bold text-white mb-6 text-center'>{Header}</h2>
+        <h2 className='text-2xl md:text-3xl font-bold text-black mb-6 text-center'>{Header}</h2>
         <div className='relative'>
           <div className='overflow-hidden'>
             <div

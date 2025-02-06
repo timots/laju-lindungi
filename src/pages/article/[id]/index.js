@@ -22,6 +22,7 @@ export default function ArticlePage() {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState({ name: '', email: '', content: '' });
 
+
   const getLocation = async () => {
     if ('geolocation' in navigator) {
       try {
@@ -97,17 +98,34 @@ export default function ArticlePage() {
     }
   };
 
-  const handleCommentSubmit = async (e) => {
+  const handleSubmitComment = async (e) => {
     e.preventDefault();
-    if (!newComment.name || !newComment.email || !newComment.content) {
+    const { name, email, content } = newComment;
+
+    if (!name || !email || !content) {
       alert('Please fill in all fields');
       return;
     }
 
-    // Here you would typically send the comment to your backend API
-    // For this example, we'll just add it to the local state
-    setComments([...comments, { ...newComment, createdAt: new Date() }]);
-    setNewComment({ name: '', email: '', content: '' });
+    // Post the new comment
+    try {
+      const requestData = {
+        name,
+        email,
+        content,
+        docId: router?.query?.id,
+      };
+
+      await axios.post('/api/v1/blogArticle/comment-post', requestData);
+      setComments((prevComments) => [...prevComments, { ...newComment, createdAt: new Date() }]);
+
+      // Reset the new comment form
+      setNewComment({ name: '', email: '', content: '' });
+      loadCampaigns();
+    } catch (error) {
+      console.error(error.message);
+      setError('Gagal mengirim komentar.');
+    }
   };
 
   useEffect(() => {
@@ -140,7 +158,7 @@ export default function ArticlePage() {
         <div className='w-full max-w-md mx-auto bg-white  space-y-5'>
           <h1 className='text-3xl font-bold'>{activeCampaigns?.title}</h1>
 
-          <div className='flex items-center text-sm text-gray-500 space-x-4'>
+          <div className='flex items-center text-sm text-blue-500 space-x-4'>
             <span>{format(new Date(activeCampaigns?.createdAt._seconds * 1000), 'MMMM d, yyyy')}</span>
             <span>•</span>
             <span>{activeCampaigns?.lastUpdatedBy?.email}</span>
@@ -151,7 +169,7 @@ export default function ArticlePage() {
             dangerouslySetInnerHTML={{ __html: activeCampaigns?.html }}
           />
 
-          <div className='flex justify-between items-center pt-6 border-t'>
+          {/* <div className='flex justify-between items-center pt-6 border-t'>
             <span className='text-sm text-gray-500'>Tags: {activeCampaigns?.tags.join(', ') || 'No tags'}</span>
             <Button
               variant='outline'
@@ -159,33 +177,30 @@ export default function ArticlePage() {
               <Share className='w-5 h-5' />
               Share
             </Button>
-          </div>
+          </div> */}
           <div className='mt-8'>
-            <h2 className='text-2xl font-bold mb-4'>Comments</h2>
-
-            {/* New Comment Form */}
             <div className='bg-gray-50 p-6 mt-8'>
               <h2 className='text-2xl font-bold mb-6 text-gray-900'>Comments</h2>
 
               {/* Existing Comments */}
               <div className='space-y-6 mb-8'>
-                {comments.map((comment, index) => (
+                {activeCampaigns?.comments?.map((comment, index) => (
                   <div
                     key={index}
                     className='bg-white p-4 rounded-lg shadow-sm'>
                     <div className='flex items-center mb-2'>
                       <User className='w-6 h-6 text-gray-400 mr-2' />
                       <span className='font-semibold text-gray-700'>{comment.name}</span>
-                      <span className='text-sm text-gray-500 ml-auto'>{format(comment.createdAt, 'MMMM d, yyyy')}</span>
+                      <span className='text-sm text-gray-500 ml-auto'>{format(comment.createdAt._seconds * 1000, 'MMMM d, yyyy')}</span>
                     </div>
-                    <p className='text-gray-600'>{comment.content}</p>
+                    <p className='text-gray-600'>{comment.content || 'no comment assigned'}</p>
                   </div>
                 ))}
               </div>
 
               {/* New Comment Form */}
               <form
-                onSubmit={handleCommentSubmit}
+                onSubmit={handleSubmitComment}
                 className='bg-white p-6 rounded-lg shadow-sm'>
                 <h3 className='text-xl font-semibold mb-4 text-gray-900'>Leave a comment</h3>
                 <div className='grid grid-cols-1 gap-4 md:grid-cols-2 mb-4'>

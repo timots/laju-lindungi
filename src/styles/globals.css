@@ -53,13 +53,13 @@
     --accent-foreground: #000000; /* Accent text color set to black */
     --destructive: #e63946;
     --destructive-foreground: #ffffff;
-    --border: #e0e0e0;
-    --input: #ffffff; /* Default white background for input fields */
+    --border: #e0e0e000;
+    --input: #ffffff00; /* Default white background for input fields */
     --input-text: #000000; /* Default black text for input fields */
-    --ring: #000000;
+    --ring: #ffffff00;
     --chart-1: #f87171;
     --chart-2: #34d399;
-    --chart-3: #60a5fa;
+    --chart-3: #ffffff;
     --chart-4: #facc15;
     --chart-5: #f472b6;
   }

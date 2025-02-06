@@ -5,7 +5,7 @@ export const LoadingScreen = () => {
     <div className='fixed inset-0 bg-white flex flex-col items-center justify-center'>
       <div className='relative'>
         <img
-          src='/payment logo/laju_peduli.png'
+          src='/payment logo/synergyhumanity.jpeg'
           alt='LajuPeduli Logo'
           width={120}
           height={40}

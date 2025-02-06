@@ -40,7 +40,6 @@ export default function PrayerList(data) {
   const [visiblePrayers, setVisiblePrayers] = useState(5);
   const orders = data?.data?.orders;
 
-  console.log(data, 'ini orders di doa');
   function formatDateToIndonesian(createdAt) {
     const date = new Date(createdAt._seconds * 1000); // Konversi detik ke milidetik
     return date.toLocaleDateString('id-ID', {

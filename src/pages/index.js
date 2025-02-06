@@ -22,7 +22,6 @@ export default function CharityHome() {
   const [dynamicSection, setDynamicSection] = useState([]);
   const [loadingSelectedCampaign, setLoadingSelectedCampaign] = useState(true);
 
-
   const fetchSelectedCampaign = async () => {
     setLoadingSelectedCampaign(true);
     try {
@@ -44,6 +43,7 @@ export default function CharityHome() {
             ...(matchedSection.tags && { tags: matchedSection.tags }),
           };
 
+
           const response = await axios.post('/api/v1/article/read', requestData);
           if (response?.data?.data) {
             setter({ ...matchedSection, article: response.data.data });
@@ -62,14 +62,12 @@ export default function CharityHome() {
   };
 
   const getArticles = async () => {
-    console.log('masuk get article');
     try {
       const res = await axios.post('/api/v1/blogArticle/read', {
         companyId: 'vrWcmcy7wEw1BUkQP3l9',
         projectId: 'HWMHbyA6S12FXzVwcru7',
       });
 
-      console.log(res, 'ini res articles');
 
       if (res?.data?.data.length > 0) {
         setArticleCard(res.data.data);
@@ -86,6 +84,7 @@ export default function CharityHome() {
       const res = await axios.post('/api/v1/categories/read', {
         projectId: 'HWMHbyA6S12FXzVwcru7',
       });
+
 
       if (res?.data?.data.length > 0) {
         setDynamicSection(res.data.data);
@@ -108,6 +107,7 @@ export default function CharityHome() {
     }
   }, [dynamicSection]);
 
+
   if (loadingSelectedCampaign) return <LoadingScreen />;
   return (
     <div>
@@ -118,13 +118,13 @@ export default function CharityHome() {
         <ProgramNavigation />
         <CardSlider
           Header={campaignCard2?.name || 'Section 2'}
-          BgImage={campaignCard2?.image}
+          Data={campaignCard2 || null}
           campaignsSelected={campaignCard2?.article || []}
         />
         <HeaderSlider campaignsSelected={campaignCard3?.article || []} />
         <CardSlider
           Header={campaignCard4?.name || 'Section 4'}
-          BgImage={campaignCard4?.image}
+          Data={campaignCard4}
           campaignsSelected={campaignCard4?.article || []}
         />
         <CardList

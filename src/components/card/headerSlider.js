@@ -2,12 +2,18 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Loader } from 'lucide-react';
+import { useRouter } from 'next/router';
 
 export default function HeaderSlider(campaignsSelected) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [campaigns, setCampaigns] = useState(campaignsSelected?.campaignsSelected || []);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const router = useRouter();
+
+  const handleCardClick = (slug) => {
+    router.push(`/campaign/${slug}`);
+  };
 
   useEffect(() => {
     if (campaignsSelected?.campaigns) {
@@ -57,7 +63,8 @@ export default function HeaderSlider(campaignsSelected) {
           {campaigns.map((slide, index) => (
             <div
               key={index}
-              className='w-full flex-shrink-0'>
+              onClick={() => handleCardClick(slide?.id)}
+              className='w-full flex-shrink-0 cursor-pointer'>
               <div className='relative h-[300px]'>
                 <img
                   src={slide?.images?.[0] || 'https://picsum.photos/600/400'}

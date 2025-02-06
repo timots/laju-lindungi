@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useEffect, useState } from 'react';
 import { CheckCircle2, Clock } from 'lucide-react';
 import { useRouter } from 'next/router';
@@ -9,9 +7,8 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import useUserStore from '@/hooks/zustand';
-import { LoadingScreen } from '../loading/loadingScreen';
 
-function CampaignCard({ campaign }) {
+function SearchedCard({ campaign }) {
   const router = useRouter();
   const [exchangeRates, setExchangeRates] = useState({});
   const globalState = useUserStore();
@@ -26,9 +23,8 @@ function CampaignCard({ campaign }) {
   };
 
   const handleCardClick = () => {
-    // const slug = createSlug(campaign.name);
     const slug = campaign?.id;
-    router.push(`${router.asPath}/${slug}`);
+    router.push(`/search/${slug}`);
   };
 
   const formatCurrency = (amount, location) => {
@@ -108,72 +104,4 @@ function CampaignCard({ campaign }) {
   );
 }
 
-function CampaignListCard() {
-  const [visibleCampaigns, setVisibleCampaigns] = useState(5);
-  const [campaigns, setCampaigns] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  const fetchCampaignData = async () => {
-    try {
-      const requestData = {
-        companyId: 'vrWcmcy7wEw1BUkQP3l9',
-        projectId: 'HWMHbyA6S12FXzVwcru7',
-      };
-
-      const response = await axios.post('/api/v1/article/read', requestData);
-      return response.data;
-    } catch (error) {
-      throw new Error(error.response?.data?.message || 'Gagal memuat data');
-    }
-  };
-
-  useEffect(() => {
-    const loadCampaigns = async () => {
-      setLoading(true);
-      try {
-        const data = await fetchCampaignData();
-        setCampaigns(data?.data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCampaigns();
-  }, []);
-
-  // if (loading) return <div className='text-center py-8'>Loading...</div>;
-  if (loading) return <LoadingScreen />;
-  if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
-
-  const loadMore = () => {
-    setVisibleCampaigns((prev) => Math.min(prev + 5, campaigns.length));
-  };
-
-  return (
-    <div className='w-full max-w-2xl mx-auto px-4 py-6'>
-      <div className='space-y-4'>
-        {campaigns.slice(0, visibleCampaigns).map((campaign) => (
-          <CampaignCard
-            key={campaign.id}
-            campaign={campaign}
-          />
-        ))}
-      </div>
-
-      {visibleCampaigns < campaigns.length && (
-        <div className='mt-6 text-center'>
-          <button
-            onClick={loadMore}
-            className='bg-orange-500 text-white px-6 py-2 rounded-full hover:bg-orange-600 transition-colors'>
-            Load More
-          </button>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default CampaignListCard;
+export default SearchedCard;

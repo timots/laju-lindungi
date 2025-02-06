@@ -62,7 +62,6 @@ const articles = [
 );
 
 function ArticleCard({ article }) {
-  console.log(article, 'ini article data');
   return (
     <div className='bg-white rounded-2xl overflow-hidden shadow-sm mb-4'>
       <Link href={`/artikel/${article.slug}`}>
@@ -97,7 +96,6 @@ function ArticleCard({ article }) {
 }
 
 export default function CardBig(articleCard) {
-  console.log(articleCard, 'ini article card nya');
   const [visibleArticles, setVisibleArticles] = useState(5);
 
   const loadMore = () => {
