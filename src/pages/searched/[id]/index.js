@@ -4,7 +4,7 @@ import { TypesenseRestApi } from '@/api/typesenseApi';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import useUserStore from '@/hooks/zustand';
-import { LoadingScreen } from '@/components/loading/loadingScreen';
+import SearchedCard from '@/components/card/SearchedCard';
 
 export default function InfoPage() {
   const router = useRouter();
