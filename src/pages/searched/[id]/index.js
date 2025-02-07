@@ -5,7 +5,6 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import useUserStore from '@/hooks/zustand';
 import { LoadingScreen } from '@/components/loading/loadingScreen';
-import SearchedCard from '@/components/card/searchedCard';
 
 export default function InfoPage() {
   const router = useRouter();
