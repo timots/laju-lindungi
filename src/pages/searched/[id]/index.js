@@ -5,11 +5,13 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import useUserStore from '@/hooks/zustand';
 import SearchedCard from '@/components/card/SearchedCard';
+import { LoadingScreen } from '@/components/loading/loadingScreen';
 
 export default function InfoPage() {
   const router = useRouter();
   const [campaigns, setCampaigns] = useState([]);
   const [visibleCampaigns, setVisibleCampaigns] = useState(5);
+  const [loadingSelectedCampaign, setLoadingSelectedCampaign] = useState(true);
 
   const handleTypesenseSearch = async () => {
     const searchParameters = {
@@ -18,6 +20,8 @@ export default function InfoPage() {
       filter_by: `companyId:${'vrWcmcy7wEw1BUkQP3l9'} && projectId:${'HWMHbyA6S12FXzVwcru7'}`,
       sort_by: '_text_match:desc',
     };
+    setLoadingSelectedCampaign(true);
+
     try {
       const response = await TypesenseRestApi({
         collection: 'crm_product',
@@ -50,6 +54,8 @@ export default function InfoPage() {
       return campaign;
     } catch (error) {
       throw new Error(error.message);
+    } finally {
+      setLoadingSelectedCampaign(false);
     }
   };
 
@@ -62,6 +68,8 @@ export default function InfoPage() {
       handleTypesenseSearch();
     }
   }, [router.query?.id]);
+
+  if (loadingSelectedCampaign) return <LoadingScreen />;
 
   return (
     <div className='bg-gray-50'>
