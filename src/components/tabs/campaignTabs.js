@@ -1,11 +1,12 @@
 'use client';
 
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
 export default function CampaignTabs({ data }) {
   const [activeTab, setActiveTab] = useState('keterangan');
   const [visibleDonors, setVisibleDonors] = useState(3);
+  const [expandedUpdateId, setExpandedUpdateId] = useState(null);
   const updates = data?.history;
   const orders = data?.orders;
 
@@ -20,6 +21,10 @@ export default function CampaignTabs({ data }) {
 
   const loadMoreDonors = () => {
     setVisibleDonors((prev) => prev + 5);
+  };
+
+  const toggleUpdate = (index) => {
+    setExpandedUpdateId(expandedUpdateId === index ? null : index);
   };
 
   return (
@@ -47,9 +52,19 @@ export default function CampaignTabs({ data }) {
                 className='relative pl-6'>
                 <div className='absolute left-0 top-2 w-3 h-3 bg-blue-500 rounded-full' />
                 <div className='text-sm text-gray-500 mb-1'>{formatDateToIndonesian(update?.createdAt)}</div>
-                <div className='flex items-center justify-between'>
-                  <div className='font-medium pr-4'>{update.des}</div>
-                  {update.title && <ChevronRight className='w-5 h-5 text-gray-400 flex-shrink-0' />}
+                <div className='space-y-2'>
+                  <div
+                    className='flex items-center justify-between cursor-pointer'
+                    onClick={() => update.des && toggleUpdate(index)}>
+                    <div className='font-medium pr-4'>{update.title}</div>
+                    {update.des && (expandedUpdateId === index ? <ChevronDown className='w-5 h-5 text-gray-400 flex-shrink-0' /> : <ChevronRight className='w-5 h-5 text-gray-400 flex-shrink-0' />)}
+                  </div>
+                  {expandedUpdateId === index && update.des && (
+                    <div
+                      className='text-gray-600 pl-4 pt-2'
+                      dangerouslySetInnerHTML={{ __html: update.des }}
+                    />
+                  )}
                 </div>
               </div>
             ))}

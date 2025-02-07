@@ -73,7 +73,16 @@ const CampaignCard = ({ campaign }) => {
       </div>
 
       <div className='p-4 space-y-3'>
-        <h2 className='font-medium text-[15px] leading-tight text-gray-900 line-clamp-2 min-h-[40px]'>{campaign.name}</h2>
+        {/* <h2 className='font-medium text-[15px] leading-tight text-gray-900 line-clamp-2 min-h-[40px]'>{campaign.name}</h2> */}
+        <h2
+          className='font-medium text-[15px] leading-tight line-clamp-2 min-h-[40px]'
+          style={{
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundImage: 'linear-gradient(120deg, #4CAF50, #2196F3)',
+          }}>
+          {campaign.name}
+        </h2>
 
         <div className='flex items-center gap-1.5'>
           <span className='text-gray-600 text-sm truncate max-w-[200px]'>{campaign?.vendor}</span>
@@ -145,7 +154,6 @@ const CardSlider = ({ Header, Data, campaignsSelected }) => {
     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
   };
 
-
   return (
     <div
       className='p-8'
@@ -155,7 +163,16 @@ const CardSlider = ({ Header, Data, campaignsSelected }) => {
         backgroundPosition: 'center',
       }}>
       <div className='max-w-[600px] mx-auto'>
-        <h2 className='text-2xl md:text-3xl font-bold text-black mb-6 text-center'>{Header}</h2>
+        <h2
+          className='text-2xl md:text-3xl font-bold mb-6 text-center'
+          style={{
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundImage: 'linear-gradient(120deg, #3b82f6, #06b6d4)',
+          }}>
+          {Header}
+        </h2>
+
         <div className='relative'>
           <div className='overflow-hidden'>
             <div

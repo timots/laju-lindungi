@@ -18,6 +18,7 @@ export default async function handler(req, res) {
 
   // const baseUrl = 'https://deoapp.com/api/public/service/payment/stripe/create-orders';
   const baseUrl = 'https://deoapp.com//api/public/platform/laju-peduli/create-invoice';
+  // const baseUrl = 'http://172.16.21.197:3000//api/public/platform/laju-peduli/create-invoice';
 
   const requestData = req.body;
 

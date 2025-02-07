@@ -16,7 +16,7 @@ function CompletePaymentPage() {
       <iframe
         src={paymentUrl}
         allow='payment'
-        className='w-full'
+        className='w-full mb-12'
         style={{ height: iframeHeight }}
         title='Payment Gateway'
       />

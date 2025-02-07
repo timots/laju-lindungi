@@ -21,13 +21,11 @@ const Navbar = () => {
         });
         const { latitude, longitude } = position.coords;
 
-        // Mendapatkan negara berdasarkan koordinat
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
         const data = await response.json();
         const country = data.address.country || 'Unknown';
         globalState?.setLocation(country);
 
-        // Mendapatkan kode mata uang berdasarkan negara
         const currencyResponse = await fetch(`https://restcountries.com/v3.1/name/${country}`);
         const currencyData = await currencyResponse.json();
         const currencyCode = currencyData[0]?.currencies ? Object.keys(currencyData[0].currencies)[0] : 'Unknown';
@@ -61,12 +59,6 @@ const Navbar = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (i18n.isInitialized) {
-  //     setIsLoading(false);
-  //   }
-  // }, [i18n]);
-
   useEffect(() => {
     if (i18n.isInitialized) {
       setIsLoading(false);
@@ -93,15 +85,12 @@ const Navbar = () => {
   const menuItems = [
     { id: 'home', label: t('nav.home') || 'Home', icon: Home, link: '/' },
     { id: 'info', label: t('nav.infoTerbaru') || 'Info', icon: Info, link: '/info' },
-    // { id: 'galang', label: t('nav.Galang_dana') || 'Galang Dana', icon: HandHeart, link: '/galang' },
-    // { id: 'rekening', label: t('nav.rekening') || 'Rekening', icon: Trophy, link: '/rekening' },
-    // { id: 'user', label: t('nav.User') || 'User', icon: User, link: '/auth/login' },
   ];
 
   return (
     <nav className='fixed bottom-0 left-0 right-0 z-50'>
-      <div className='mx-auto max-w-md bg-gradient-to-r from-blue-500 to-blue-600'>
-        <ul className='flex h-16 items-center justify-between'>
+      <div className='mx-auto max-w-md bg-gradient-to-r from-blue-600 via-blue-500 to-orange-400 shadow-lg'>
+        <ul className='flex h-16 items-center justify-between px-2'>
           {menuItems.map((item) => {
             const isActive = pathname === item.link;
             return (
@@ -110,9 +99,11 @@ const Navbar = () => {
                 className='flex-1'>
                 <Link
                   href={item.link}
-                  className={`flex h-full w-full flex-col items-center justify-center gap-1 rounded-lg transition-colors ${isActive ? 'bg-blue-50 text-blue-600' : 'text-white hover:bg-blue-50 hover:text-blue-600'}`}>
-                  <item.icon className='h-5 w-5' />
-                  <span className='text-xs font-medium'>{item.label}</span>
+                  className={`flex h-14 flex-col items-center justify-center gap-1 rounded-xl transition-all duration-300 ${
+                    isActive ? 'bg-white/10 backdrop-blur-sm text-white shadow-inner' : 'text-white/90 hover:bg-white/5 hover:text-white'
+                  }`}>
+                  <item.icon className={`h-5 w-5 transition-transform duration-300 ${isActive ? 'scale-110' : 'scale-100'}`} />
+                  <span className={`text-xs font-medium transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-80'}`}>{item.label}</span>
                 </Link>
               </li>
             );

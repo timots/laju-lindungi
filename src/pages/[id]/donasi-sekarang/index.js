@@ -178,7 +178,6 @@ export default function DonationPage() {
   };
 
   const updateTotalAmount = (newQuantities = {}, customAmounts = {}) => {
-
     let total = 0;
 
     // Jika newQuantities tersedia, atur semua value di customVariantAmounts menjadi 0
@@ -247,7 +246,7 @@ export default function DonationPage() {
 
       const data = {
         format: 'stripe',
-        isProduction: false,
+        isProduction: true,
         payload: {
           companyId: 'vrWcmcy7wEw1BUkQP3l9',
           projectId: 'HWMHbyA6S12FXzVwcru7',
@@ -502,7 +501,7 @@ export default function DonationPage() {
           </div>
         </div>
 
-        <div className='fixed bottom-0 left-0 right-0 z-50'>
+        <div className=' bottom-0 left-0 right-0 z-50'>
           <div className='flex justify-center'>
             <button
               onClick={handleDonateNow}
