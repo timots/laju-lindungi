@@ -1,4 +1,9 @@
-import { LinkAuthenticationElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import {
+  LinkAuthenticationElement,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from '@stripe/react-stripe-js';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { Button } from '@/components/ui/button';
@@ -11,8 +16,9 @@ export default function CheckoutForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
-
-  const stripePromise = loadStripe('pk_test_eZL2hA7uIiCkLVuxcTNIIx7I008ckE9NzV');
+  const stripePromise = loadStripe(
+    'pk_test_eZL2hA7uIiCkLVuxcTNIIx7I008ckE9NzV'
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,38 +73,41 @@ export default function CheckoutForm() {
 
   return (
     <form
-      id='payment-form'
+      id="payment-form"
       onSubmit={handleSubmit}
-      className='flex flex-col items-center p-6 bg-white shadow-lg rounded-md max-w-md mx-auto'>
-      <h2 className='text-lg font-semibold text-center mb-4'>Complete Your Payment</h2>
+      className="flex flex-col items-center p-6 bg-white shadow-lg rounded-md max-w-md mx-auto"
+    >
+      <h2 className="text-lg font-semibold text-center mb-4">
+        Complete Your Payment
+      </h2>
       <LinkAuthenticationElement
-        id='link-authentication-element'
-        className='mb-4 w-full'
+        id="link-authentication-element"
+        className="mb-4 w-full"
       />
       <PaymentElement
-        id='payment-element'
+        id="payment-element"
         options={paymentElementOptions}
         paymentMethodOrder={paymentMethod}
-        className='mb-4 w-full'
+        className="mb-4 w-full"
       />
       <Button
-        className='mt-4 w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors'
+        className="mt-4 w-full py-2 bg-blue-600 text-white font-semibold rounded hover:bg-blue-700 transition-colors"
         disabled={isLoading || !stripe || !elements}
-        id='submit'>
-        <span id='button-text'>
+        id="submit"
+      >
+        <span id="button-text">
           {isLoading ? (
             <div
-              className='spinner border-t-2 border-white w-4 h-4 rounded-full animate-spin'
-              id='spinner'></div>
+              className="spinner border-t-2 border-white w-4 h-4 rounded-full animate-spin"
+              id="spinner"
+            ></div>
           ) : (
             'Pay Now'
           )}
         </span>
       </Button>
       {message && (
-        <div
-          id='payment-message'
-          className='text-red-600 mt-2'>
+        <div id="payment-message" className="text-red-600 mt-2">
           {message}
         </div>
       )}

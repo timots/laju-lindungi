@@ -35,17 +35,15 @@ export default function InfoPage() {
       let campaign = [];
 
       if (newData.length > 0) {
-        // Process each item in newData
         for (const item of newData) {
           try {
             const response = await axios.post('/api/v1/article/read', { productId: item.id });
-            // Store response.data.data in campaign array
             if (response.data.data) {
               campaign.push(response.data.data);
             }
           } catch (error) {
             console.error(error.message);
-            setError('Gagal memuat data kampanye.');
+            setError('Gagal memuat data Campaign.');
           }
         }
       }
