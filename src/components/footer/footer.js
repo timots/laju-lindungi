@@ -1,173 +1,43 @@
 import React from 'react';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Facebook, Instagram, Youtube } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import useUserStore from '@/hooks/zustand';
 
 export default function Footer() {
+  const { t } = useTranslation();
+  const globalState = useUserStore();
   return (
     <footer className='w-full bg-white px-4 py-8'>
       <div className='flex flex-col items-center text-center'>
         {/* Logo */}
-        <Image
-          src='/placeholder.svg'
+        <img
+          src='/payment logo/synergyhumanity.jpeg'
           alt='LajuPeduli Logo'
           width={120}
           height={40}
-          className='mb-4'
         />
-
-        {/* Mission Statement */}
-        <p className='mb-4 text-sm'>
-          <span className='font-semibold'>Laju Peduli</span> adalah Organisasi Sosial yang lahir dari semangat kepedulian untuk membantu masalah kemanusiaan di Indonesia dan juga di dunia Islam khususnya Palestina.
-        </p>
-
-        {/* Registration Number */}
-        <p className='mb-6 text-sm font-medium'>KEP. UPZ/020 TAHUN 2023</p>
 
         {/* Anti-Corruption Statement */}
         <div className='mb-8 rounded-lg border border-dashed border-gray-300 p-4 text-sm'>
-          <p className='text-center'>
-            "Laju Peduli berkomitmen menerapkan Sistem Manajemen Anti Penyuapan sehingga tidak membolehkan segala bentuk penyuapan dan gratifikasi, serta tidak akan mendukung atau menyediakan dana/material untuk individu maupun organisasi
-            yang dapat menganjurkan, mendukung, atau terlibat dalam aktivitas melanggar hukum, kekerasan, pencucian uang ataupun terorisme."
-          </p>
+          <p className='text-center'>{t('title content.organization2')}</p>
         </div>
 
-        {/* Payment Methods */}
-        <div className='mb-8'>
-          <h3 className='mb-4 text-lg font-semibold'>Metode Pembayaran</h3>
-          <div className='grid grid-cols-4 gap-4'>
-            {/* Bank logos - First row */}
-            <Image
-              src='/placeholder.svg'
-              alt='BCA'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='Mandiri'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='BSI'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='BRI'
-              width={60}
-              height={30}
-            />
-            {/* Bank logos - Second row */}
-            <Image
-              src='/placeholder.svg'
-              alt='BNI'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='Bank Muamalat'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='Danamon'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='CIMB'
-              width={60}
-              height={30}
-            />
-            {/* E-wallet logos */}
-            <Image
-              src='/placeholder.svg'
-              alt='Gopay'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='ShopeePay'
-              width={60}
-              height={30}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='DANA'
-              width={60}
-              height={30}
-            />
-            {/* Retail logos */}
-            <Image
-              src='/placeholder.svg'
-              alt='Indomaret'
-              width={60}
-              height={30}
-            />
-          </div>
-        </div>
-
-        {/* Digital Channels */}
-        <div className='mb-8'>
-          <h3 className='mb-4 text-lg font-semibold'>Channel Digital Lainnya</h3>
-          <div className='grid grid-cols-3 gap-4'>
-            <Image
-              src='/placeholder.svg'
-              alt='Kitabisa'
-              width={100}
-              height={40}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='Amalsholeh'
-              width={100}
-              height={40}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='Bersedekah'
-              width={100}
-              height={40}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='Tokopedia'
-              width={100}
-              height={40}
-            />
-            <Image
-              src='/placeholder.svg'
-              alt='Shopee'
-              width={100}
-              height={40}
-            />
-          </div>
-        </div>
-
-        {/* Social Media Links */}
         <div>
-          <h3 className='mb-4 text-lg font-semibold'>Info Selengkapnya:</h3>
+          <h3 className='mb-4 text-lg font-semibold'>{t('title content.footer3')}:</h3>
           <div className='flex justify-center gap-4'>
             <Link
-              href='#'
+              href={globalState?.webConfig?.socialMedia?.Facebook || '*'}
               className='rounded-full bg-[#1877F2] p-3 text-white'>
               <Facebook size={24} />
             </Link>
-            <Link
-              href='#'
+            {/* <Link
+              href={globalState?.webConfig?.socialMedia?.Instagram || '*'}
               className='rounded-full bg-gradient-to-br from-[#fa7e1e] via-[#d62976] to-[#962fbf] p-3 text-white'>
               <Instagram size={24} />
-            </Link>
+            </Link> */}
             <Link
-              href='#'
+              href={globalState?.webConfig?.socialMedia?.Phone || '*'}
               className='rounded-full bg-black p-3 text-white'>
               <svg
                 width='24'
@@ -178,7 +48,7 @@ export default function Footer() {
               </svg>
             </Link>
             <Link
-              href='#'
+              href={globalState?.webConfig?.socialMedia?.Youtube || '*'}
               className='rounded-full bg-[#25D366] p-3 text-white'>
               <svg
                 width='24'
@@ -189,7 +59,7 @@ export default function Footer() {
               </svg>
             </Link>
             <Link
-              href='#'
+              href={globalState?.webConfig?.socialMedia?.Facebook || '*'}
               className='rounded-full bg-[#FF0000] p-3 text-white'>
               <Youtube size={24} />
             </Link>

@@ -1,95 +1,131 @@
-import React, { useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { ChevronLeft, ChevronRight, CheckCircle2, Clock, Loader } from 'lucide-react';
 import { useRouter } from 'next/router';
-
-const campaigns = [
-  {
-    id: 1,
-    title: 'Sedekah Subuh, Awali Hari Dengan Amalan Baik',
-    image: 'https://via.placeholder.com/400x200',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 2.150.000',
-    target: 'Rp 5.000.000',
-    progress: 43,
-    verified: true,
-  },
-  {
-    id: 2,
-    title: 'Bantu Bu Munawaroh Dapatkan Kaki Palsu',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 225.000',
-    target: 'Rp 1.000.000',
-    progress: 22,
-    verified: true,
-  },
-  {
-    id: 3,
-    title: 'Bantu Pembangunan Masjid Al-Ikhlas',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 1.750.000',
-    target: 'Rp 3.000.000',
-    progress: 58,
-    verified: true,
-  },
-  {
-    id: 4,
-    title: 'Bantu Anak Yatim Mendapatkan Pendidikan',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    raised: 'Rp 3.500.000',
-    target: 'Rp 10.000.000',
-    progress: 35,
-    verified: true,
-  },
-];
-
-const createSlug = (title) => {
-  return title
-    .toLowerCase()
-    .replace(/ /g, '-')
-    .replace(/[^\w-]+/g, '');
-};
+import { Card } from '@/components/ui/card';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { differenceInDays } from 'date-fns';
+import useUserStore from '@/hooks/zustand';
+import { LoadingScreen } from '../loading/loadingScreen';
 
 const CampaignCard = ({ campaign }) => {
   const router = useRouter();
+  const [exchangeRates, setExchangeRates] = useState({});
+  const globalState = useUserStore();
+
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await axios.get('/api/public/exchangeRate');
+      setExchangeRates(response.data.rates || {});
+    } catch (error) {
+      console.error('Failed to fetch exchange rates:', error.message);
+    }
+  };
 
   const handleCardClick = () => {
-    const slug = createSlug(campaign.title);
-    router.push(`${router.asPath}/campaign/${slug}`);
+    const slug = campaign.id;
+    router.push(`/campaign/${slug}`);
   };
+
+  // const formatRupiah = (number) => {
+  //   return new Intl.NumberFormat('id-ID', {
+  //     style: 'currency',
+  //     currency: 'IDR',
+  //     minimumFractionDigits: 0,
+  //   }).format(number);
+  // };
+
+  const formatCurrency = (amount, location) => {
+    const currencyMap = {
+      Indonesia: 'IDR',
+      Malaysia: 'MYR',
+      Amerika: 'USD',
+      // Tambahkan negara lainnya jika diperlukan
+    };
+
+    const currencyCode = currencyMap[location] || 'IDR';
+    const rate = exchangeRates[currencyCode] || 1;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount * rate);
+  };
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
+
+  const progressPercentage = (campaign.amount_total / campaign.target_amount) * 100;
 
   return (
     <div
-      onClick={handleCardClick}
-      className='block cursor-pointer'>
-      <div className='bg-white rounded-xl overflow-hidden shadow-lg'>
-        <div className='relative'>
-          <Image
-            src={campaign.image}
-            alt={campaign.title}
-            width={400}
-            height={200}
-            className='w-full h-48 object-cover'
-          />
-          {campaign.verified && <div className='absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded'>Verified</div>}
+      className='bg-white rounded-lg overflow-hidden shadow-sm h-full cursor-pointer'
+      onClick={handleCardClick}>
+      <div className='h-[140px] overflow-hidden'>
+        <img
+          src={campaign?.images?.[0]}
+          alt={campaign.name}
+          className='w-full h-full object-cover'
+        />
+      </div>
+
+      <div className='p-4 space-y-3'>
+        {/* <h2 className='font-medium text-[15px] leading-tight text-gray-900 line-clamp-2 min-h-[40px]'>{campaign.name}</h2> */}
+        <h2
+          className='font-medium text-[15px] leading-tight line-clamp-2 min-h-[40px]'
+          style={{
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundImage: 'linear-gradient(120deg, #4CAF50, #2196F3)',
+          }}>
+          {campaign.name}
+        </h2>
+
+        <div className='flex items-center gap-1.5'>
+          <span className='text-gray-600 text-sm truncate max-w-[200px]'>{campaign?.vendor}</span>
+          <CheckCircle2 className='w-4 h-4 text-blue-500 flex-shrink-0' />
         </div>
-        <div className='p-4'>
-          <h3 className='font-semibold text-gray-800 mb-2 line-clamp-2'>{campaign.title}</h3>
-          <p className='text-sm text-gray-600 mb-3'>{campaign.organization}</p>
-          <div className='space-y-2'>
-            <div className='flex justify-between text-sm'>
-              <span className='font-semibold text-orange-500'>{campaign.raised}</span>
-              <span className='text-gray-500'>terkumpul</span>
-            </div>
-            <div className='w-full bg-gray-200 rounded-full h-2'>
-              <div
-                className='bg-orange-500 h-2 rounded-full'
-                style={{ width: `${campaign.progress}%` }}
-              />
-            </div>
+
+        <div className='space-y-2'>
+          <div className='flex items-center justify-between'>
+            <span className='text-gray-500 text-sm'>terkumpul</span>
+          </div>
+          <div className='flex items-center justify-between'>
+            <span className='text-orange-500 font-bold text-base'>
+              {/* {formatRupiah(campaign?.amount_total)} */}
+              {formatCurrency(campaign.amount_total, globalState?.location)}
+            </span>
+          </div>
+
+          <div className='w-full bg-gray-100 rounded-full h-1'>
+            <div
+              className='bg-orange-500 h-1 rounded-full transition-all duration-300'
+              style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+            />
+          </div>
+        </div>
+
+        <div className='space-y-2'>
+          <div className='flex -space-x-2 min-h-[24px]'>
+            {campaign?.orders?.slice(0, 4).map((donor, index) => (
+              <Avatar
+                key={index}
+                className='w-6 h-6 border-2 border-white'>
+                <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor?.contact_information?.name?.[0]}</AvatarFallback>
+              </Avatar>
+            ))}
+            {campaign?.orders?.length > 4 && (
+              <Avatar className='w-6 h-6 border-2 border-white'>
+                <AvatarFallback className='bg-orange-500 text-[10px] text-white'>+{campaign.orders.length - 4}</AvatarFallback>
+              </Avatar>
+            )}
+          </div>
+          <div className='flex items-center gap-1 text-sm text-gray-500'>
+            <Clock className='w-4 h-4' />
+            <span>{campaign?.endAt?._seconds ? `${differenceInDays(new Date(campaign.endAt._seconds * 1000), new Date())} hari lagi` : '∞'}</span>
           </div>
         </div>
       </div>
@@ -97,8 +133,17 @@ const CampaignCard = ({ campaign }) => {
   );
 };
 
-const CardSlider = ({ Header, BgColour }) => {
+const CardSlider = ({ Header, Data, campaignsSelected }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [campaigns, setCampaigns] = useState(campaignsSelected || []);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (campaignsSelected?.campaigns) {
+      setCampaigns(campaignsSelected.campaigns);
+    }
+  }, [campaignsSelected]);
+
   const totalSlides = Math.ceil(campaigns.length / 2);
 
   const nextSlide = () => {
@@ -110,69 +155,68 @@ const CardSlider = ({ Header, BgColour }) => {
   };
 
   return (
-    <div className={`p-8 ${BgColour}`}>
-      <div className='max-w-6xl mx-auto'>
-        <h2 className='text-2xl md:text-3xl font-bold text-white mb-6 text-center'>{Header}</h2>
+    <div
+      className='p-8'
+      style={{
+        backgroundImage: Data?.image ? `url(${encodeURI(Data?.image?.trim())})` : 'linear-gradient(to right, #1e3a8a, #2563eb)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }}>
+      <div className='max-w-[600px] mx-auto'>
+        <h2
+          className='text-2xl md:text-3xl font-bold mb-6 text-center'
+          style={{
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundImage: 'linear-gradient(120deg, #3b82f6, #06b6d4)',
+          }}>
+          {Header}
+        </h2>
+
         <div className='relative'>
           <div className='overflow-hidden'>
             <div
               className='flex transition-transform duration-300 ease-in-out'
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-              {Array.from({ length: totalSlides }).map((_, index) => (
-                <div
-                  key={index}
-                  className='w-full flex-shrink-0 flex gap-6'>
-                  {campaigns.slice(index * 2, index * 2 + 2).map((campaign) => (
-                    <div
-                      key={campaign.id}
-                      className='w-1/2'>
-                      <CampaignCard campaign={campaign} />
-                    </div>
-                  ))}
-                </div>
-              ))}
+              {totalSlides > 0 ? (
+                Array.from({ length: totalSlides }).map((_, index) => (
+                  <div
+                    key={index}
+                    className='w-full flex-shrink-0 grid grid-cols-2 gap-4'>
+                    {campaigns.slice(index * 2, index * 2 + 2).map((campaign) => (
+                      <CampaignCard
+                        key={campaign.id}
+                        campaign={campaign}
+                      />
+                    ))}
+                  </div>
+                ))
+              ) : (
+                <div className='w-full text-center py-4 text-gray-500'>No articles available</div>
+              )}
             </div>
           </div>
+
           <button
             onClick={prevSlide}
-            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 bg-white rounded-full p-2 shadow-md'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-              className='w-6 h-6'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M15 19l-7-7 7-7'
-              />
-            </svg>
+            className='absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors border-none focus:outline-none'
+            aria-label='Previous slide'>
+            <ChevronLeft className='w-6 h-6' />
           </button>
+
           <button
             onClick={nextSlide}
-            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 bg-white rounded-full p-2 shadow-md'>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
-              className='w-6 h-6'>
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M9 5l7 7-7 7'
-              />
-            </svg>
+            className='absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4  rounded-full p-2 shadow-md hover:bg-gray-50 transition-colors  border-none focus:outline-none'
+            aria-label='Next slide'>
+            <ChevronRight className='w-6 h-6' />
           </button>
         </div>
+
         <div className='flex justify-center gap-2 mt-6'>
           {Array.from({ length: totalSlides }).map((_, index) => (
             <div
               key={index}
-              className={`w-2 h-2 rounded-full ${currentSlide === index ? 'bg-white' : 'bg-white opacity-50'}`}
+              className={`w-2 h-2 rounded-full transition-all duration-300 ${currentSlide === index ? 'bg-white' : 'bg-white opacity-50'}`}
             />
           ))}
         </div>

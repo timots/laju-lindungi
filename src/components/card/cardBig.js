@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { User } from 'lucide-react';
+import { format } from 'date-fns';
 
 const articles = [
   {
@@ -65,57 +66,53 @@ function ArticleCard({ article }) {
     <div className='bg-white rounded-2xl overflow-hidden shadow-sm mb-4'>
       <Link href={`/artikel/${article.slug}`}>
         <div className='relative'>
-          <Image
-            src={article.image}
+          <img
+            src={article.thumbnail_image || 'https://picsum.photos/600/400'}
             alt={article.title}
             width={600}
             height={400}
             className='w-full h-48 object-cover'
           />
-          <span className={`absolute top-4 right-4 ${article.category === 'ARTIKEL' ? 'bg-emerald-500' : 'bg-emerald-500'} text-white text-xs px-4 py-1 rounded-full`}>{article.category}</span>
+          <span className={`absolute top-4 right-4 ${article.category === 'ARTIKEL' ? 'bg-emerald-500' : 'bg-emerald-500'} text-white text-xs px-4 py-1 rounded-full`}>{article.category || 'ARTIKEL'}</span>
         </div>
       </Link>
       <div className='p-4'>
-        <div className='flex items-center mb-4'>
-          <div className='w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center'>
-            <User className='w-4 h-4 text-gray-500' />
-          </div>
-        </div>
         <Link href={`/artikel/${article.slug}`}>
           <h2 className='text-lg font-semibold text-orange-500 hover:text-orange-600 mb-2'>{article.title}</h2>
         </Link>
         <Link
-          href={`/artikel/${article.slug}`}
+          href={`/article/${article.id}`}
           className='text-emerald-500 text-sm font-medium hover:text-emerald-600'>
           READ MORE »
         </Link>
         <div className='mt-4 text-sm text-gray-500 flex items-center justify-between'>
-          <span>{article.date}</span>
-          <span>{article.comments}</span>
+          {/* <span>{article.createdAt}</span> */}
+          <span>{format(new Date(article?.createdAt._seconds * 1000), 'MMMM d, yyyy')}</span>
+          <span>{article.comments || 'Tidak ada komentar'}</span>
         </div>
       </div>
     </div>
   );
 }
 
-export default function CardBig() {
+export default function CardBig(articleCard) {
   const [visibleArticles, setVisibleArticles] = useState(5);
 
   const loadMore = () => {
-    setVisibleArticles((prev) => Math.min(prev + 5, articles.length));
+    setVisibleArticles((prev) => Math.min(prev + 5, articleCard?.articleCard?.length));
   };
 
   return (
     <div className='px-4 py-4'>
       <div className='space-y-4'>
-        {articles.slice(0, visibleArticles).map((article) => (
+        {articleCard?.articleCard?.slice(0, visibleArticles).map((article) => (
           <ArticleCard
             key={article.id}
             article={article}
           />
         ))}
       </div>
-      {visibleArticles < articles.length && (
+      {visibleArticles < articleCard?.articleCard?.length && (
         <div className='mt-6 text-center'>
           <button
             onClick={loadMore}

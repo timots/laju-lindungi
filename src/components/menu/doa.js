@@ -36,27 +36,37 @@ const prayers = [
   },
 ];
 
-export default function PrayerList() {
+export default function PrayerList(data) {
   const [visiblePrayers, setVisiblePrayers] = useState(5);
+  const orders = data?.data?.orders;
+
+  function formatDateToIndonesian(createdAt) {
+    const date = new Date(createdAt._seconds * 1000); // Konversi detik ke milidetik
+    return date.toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+  }
 
   const loadMore = () => {
-    setVisiblePrayers((prev) => Math.min(prev + 5, prayers.length));
+    setVisiblePrayers((prev) => Math.min(prev + 5, orders.length));
   };
 
   return (
     <div className='w-full bg-gray-50 p-4 rounded-lg'>
-      <h2 className='text-xl font-bold text-gray-800 mb-4'>Doa-doa orang baik (558)</h2>
+      <h2 className='text-xl font-bold text-gray-800 mb-4'>Doa-doa orang baik ({orders?.length || '0'})</h2>
 
       <div className='space-y-4'>
-        {prayers.slice(0, visiblePrayers).map((prayer) => (
+        {orders.slice(0, visiblePrayers).map((prayer, index) => (
           <div
-            key={prayer.id}
+            key={index}
             className='bg-white rounded-lg p-4 shadow-sm'>
             <div className='flex justify-between items-start mb-2'>
-              <span className='font-medium text-gray-800'>{prayer.name}</span>
-              <span className='text-sm text-gray-500'>{prayer.timeAgo}</span>
+              <span className='font-medium text-gray-800'>{prayer?.contact_information?.name}</span>
+              <span className='text-sm text-gray-500'> {formatDateToIndonesian(prayer.createdAt)}</span>
             </div>
-            <p className='text-gray-600 mb-3'>{prayer.message}</p>
+            <p className='text-gray-600 mb-3'>{prayer?.additional_data?.msg}</p>
             <div className='flex items-center gap-2'>
               <div className='w-8 h-8 rounded-full bg-red-500 flex items-center justify-center'>
                 <Heart className='w-4 h-4 text-white' />

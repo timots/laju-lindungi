@@ -1,152 +1,161 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { CheckCircle2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { CheckCircle2, Clock } from 'lucide-react';
 import { useRouter } from 'next/router';
-
-const allCampaigns = [
-  {
-    id: 1,
-    title: 'Hebatkan Aksi Nyata dengan Infaq Gandum Palestina',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    collected: 'Rp 158.362.594',
-    progress: 75,
-    donors: ['R', 'R', 'Z', 'K'],
-    donorCount: '2K+',
-  },
-  {
-    id: 2,
-    title: 'Sedekah Air Untuk Saudara Palestina',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    collected: 'Rp 26.249.350',
-    progress: 45,
-    donors: ['M', 'E', 'D'],
-    donorCount: '244',
-  },
-  {
-    id: 3,
-    title: 'Bantu Hunian Darurat Palestina',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    collected: 'Rp 160.000',
-    progress: 15,
-    donors: ['H', 'R', 'J'],
-    donorCount: '16+',
-  },
-  {
-    id: 4,
-    title: 'Bangun MCK Untuk Pelosok Negeri',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    collected: 'Rp 120.000',
-    progress: 25,
-    donors: ['D', 'G', 'I'],
-    donorCount: '',
-  },
-  {
-    id: 5,
-    title: 'Bersama Bantu Penuhi Kebutuhan Beras Santri',
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    collected: 'Rp 135.043',
-    progress: 30,
-    donors: ['S', 'H', 'Z'],
-    donorCount: '8+',
-  },
-].concat(
-  Array.from({ length: 15 }, (_, i) => ({
-    id: i + 6,
-    title: `Campaign ${i + 6}`,
-    image: '/placeholder.svg?height=200&width=400',
-    organization: 'Yayasan Langkah Maju Peduli',
-    collected: `Rp ${Math.floor(Math.random() * 1000000)}`,
-    progress: Math.floor(Math.random() * 100),
-    donors: ['A', 'B', 'C'],
-    donorCount: `${Math.floor(Math.random() * 100)}+`,
-  }))
-);
+import axios from 'axios';
+import { differenceInDays } from 'date-fns';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import useUserStore from '@/hooks/zustand';
+import { LoadingScreen } from '../loading/loadingScreen';
 
 function CampaignCard({ campaign }) {
   const router = useRouter();
+  const [exchangeRates, setExchangeRates] = useState({});
+  const globalState = useUserStore();
 
-  const createSlug = (title) => {
-    return title
-      .toLowerCase()
-      .replace(/ /g, '-')
-      .replace(/[^\w-]+/g, '');
+  const fetchExchangeRates = async () => {
+    try {
+      const response = await axios.get('/api/public/exchangeRate');
+      setExchangeRates(response.data.rates || {});
+    } catch (error) {
+      console.error('Failed to fetch exchange rates:', error.message);
+    }
   };
-  console.log(router, 'ini router');
 
   const handleCardClick = () => {
-    const slug = createSlug(campaign.title);
+    // const slug = createSlug(campaign.name);
+    const slug = campaign?.id;
     router.push(`${router.asPath}/${slug}`);
   };
 
+  const formatCurrency = (amount, location) => {
+    const currencyMap = {
+      Indonesia: 'IDR',
+      Malaysia: 'MYR',
+      Amerika: 'USD',
+    };
+
+    const currencyCode = currencyMap[location] || 'IDR';
+    const rate = exchangeRates[currencyCode] || 1;
+
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount * rate);
+  };
+
+  useEffect(() => {
+    fetchExchangeRates();
+  }, []);
+
+  const progressPercentage = (campaign.amount_total / campaign.target_amount) * 100;
+
   return (
-    <div
-      className='bg-white rounded-lg shadow-sm overflow-hidden p-4 cursor-pointer'
+    <Card
+      className='overflow-hidden hover:shadow-md transition-shadow cursor-pointer bg-white'
       onClick={handleCardClick}>
-      <div className='flex gap-4'>
-        <div className='w-1/3 flex-shrink-0'>
-          <Image
-            src={campaign.image}
-            alt={campaign.title}
-            width={400}
-            height={200}
-            className='w-full h-auto rounded-lg'
+      <div className='flex gap-4 p-4'>
+        <div className='w-[120px] h-[120px] flex-shrink-0'>
+          <img
+            src={campaign.images?.[0]}
+            alt={campaign.name}
+            className='w-full h-full object-cover rounded-lg'
           />
         </div>
-        <div className='w-2/3 flex flex-col'>
-          <h3 className='font-bold text-gray-800 mb-1'>{campaign.title}</h3>
-          <div className='flex items-center gap-1 mb-2'>
-            <span className='text-gray-600 text-sm'>{campaign.organization}</span>
+        <div className='flex-1 min-w-0'>
+          <h3 className='font-semibold text-base text-gray-900 mb-1 line-clamp-2'>{campaign.name || 'Item Name Not Seet'}</h3>
+          <div className='flex items-center gap-1 mb-3'>
+            <span className='text-gray-600 text-sm'>{campaign.vendor || ' vendor not set'}</span>
             <CheckCircle2 className='w-4 h-4 text-blue-500' />
           </div>
-          <div className='mt-auto'>
-            <div className='flex justify-between items-center mb-1'>
-              <span className='font-bold text-orange-500'>{campaign.collected}</span>
+          <div className='space-y-2'>
+            <div className='flex items-baseline justify-between'>
+              <span className='font-bold text-orange-500 text-lg'>{formatCurrency(campaign.amount_total, globalState?.location)}</span>
               <span className='text-sm text-gray-500'>terkumpul</span>
             </div>
-            <div className='w-full bg-gray-200 rounded-full h-1.5 mb-3'>
-              <div
-                className='bg-orange-500 h-1.5 rounded-full'
-                style={{ width: `${campaign.progress}%` }}
-              />
-            </div>
-            <div className='flex items-center justify-between'>
+            <Progress
+              value={progressPercentage}
+              className='h-2 bg-gray-100'
+              indicatorClassName='bg-orange-500'
+            />
+            <div className='flex items-center justify-between pt-1'>
               <div className='flex -space-x-2'>
-                {campaign.donors.map((donor, index) => (
-                  <div
+                {campaign.orders?.slice(0, 4).map((donor, index) => (
+                  <Avatar
                     key={index}
-                    className='w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-medium ring-2 ring-white'>
-                    {donor}
-                  </div>
+                    className='w-6 h-6 border-2 border-white'>
+                    <AvatarFallback className='bg-orange-500 text-[10px] text-white'>{donor.contact_information?.name?.[0]?.toUpperCase()}</AvatarFallback>
+                  </Avatar>
                 ))}
-                {campaign.donorCount && <div className='w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs font-medium ring-2 ring-white'>{campaign.donorCount}</div>}
+                {campaign.orders?.length > 4 && (
+                  <Avatar className='w-6 h-6 border-2 border-white'>
+                    <AvatarFallback className='bg-orange-500 text-[10px] text-white'>+{campaign.orders.length - 4}</AvatarFallback>
+                  </Avatar>
+                )}
               </div>
-              <button className='text-gray-400'>∞</button>
+              <div className='flex items-center gap-1 text-sm text-gray-500'>
+                <Clock className='w-4 h-4' />
+                <span>{campaign?.endAt?._seconds ? `${differenceInDays(new Date(campaign.endAt._seconds * 1000), new Date())} hari lagi` : '∞'}</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }
 
-export default function CampaignListCard() {
+function CampaignListCard() {
   const [visibleCampaigns, setVisibleCampaigns] = useState(5);
+  const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchCampaignData = async () => {
+    try {
+      const requestData = {
+        companyId: 'vrWcmcy7wEw1BUkQP3l9',
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+      };
+
+      const response = await axios.post('/api/v1/article/read', requestData);
+      return response.data;
+    } catch (error) {
+      throw new Error(error.response?.data?.message || 'Gagal memuat data');
+    }
+  };
+
+  useEffect(() => {
+    const loadCampaigns = async () => {
+      setLoading(true);
+      try {
+        const data = await fetchCampaignData();
+        setCampaigns(data?.data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCampaigns();
+  }, []);
+
+  // if (loading) return <div className='text-center py-8'>Loading...</div>;
+  if (loading) return <LoadingScreen />;
+  if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
 
   const loadMore = () => {
-    setVisibleCampaigns((prev) => Math.min(prev + 5, allCampaigns.length));
+    setVisibleCampaigns((prev) => Math.min(prev + 5, campaigns.length));
   };
 
   return (
-    <div className='w-full max-w-md mx-auto px-4 py-6'>
+    <div className='w-full max-w-2xl mx-auto px-4 py-6'>
       <div className='space-y-4'>
-        {allCampaigns.slice(0, visibleCampaigns).map((campaign) => (
+        {campaigns.slice(0, visibleCampaigns).map((campaign) => (
           <CampaignCard
             key={campaign.id}
             campaign={campaign}
@@ -154,7 +163,7 @@ export default function CampaignListCard() {
         ))}
       </div>
 
-      {visibleCampaigns < allCampaigns.length && (
+      {visibleCampaigns < campaigns.length && (
         <div className='mt-6 text-center'>
           <button
             onClick={loadMore}
@@ -166,3 +175,5 @@ export default function CampaignListCard() {
     </div>
   );
 }
+
+export default CampaignListCard;
