@@ -16,7 +16,7 @@ function PaymentPage() {
   }, [router.isReady, router.query]);
 
   return (
-    <main>
+    <main className='mb-4'>
       <Payment clientSecret={clientSecret} />
     </main>
   );

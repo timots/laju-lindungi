@@ -16,10 +16,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  // const baseUrl = 'https://deoapp.com/api/public/service/payment/stripe/create-orders';
-  // const baseUrl =
-  //   'https://deoapp.com/api/public/platform/laju-peduli/create-invoice';
-  const baseUrl = 'http://172.16.21.197:3000//api/public/platform/laju-peduli/create-invoice';
+  //   const baseUrl = 'https://deoapp.com/api/public/platform/laju-peduli/client-order';
+  const baseUrl = 'http:///172.16.21.197:3000/api/public/platform/laju-peduli/client-order';
 
   const requestData = req.body;
 
@@ -29,8 +27,6 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json',
       },
     });
-
-    console.log(response, 'responseeeeeIt');
 
     res.status(200).json(response.data);
   } catch (error) {
