@@ -64,7 +64,7 @@ const articles = [
 function ArticleCard({ article }) {
   return (
     <div className='bg-white rounded-2xl overflow-hidden shadow-sm mb-4'>
-      <Link href={`/artikel/${article.slug}`}>
+      <Link href={`/article/${article.id}`}>
         <div className='relative'>
           <img
             src={article.thumbnail_image || 'https://picsum.photos/600/400'}
