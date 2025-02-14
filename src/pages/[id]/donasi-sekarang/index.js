@@ -123,7 +123,9 @@ export default function DonationPage() {
   };
 
   const addCustomVariantAmount = (id) => {
-    const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.selectVariantButton || 'initiate_checkout';
+    const paymentButtonEvent =
+      globalState?.webConfig?.aditionalDataPixels?.selectVariantButton ||
+      'initiate_checkout';
 
     trackPixelEvents({
       eventName: paymentButtonEvent,
@@ -155,7 +157,9 @@ export default function DonationPage() {
   };
 
   const addItem = (id, price) => {
-    const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.selectVariantButton || 'initiate_checkout';
+    const paymentButtonEvent =
+      globalState?.webConfig?.aditionalDataPixels?.selectVariantButton ||
+      'initiate_checkout';
 
     trackPixelEvents({
       eventName: paymentButtonEvent,
@@ -263,7 +267,10 @@ export default function DonationPage() {
             phone_number: phoneNumber,
           },
           items: items,
-          additional_data: { msg: message },
+          additional_data: {
+            msg: message,
+            domain: window.location.origin,
+          },
           currency: globalState?.currency,
           region: globalState?.countryCode,
           automatic_payment_methods: true,
@@ -272,7 +279,9 @@ export default function DonationPage() {
         },
       };
 
-      const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.paymentButton || 'initiate_checkout';
+      const paymentButtonEvent =
+        globalState?.webConfig?.aditionalDataPixels?.paymentButton ||
+        'initiate_checkout';
 
       trackPixelEvents({
         eventName: paymentButtonEvent,
@@ -286,7 +295,10 @@ export default function DonationPage() {
         dynamicTagPixels: paymentButtonEvent,
       });
 
-      const response = await axios.post('/api/public/payment/stripe/create-payment', data);
+      const response = await axios.post(
+        '/api/public/payment/stripe/create-payment',
+        data
+      );
 
       console.log(response, 'responseeee');
 
@@ -319,7 +331,9 @@ export default function DonationPage() {
   }, [router?.query?.id]);
 
   useEffect(() => {
-    const checkoutPageEvent = globalState?.webConfig?.aditionalDataPixels?.checkoutPage || 'InitiateCheckout';
+    const checkoutPageEvent =
+      globalState?.webConfig?.aditionalDataPixels?.checkoutPage ||
+      'InitiateCheckout';
 
     // Track pixel events when page loads
     trackPixelEvents({
@@ -335,72 +349,86 @@ export default function DonationPage() {
 
   if (loading) return <LoadingScreen />;
 
-  if (error) return <div className='text-center py-8 text-red-500'>Error: {error}</div>;
+  if (error)
+    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className='sticky top-0 bg-white border-b z-10'>
-        <div className='max-w-md mx-auto px-4 h-14 flex items-center'>
-          <button
-            onClick={() => router.back()}
-            className='p-2 -ml-2'>
-            <ChevronLeft className='w-6 h-6' />
+      <div className="sticky top-0 bg-white border-b z-10">
+        <div className="max-w-md mx-auto px-4 h-14 flex items-center">
+          <button onClick={() => router.back()} className="p-2 -ml-2">
+            <ChevronLeft className="w-6 h-6" />
           </button>
-          <h1 className='ml-2 text-lg font-medium truncate'>{product?.name}.</h1>
+          <h1 className="ml-2 text-lg font-medium truncate">
+            {product?.name}.
+          </h1>
         </div>
       </div>
 
-      <div className='max-w-md mx-auto px-4 py-4'>
+      <div className="max-w-md mx-auto px-4 py-4">
         {/* Campaign Banner */}
-        <div className='flex flex-col sm:flex-row gap-4 mb-6 bg-white rounded-lg p-4 shadow-sm'>
-          <div className='w-full sm:w-[120px] h-[120px] flex-shrink-0'>
+        <div className="flex flex-col sm:flex-row gap-4 mb-6 bg-white rounded-lg p-4 shadow-sm">
+          <div className="w-full sm:w-[120px] h-[120px] flex-shrink-0">
             <img
               src={product?.images?.[0]}
-              alt='Campaign Banner'
-              className='w-full h-full object-cover rounded-lg'
+              alt="Campaign Banner"
+              className="w-full h-full object-cover rounded-lg"
             />
           </div>
-          <div className='flex flex-col justify-center'>
-            <h2 className='text-lg font-semibold text-[#000000] line-clamp-2'>{product?.name}</h2>
+          <div className="flex flex-col justify-center">
+            <h2 className="text-lg font-semibold text-[#000000] line-clamp-2">
+              {product?.name}
+            </h2>
           </div>
         </div>
 
         {/* Donation Options */}
-        <div className='space-y-4 mb-6'>
+        <div className="space-y-4 mb-6">
           {variants.map((variant) => (
             <div
               key={variant.id}
-              className='bg-white rounded-lg p-4 flex items-center shadow-sm'>
+              className="bg-white rounded-lg p-4 flex items-center shadow-sm"
+            >
               <img
                 src={variant.image}
                 alt={variant.name}
                 width={100}
                 height={100}
-                className='w-24 h-24 rounded-lg object-cover'
+                className="w-24 h-24 rounded-lg object-cover"
               />
-              <div className='ml-4 flex-1'>
-                <h3 className='font-medium'>{variant.name}</h3>
-                <p className='text-gray-900 font-medium mt-1'>{formatPrice(globalState?.currency || 'IDR', variant.regular_price_int)}</p>
+              <div className="ml-4 flex-1">
+                <h3 className="font-medium">{variant.name}</h3>
+                <p className="text-gray-900 font-medium mt-1">
+                  {formatPrice(
+                    globalState?.currency || 'IDR',
+                    variant.regular_price_int
+                  )}
+                </p>
 
                 {quantities[variant.id] > 0 ? (
-                  <div className='flex items-center mt-2'>
+                  <div className="flex items-center mt-2">
                     <button
                       onClick={() => updateQuantity(variant.id, -1)}
-                      className='px-3 py-1 border rounded-lg'>
+                      className="px-3 py-1 border rounded-lg"
+                    >
                       -
                     </button>
-                    <span className='mx-2'>{quantities[variant.id] || 0}</span>
+                    <span className="mx-2">{quantities[variant.id] || 0}</span>
                     <button
                       onClick={() => updateQuantity(variant.id, 1)}
-                      className='px-3 py-1 border rounded-lg'>
+                      className="px-3 py-1 border rounded-lg"
+                    >
                       +
                     </button>
                   </div>
                 ) : (
                   <button
-                    onClick={() => addItem(variant.id, variant?.regular_price_int)}
-                    className='bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors mt-2'>
+                    onClick={() =>
+                      addItem(variant.id, variant?.regular_price_int)
+                    }
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors mt-2"
+                  >
                     + Add
                   </button>
                 )}
@@ -411,35 +439,41 @@ export default function DonationPage() {
           {customVariants.map((variant) => (
             <div
               key={variant.id}
-              className='bg-white rounded-lg p-4 flex items-center shadow-sm'>
+              className="bg-white rounded-lg p-4 flex items-center shadow-sm"
+            >
               <img
                 src={variant.image}
                 alt={variant.name}
                 width={100}
                 height={100}
-                className='w-24 h-24 rounded-lg object-cover'
+                className="w-24 h-24 rounded-lg object-cover"
               />
-              <div className='ml-4 flex-1'>
-                <h3 className='font-medium'>{variant.name}</h3>
+              <div className="ml-4 flex-1">
+                <h3 className="font-medium">{variant.name}</h3>
 
                 {showInputPrice ? (
-                  <div className='mt-3'>
-                    <div className='relative'>
-                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-500'>{globalState?.currency}</span>
+                  <div className="mt-3">
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        {globalState?.currency}
+                      </span>
                       <input
-                        type='number'
-                        min='0'
-                        placeholder='Masukkan Nominal Yang Di Inginkan'
+                        type="number"
+                        min="0"
+                        placeholder="Masukkan Nominal Yang Di Inginkan"
                         value={customVariantAmounts[variant.id] || ''}
-                        onChange={(e) => handleCustomAmountChange(variant.id, e.target.value)}
-                        className='w-full pl-12 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600'
+                        onChange={(e) =>
+                          handleCustomAmountChange(variant.id, e.target.value)
+                        }
+                        className="w-full pl-12 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
                       />
                     </div>
                   </div>
                 ) : (
                   <button
                     onClick={() => addCustomVariantAmount(variant.id)}
-                    className='bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors mt-2'>
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors mt-2"
+                  >
                     + Add
                   </button>
                 )}
@@ -449,7 +483,7 @@ export default function DonationPage() {
         </div>
 
         {/* Donation Form */}
-        <div className='bg-white rounded-lg p-4 shadow-sm'>
+        <div className="bg-white rounded-lg p-4 shadow-sm">
           {/* <div className='mb-4'>
             <p className='mb-2'>Sapaan :</p>
             <div className='flex gap-2'>
@@ -464,79 +498,99 @@ export default function DonationPage() {
             </div>
           </div> */}
 
-          <div className='space-y-4'>
+          <div className="space-y-4">
             <input
-              type='text'
-              placeholder='Nama Lengkap'
+              type="text"
+              placeholder="Nama Lengkap"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
-            <div className='flex items-center justify-between'>
-              <span className='text-gray-600'>Sembunyikan nama saya (Hamba Allah)</span>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">
+                Sembunyikan nama saya (Hamba Allah)
+              </span>
               <button
                 onClick={() => setHideIdentity(!hideIdentity)}
-                className={`w-12 h-6 rounded-full transition-colors ${hideIdentity ? 'bg-blue-600' : 'bg-gray-200'}`}>
-                <div className={`w-5 h-5 rounded-full bg-white shadow transform transition-transform ${hideIdentity ? 'translate-x-6' : 'translate-x-1'}`} />
+                className={`w-12 h-6 rounded-full transition-colors ${
+                  hideIdentity ? 'bg-blue-600' : 'bg-gray-200'
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full bg-white shadow transform transition-transform ${
+                    hideIdentity ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
               </button>
             </div>
 
             <input
-              type='tel'
-              placeholder='No Whatsapp atau Handphone'
+              type="tel"
+              placeholder="No Whatsapp atau Handphone"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
-              type='email'
-              placeholder='Email (optional)'
+              type="email"
+              placeholder="Email (optional)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <textarea
-              placeholder='Tuliskan pesan atau doa disini (optional)'
+              placeholder="Tuliskan pesan atau doa disini (optional)"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}
-              className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
+              className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
 
-        <div className=' bottom-0 left-0 right-0 z-50'>
-          <div className='flex justify-center'>
+        <div className=" bottom-0 left-0 right-0 z-50">
+          <div className="flex justify-center">
             <button
               onClick={handleDonateNow}
               disabled={donationLoading}
-              className={`w-full max-w-md mx-auto py-4 rounded-lg font-medium mt-6 transition-colors ${donationLoading ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}>
+              className={`w-full max-w-md mx-auto py-4 rounded-lg font-medium mt-6 transition-colors ${
+                donationLoading
+                  ? 'bg-blue-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
+            >
               {donationLoading ? (
-                <span className='flex items-center justify-center'>
+                <span className="flex items-center justify-center">
                   <svg
-                    className='w-5 h-5 mr-2 text-blue-600 animate-spin'
-                    xmlns='http://www.w3.org/2000/svg'
-                    fill='none'
-                    viewBox='0 0 24 24'>
+                    className="w-5 h-5 mr-2 text-blue-600 animate-spin"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
-                      className='opacity-25'
-                      cx='12'
-                      cy='12'
-                      r='10'
-                      stroke='currentColor'
-                      strokeWidth='4'></circle>
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
                     <path
-                      className='opacity-75'
-                      fill='currentColor'
-                      d='M4 12a8 8 0 018-8v8z'></path>
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v8z"
+                    ></path>
                   </svg>
                 </span>
               ) : (
                 <>
-                  Sedekah Sekarang <span>{formatPrice(globalState?.currency || 'IDR', totalAmount)}</span>
+                  Sedekah Sekarang{' '}
+                  <span>
+                    {formatPrice(globalState?.currency || 'IDR', totalAmount)}
+                  </span>
                 </>
               )}
             </button>

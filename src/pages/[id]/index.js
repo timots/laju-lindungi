@@ -6,9 +6,9 @@ import CardSlider2 from '@/components/card/cardSlider2';
 
 export default function InfoPage() {
   return (
-    <div className='bg-gray-50'>
-      <Header />
-      <main className=' mt-16'>
+    <div className="bg-gray-50">
+      {/* <Header /> */}
+      <main className=" mt-16">
         <CampaignListCard />
         <CardSlider2 />
 
