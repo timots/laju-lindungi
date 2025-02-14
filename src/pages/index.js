@@ -25,35 +25,44 @@ export default function CharityHome() {
   const fetchSelectedCampaign = async () => {
     setLoadingSelectedCampaign(true);
     try {
-      const campaignsArray = [
-        { setter: setCampaignCard1, section: 'section1' },
-        { setter: setCampaignCard2, section: 'section2' },
-        { setter: setCampaignCard3, section: 'section3' },
-        { setter: setCampaignCard4, section: 'section4' },
-        { setter: setCampaignCard5, section: 'section5' },
-        { setter: setCampaignCard6, section: 'section6' },
-      ];
-
-      for (const { setter, section } of campaignsArray) {
-        const matchedSection = dynamicSection.find((sec) => sec.section === section);
-        if (matchedSection) {
-          const requestData = {
-            companyId: 'vrWcmcy7wEw1BUkQP3l9',
-            projectId: 'HWMHbyA6S12FXzVwcru7',
-            ...(matchedSection.tags && { tags: matchedSection.tags }),
-          };
-
-
-          const response = await axios.post('/api/v1/article/read', requestData);
-          if (response?.data?.data) {
-            setter({ ...matchedSection, article: response.data.data });
-          } else {
-            setter({ ...matchedSection, article: [] });
-          }
-        } else {
-          setter({ article: [] });
+      const allTags = dynamicSection.reduce((tags, section) => {
+        if (section.tags) {
+          tags.push(...section.tags);
         }
-      }
+        return tags;
+      }, []);
+
+      const uniqueTags = [...new Set(allTags)];
+      const response = await axios.post('/api/v1/article/read', {
+        companyId: 'vrWcmcy7wEw1BUkQP3l9',
+        projectId: 'HWMHbyA6S12FXzVwcru7',
+        tags: uniqueTags,
+      });
+
+      const allArticles = response?.data?.data || [];
+
+      const sectionSetters = {
+        section1: setCampaignCard1,
+        section2: setCampaignCard2,
+        section3: setCampaignCard3,
+        section4: setCampaignCard4,
+        section5: setCampaignCard5,
+        section6: setCampaignCard6,
+      };
+
+      // Distribute articles to their respective sections
+      dynamicSection.forEach((section) => {
+        const setter = sectionSetters[section.section];
+        if (setter) {
+          // Filter articles based on section tags
+          const sectionArticles = section.tags ? allArticles.filter((article) => article.tags && article.tags.some((tag) => section.tags.includes(tag))) : [];
+
+          setter({
+            ...section,
+            article: sectionArticles,
+          });
+        }
+      });
     } catch (error) {
       console.log(error.message);
     } finally {
@@ -67,7 +76,6 @@ export default function CharityHome() {
         companyId: 'vrWcmcy7wEw1BUkQP3l9',
         projectId: 'HWMHbyA6S12FXzVwcru7',
       });
-
 
       if (res?.data?.data.length > 0) {
         setArticleCard(res.data.data);
@@ -84,7 +92,6 @@ export default function CharityHome() {
       const res = await axios.post('/api/v1/categories/read', {
         projectId: 'HWMHbyA6S12FXzVwcru7',
       });
-
 
       if (res?.data?.data.length > 0) {
         setDynamicSection(res.data.data);
@@ -107,15 +114,23 @@ export default function CharityHome() {
     }
   }, [dynamicSection]);
 
+  // Find sections for each button
+  const findSectionByButton = (buttonNumber) => {
+    return dynamicSection.find((section) => section.section === `button${buttonNumber}`);
+  };
 
   if (loadingSelectedCampaign) return <LoadingScreen />;
   return (
     <div>
       <Header />
-
       <main className='mt-16'>
         <HeaderSlider campaignsSelected={campaignCard1?.article || []} />
-        <ProgramNavigation />
+        <ProgramNavigation
+          button1={findSectionByButton(1)}
+          button2={findSectionByButton(2)}
+          button3={findSectionByButton(3)}
+          button4={findSectionByButton(4)}
+        />
         <CardSlider
           Header={campaignCard2?.name || 'Section 2'}
           Data={campaignCard2 || null}
@@ -135,7 +150,6 @@ export default function CharityHome() {
           Header={campaignCard6?.name || 'Section 6'}
           articleCard={articleCard || []}
         />
-
         <Footer />
       </main>
     </div>
