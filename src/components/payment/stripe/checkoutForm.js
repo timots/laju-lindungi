@@ -26,7 +26,6 @@ export default function CheckoutForm() {
     }
   };
 
-  console.log(dataOrder, 'ini data order');
 
   const handleSubmit = async (e) => {
     e.preventDefault();

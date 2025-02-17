@@ -8,6 +8,11 @@ const resLang = {
         rekening: 'Rekening',
         User: 'Pengguna',
       },
+      tab: {
+        description: 'keterangan',
+        Information: 'Kabar',
+        Donation: 'Donatur',
+      },
 
       menu: {
         button1: 'donasi kemanusiaan',
@@ -46,6 +51,11 @@ const resLang = {
         rekening: 'Account',
         User: 'User',
       },
+      tab: {
+        description: 'Description',
+        Information: 'News',
+        Donation: 'Donor',
+      },
       menu: {
         button1: 'humanitarian donation',
         button2: 'regular charity',
@@ -81,6 +91,11 @@ const resLang = {
         Galang_dana: 'Ambil Dana',
         rekening: 'Akaun',
         User: 'Pengguna',
+      },
+      tab: {
+        description: 'keterangan',
+        Information: 'Berita',
+        Donation: 'Penderma',
       },
       menu: {
         button1: 'derma kemanusiaan',
@@ -118,6 +133,11 @@ const resLang = {
         Galang_dana: '筹款',
         rekening: '账户',
         User: '用户',
+      },
+      tab: {
+        description: '描述',
+        Information: '新闻',
+        Donation: '捐助者',
       },
       menu: {
         button1: '人道主义捐赠',
@@ -159,6 +179,11 @@ const resLang = {
         button2: 'الصدقة المنتظمة',
         button3: 'الزكاة',
         button4: 'جميع برامج الخير',
+      },
+      tab: {
+        description: 'وصف',
+        Information: 'أخبار',
+        Donation: 'المتبرع',
       },
       'title content': {
         footer: 'طرق الدفع',

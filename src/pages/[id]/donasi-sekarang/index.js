@@ -28,12 +28,6 @@ export default function DonationPage() {
   const [message, setMessage] = useState('');
   const [customVariantAmounts, setCustomVariantAmounts] = useState({});
 
-  useEffect(() => {
-    if (i18n.isInitialized) {
-      setLoading(false);
-    }
-  }, [i18n]);
-
   const formatPrice = (currency, amount) => {
     // Mapping for custom currency symbols
     const currencySymbols = {
@@ -58,67 +52,90 @@ export default function DonationPage() {
   };
 
   const handleGetVariants = async (id) => {
-    try {
-      if (!id) return;
+    if (!id) throw new Error('Product ID is required');
 
-      const country = globalState?.location?.toLowerCase() || '';
-      const response = await axios.post('/api/v1/variants/read', {
-        productId: id,
-        country,
-      });
-      return response.data;
-    } catch (error) {
-      console.error(error.message);
-      setError('Gagal memuat data kampanye.');
+    const country = globalState?.location?.toLowerCase() || '';
+    const response = await axios.post('/api/v1/variants/read', {
+      productId: id,
+      country,
+    });
+
+    if (!response.data) {
+      throw new Error('No variant data received');
     }
+
+    return response.data;
   };
 
   const handleGetCampaigns = async (id) => {
-    try {
-      if (!id) return;
-      const response = await axios.post('/api/v1/article/read', {
-        productId: id,
-      });
-      return response.data;
-    } catch (error) {
-      console.error(error.message);
-      setError('Gagal memuat data kampanye.');
+    if (!id) throw new Error('Product ID is required');
+
+    const response = await axios.post('/api/v1/article/read', {
+      productId: id,
+    });
+
+    if (!response.data) {
+      throw new Error('No campaign data received');
     }
+
+    return response.data;
   };
 
   const loadCampaigns = async () => {
     setLoading(true);
-    try {
-      const variants = await handleGetVariants(router?.query?.id);
-      const product = await handleGetCampaigns(router?.query?.id);
-      setProduct(product?.data || {});
+    setError(null);
 
-      const validVariants = [];
-      const customVariants = [];
+    try {
+      // Wait for both API calls to complete
+      const [variantsResponse, productResponse] = await Promise.all([handleGetVariants(router?.query?.id), handleGetCampaigns(router?.query?.id)]);
+
+      // Validate product data
+      if (!productResponse?.data) {
+        throw new Error('Invalid product data received');
+      }
+      setProduct(productResponse.data);
+
+      // Validate and process variants
+      const allVariants = variantsResponse?.data || [];
+      if (!Array.isArray(allVariants)) {
+        throw new Error('Invalid variants data received');
+      }
 
       // Split variants based on regular_price_int
-      (variants?.data || []).forEach((variant) => {
+      const regularVariants = [];
+      const customVariantsList = [];
+
+      allVariants.forEach((variant) => {
+        if (!variant || typeof variant.regular_price_int !== 'number') {
+          console.warn('Invalid variant data:', variant);
+          return;
+        }
+
         if (variant.regular_price_int === 0) {
-          customVariants.push(variant); // If regular_price_int is 0, add to customVariants
+          customVariantsList.push(variant);
         } else {
-          validVariants.push(variant); // Otherwise, add to validVariants
+          regularVariants.push(variant);
         }
       });
 
-      // Set the appropriate state
-      setVariants(validVariants);
-      setCustomVariants(customVariants);
+      // Set variants state
+      setVariants(regularVariants);
+      setCustomVariants(customVariantsList);
 
-      // Initialize quantities for valid variants
-      const initialQuantities = validVariants.reduce((acc, variant) => {
+      // Initialize quantities for regular variants
+      const initialQuantities = regularVariants.reduce((acc, variant) => {
         acc[variant.id] = 0;
         return acc;
       }, {});
       setQuantities(initialQuantities);
     } catch (err) {
-      console.error(err.message);
-    } finally {
-      setLoading(false);
+      console.error('Error loading campaign data:', err);
+      setError(err.message || 'Failed to load campaign data. Please try again.');
+      // Reset states on error
+      setVariants([]);
+      setCustomVariants([]);
+      setProduct({});
+      setQuantities({});
     }
   };
 
@@ -290,12 +307,6 @@ export default function DonationPage() {
 
       console.log(response, 'responseeee');
 
-      // if (response?.data?.status === true && response?.data?.data) {
-      //   window.open(response.data.data, '_blank');
-      // } else {
-      //   setError('Unable to process payment. Please try again.');
-      // }
-
       const clientSecret = response?.data?.data?.client_secret;
       if (!clientSecret) {
         throw new Error('Client secret not found in response');
@@ -312,11 +323,23 @@ export default function DonationPage() {
     }
   };
 
+  // useEffect(() => {
+  //   if (router?.query?.id) {
+  //     loadCampaigns();
+  //   }
+  // }, [router?.query?.id]);
+
   useEffect(() => {
-    if (router?.query?.id) {
-      loadCampaigns();
-    }
-  }, [router?.query?.id]);
+    const initializePage = async () => {
+      if (!router?.query?.id || !i18n.isInitialized) {
+        return;
+      }
+      await loadCampaigns();
+      setLoading(false);
+    };
+
+    initializePage();
+  }, [router?.query?.id, i18n.isInitialized]);
 
   useEffect(() => {
     const checkoutPageEvent = globalState?.webConfig?.aditionalDataPixels?.checkoutPage || 'InitiateCheckout';
@@ -450,41 +473,18 @@ export default function DonationPage() {
 
         {/* Donation Form */}
         <div className='bg-white rounded-lg p-4 shadow-sm'>
-          {/* <div className='mb-4'>
-            <p className='mb-2'>Sapaan :</p>
-            <div className='flex gap-2'>
-              {['Bapak', 'Ibu', 'Kak'].map((salutation) => (
-                <button
-                  key={salutation}
-                  onClick={() => setSelectedSalutation(salutation)}
-                  className={`px-6 py-2 rounded-lg ${selectedSalutation === salutation ? 'bg-blue-600 text-white' : 'border text-gray-600'}`}>
-                  {salutation}
-                </button>
-              ))}
-            </div>
-          </div> */}
-
           <div className='space-y-4'>
             <input
               type='text'
-              placeholder='Nama Lengkap'
+              placeholder='Name'
               value={name}
               onChange={(e) => setName(e.target.value)}
               className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
             />
 
-            <div className='flex items-center justify-between'>
-              <span className='text-gray-600'>Sembunyikan nama saya (Hamba Allah)</span>
-              <button
-                onClick={() => setHideIdentity(!hideIdentity)}
-                className={`w-12 h-6 rounded-full transition-colors ${hideIdentity ? 'bg-blue-600' : 'bg-gray-200'}`}>
-                <div className={`w-5 h-5 rounded-full bg-white shadow transform transition-transform ${hideIdentity ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
-            </div>
-
             <input
               type='tel'
-              placeholder='No Whatsapp atau Handphone'
+              placeholder='Phone Number'
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -499,7 +499,7 @@ export default function DonationPage() {
             />
 
             <textarea
-              placeholder='Tuliskan pesan atau doa disini (optional)'
+              placeholder='Your Pray (optional)'
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={4}

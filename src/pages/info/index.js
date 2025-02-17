@@ -94,7 +94,7 @@ export default function InfoPage() {
   if (loadingSelectedCampaign) return <LoadingScreen />;
 
   return (
-    <div className='bg-gray-50'>
+    <div>
       <Header />
 
       <main className=' mt-16'>

@@ -8,12 +8,7 @@ export default function ProgramNavigation({ button1, button2, button3, button4 }
   const router = useRouter();
   const { t, i18n } = useTranslation();
 
-  console.log({
-    button1Data: button1,
-    button2Data: button2,
-    button3Data: button3,
-    button4Data: button4,
-  });
+ 
 
   // const handleOpenProgram = (href) => {
   //   router.push(href);
@@ -47,7 +42,7 @@ export default function ProgramNavigation({ button1, button2, button3, button4 }
       icon: button2?.image ? null : Repeat,
       image: button2?.image || null,
       href: '/sedekah-rutin',
-      color: 'bg-blue-500',
+      color: 'bg-green-500',
       tags: button2?.tags || [],
     },
     {
@@ -65,7 +60,7 @@ export default function ProgramNavigation({ button1, button2, button3, button4 }
       icon: button4?.image ? null : Grid,
       image: button4?.image || null,
       href: '/semua-program',
-      color: 'bg-blue-500',
+      color: 'bg-red-500',
       tags: button4?.tags || [],
     },
   ];

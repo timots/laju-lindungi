@@ -13,7 +13,9 @@ const AppLayout = ({ children }) => {
     <div>
       {!fullPage ? (
         <div className='flex flex-col min-h-screen bg-white mx-auto w-full relative max-w-md'>
-          <Header />
+          <div className='fixed bottom-0 left-0 right-0 z-50 max-w-md mx-auto'>
+            <Header />
+          </div>
           {/* Main content area */}
           <main className='flex-grow pb-16 pt-4 overflow-y-auto'>{children}</main>
           {/* Fixed navbar at bottom */}

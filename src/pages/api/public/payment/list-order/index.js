@@ -16,8 +16,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  //   const baseUrl = 'https://deoapp.com/api/public/platform/laju-peduli/client-order';
-  const baseUrl = 'http:///172.16.21.197:3000/api/public/platform/laju-peduli/client-order';
+  const baseUrl = 'https://deoapp.com/api/public/platform/laju-peduli/client-order';
+  // const baseUrl = 'http:///172.16.21.197:3000/api/public/platform/laju-peduli/client-order';
 
   const requestData = req.body;
 
