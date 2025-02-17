@@ -27,6 +27,12 @@ export default function DonationPage() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [customVariantAmounts, setCustomVariantAmounts] = useState({});
+  const [fieldErrors, setFieldErrors] = useState({
+    variant: '',
+    name: '',
+    phoneNumber: '',
+    email: '',
+  });
 
   useEffect(() => {
     if (i18n.isInitialized) {
@@ -225,6 +231,54 @@ export default function DonationPage() {
   };
 
   const handleDonateNow = async () => {
+    setFieldErrors({
+      variant: '',
+      name: '',
+      phoneNumber: '',
+      email: '',
+    });
+
+    // Check if any variant is selected
+    const hasSelectedVariant = Object.values(quantities).some((qty) => qty > 0) || Object.values(customVariantAmounts).some((amount) => amount > 0);
+
+    if (!hasSelectedVariant) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        variant: 'Please select at least one donation variant',
+      }));
+      return;
+    }
+
+    // Validate required fields
+    let hasErrors = false;
+    if (!name.trim()) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        name: 'Please enter your name',
+      }));
+      hasErrors = true;
+    }
+
+    if (!phoneNumber.trim()) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        phoneNumber: 'Please enter your phone number',
+      }));
+      hasErrors = true;
+    }
+
+    if (!email.trim()) {
+      setFieldErrors((prev) => ({
+        ...prev,
+        email: 'Please enter your email',
+      }));
+      hasErrors = true;
+    }
+
+    if (hasErrors) return;
+
+    // Continue with donation process
+    setError(null);
     setDonationLoading(true);
     try {
       const variantItems = variants
@@ -268,7 +322,7 @@ export default function DonationPage() {
           region: globalState?.countryCode,
           automatic_payment_methods: true,
           affilate: true,
-          affilateId: 'gading123',
+          affilateId: 'timot123',
         },
       };
 
@@ -289,12 +343,6 @@ export default function DonationPage() {
       const response = await axios.post('/api/public/payment/stripe/create-payment', data);
 
       console.log(response, 'responseeee');
-
-      // if (response?.data?.status === true && response?.data?.data) {
-      //   window.open(response.data.data, '_blank');
-      // } else {
-      //   setError('Unable to process payment. Please try again.');
-      // }
 
       const clientSecret = response?.data?.data?.client_secret;
       if (!clientSecret) {
@@ -368,6 +416,7 @@ export default function DonationPage() {
 
         {/* Donation Options */}
         <div className='space-y-4 mb-6'>
+          {fieldErrors.variant && <p className='text-red-500 text-sm mb-2'>{fieldErrors.variant}</p>}
           {variants.map((variant) => (
             <div
               key={variant.id}
@@ -450,44 +499,50 @@ export default function DonationPage() {
 
         {/* Donation Form */}
         <div className='bg-white rounded-lg p-4 shadow-sm'>
-          {/* <div className='mb-4'>
-            <p className='mb-2'>Sapaan :</p>
-            <div className='flex gap-2'>
-              {['Bapak', 'Ibu', 'Kak'].map((salutation) => (
-                <button
-                  key={salutation}
-                  onClick={() => setSelectedSalutation(salutation)}
-                  className={`px-6 py-2 rounded-lg ${selectedSalutation === salutation ? 'bg-blue-600 text-white' : 'border text-gray-600'}`}>
-                  {salutation}
-                </button>
-              ))}
-            </div>
-          </div> */}
-
           <div className='space-y-4'>
-            <input
-              type='text'
-              placeholder='Input Your Name'
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
+            <div>
+              {fieldErrors.name && <p className='text-red-500 text-sm mt-1'>{fieldErrors.name}</p>}
 
-            <input
-              type='tel'
-              placeholder='Phone Number'
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
+              <input
+                type='text'
+                placeholder='Input Your Name'
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, name: '' }));
+                }}
+                className={`w-full px-4 py-3 rounded-lg border ${fieldErrors.name ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'} focus:outline-none focus:ring-2`}
+              />
+            </div>
 
-            <input
-              type='email'
-              placeholder='Email (optional)'
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className='w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500'
-            />
+            <div>
+              {fieldErrors.phoneNumber && <p className='text-red-500 text-sm mt-1'>{fieldErrors.phoneNumber}</p>}
+
+              <input
+                type='tel'
+                placeholder='Phone Number'
+                value={phoneNumber}
+                onChange={(e) => {
+                  setPhoneNumber(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, phoneNumber: '' }));
+                }}
+                className={`w-full px-4 py-3 rounded-lg border ${fieldErrors.phoneNumber ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'} focus:outline-none focus:ring-2`}
+              />
+            </div>
+            <div>
+              {fieldErrors.email && <p className='text-red-500 text-sm mt-1'>{fieldErrors.email}</p>}
+
+              <input
+                type='email'
+                placeholder='Email'
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setFieldErrors((prev) => ({ ...prev, email: '' }));
+                }}
+                className={`w-full px-4 py-3 rounded-lg border ${fieldErrors.email ? 'border-red-500 focus:ring-red-500' : 'focus:ring-blue-500'} focus:outline-none focus:ring-2`}
+              />
+            </div>
 
             <textarea
               placeholder='Create a pray for Them (optional)'
