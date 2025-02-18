@@ -342,7 +342,6 @@ export default function DonationPage() {
 
       const response = await axios.post('/api/public/payment/stripe/create-payment', data);
 
-      console.log(response, 'responseeee');
 
       const clientSecret = response?.data?.data?.client_secret;
       if (!clientSecret) {

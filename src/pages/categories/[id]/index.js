@@ -20,7 +20,6 @@ export default function InfoPage() {
       // Convert tags string "tag1,tag2,tag3" to array ["tag1", "tag2", "tag3"]
       const tagsArray = router?.query?.tags ? router.query.tags.split(',').map((tag) => tag.trim()) : [];
 
-      console.log(tagsArray, 'ini tags array');
 
       const response = await axios.post('/api/v1/article/read', {
         companyId: 'vrWcmcy7wEw1BUkQP3l9',

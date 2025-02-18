@@ -6,7 +6,6 @@ const stripePromise = loadStripe('pk_test_eZL2hA7uIiCkLVuxcTNIIx7I008ckE9NzV'); 
 // const stripePromise = loadStripe('pk_live_wMp5MkC9YM7VKrq47xLb7FG8008NFFMvqT');// klo true
 
 function Payment({ clientSecret }) {
-  console.log(clientSecret, 'clientScreet');
   return (
     <>
       {clientSecret && (
