@@ -317,7 +317,7 @@ export default function DonationPage() {
             phone_number: phoneNumber,
           },
           items: items,
-          additional_data: { msg: message },
+          additional_data: { msg: message, domain: window.location.origin },
           currency: globalState?.currency,
           region: globalState?.countryCode,
           automatic_payment_methods: true,
@@ -325,6 +325,8 @@ export default function DonationPage() {
           affilateId: 'timot123',
         },
       };
+
+      console.log(data, 'ini data nya');
 
       const paymentButtonEvent = globalState?.webConfig?.aditionalDataPixels?.paymentButton || 'initiate_checkout';
 
@@ -341,7 +343,6 @@ export default function DonationPage() {
       });
 
       const response = await axios.post('/api/public/payment/stripe/create-payment', data);
-
 
       const clientSecret = response?.data?.data?.client_secret;
       if (!clientSecret) {
