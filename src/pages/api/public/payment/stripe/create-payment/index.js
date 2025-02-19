@@ -19,7 +19,8 @@ export default async function handler(req, res) {
   // const baseUrl = 'https://deoapp.com/api/public/service/payment/stripe/create-orders';
   // const baseUrl =
   //   'https://deoapp.com/api/public/platform/laju-peduli/create-invoice';
-  const baseUrl = 'http://172.16.21.197:3000//api/public/platform/laju-peduli/create-invoice';
+  const baseUrl =
+    'http://localhost:3000//api/public/platform/laju-peduli/create-invoice';
 
   const requestData = req.body;
 
@@ -36,7 +37,9 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error('Request failed:', error);
     const status = error.response ? error.response.status : 500;
-    const message = error.response ? error.response.data.message : 'Internal Server Error';
+    const message = error.response
+      ? error.response.data.message
+      : 'Internal Server Error';
 
     res.status(status).json({ message, details: error.message });
   }
