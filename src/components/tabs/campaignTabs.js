@@ -96,15 +96,9 @@ export default function CampaignTabs({ data }) {
 
         {activeTab === 'keterangan' && (
           <div
-            className='prose prose-lg max-w-none prose-headings:text-gray-900 
-              prose-p:text-gray-600 prose-a:text-blue-600 prose-strong:text-gray-900'>
-            <div
-              className='break-words overflow-hidden'
-              dangerouslySetInnerHTML={{
-                __html: data?.guide || '<p>Keterangan kampanye akan ditampilkan di sini.</p>',
-              }}
-            />
-          </div>
+            className='text-gray-600'
+            dangerouslySetInnerHTML={{ __html: data?.guide || '<p>Keterangan kampanye akan ditampilkan di sini.</p>' }}
+          />
         )}
       </div>
     </div>

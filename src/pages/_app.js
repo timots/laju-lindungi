@@ -8,14 +8,16 @@ import { addFacebookPixel, addGoogleTagManager } from '@/utils/pixelUtil';
 import { useEffect } from 'react';
 import axios from 'axios';
 import '@/utils/translate/i18n';
+import DefaultLayout from '@/components/layout/defaultLayout';
 
 function App({ Component, pageProps }) {
   const router = useRouter();
   const globalState = useUserStore();
   const isAdminRoute = router.pathname.startsWith('/admin');
+  console.log(router.pathname, 'pathnamee');
+  const isInvoiceRoute = router.pathname.includes('/invoice');
 
   const getData = async () => {
-
     try {
       const res = await axios.post('/api/public/config/read', {
         projectId: 'HWMHbyA6S12FXzVwcru7',
@@ -26,11 +28,15 @@ function App({ Component, pageProps }) {
 
         // tambah facebook pixel kalo ada
         if (res?.data?.data[0]?.pixels?.facebook) {
-          addFacebookPixel(res?.data?.data[0].pixels.facebook || '2340318182830705');
+          addFacebookPixel(
+            res?.data?.data[0].pixels.facebook || '2340318182830705'
+          );
         }
         // tambah google tag manager kalo ada
         if (res?.data?.data[0]?.pixels?.['tag-manager']) {
-          addGoogleTagManager(res?.data?.data[0].pixels?.['tag-manager'] || 'GTM-T386H9R');
+          addGoogleTagManager(
+            res?.data?.data[0].pixels?.['tag-manager'] || 'GTM-T386H9R'
+          );
         }
       }
     } catch (error) {
@@ -43,7 +49,14 @@ function App({ Component, pageProps }) {
     getData();
     // }
   }, []);
-
+  if (isInvoiceRoute) {
+    return (
+      <DefaultLayout>
+        {' '}
+        <Component {...pageProps} />
+      </DefaultLayout>
+    );
+  }
   return (
     <>
       {isAdminRoute ? (

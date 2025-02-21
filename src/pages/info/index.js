@@ -50,6 +50,7 @@ export default function InfoPage() {
         projectId: 'HWMHbyA6S12FXzVwcru7',
       });
 
+      console.log(res, 'ini res article nya');
 
       if (res?.data?.data.length > 0) {
         setArticleCard(res.data.data);
@@ -88,11 +89,12 @@ export default function InfoPage() {
     }
   }, [dynamicSection]);
 
+  console.log(campaignCard6, 'ini campaign card 6');
 
   if (loadingSelectedCampaign) return <LoadingScreen />;
 
   return (
-    <div>
+    <div className='bg-gray-50'>
       <Header />
 
       <main className=' mt-16'>

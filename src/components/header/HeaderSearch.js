@@ -34,27 +34,16 @@ export default function Header({ title = 'Synergy Humanity', showBackButton = fa
     globalState?.setLanguageId(language);
   };
 
-  const handleSearch = (searchInput) => {
-    const searchValue = searchInput?.value.trim();
+  const handleSearch = (e) => {
+    const searchValue = e.target.previousSibling?.value.trim();
     if (!searchValue) return;
     window.location.href = `/searched/${searchValue}`;
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSearch(e.target);
-    }
   };
 
   const closeSearch = (e) => {
     const input = e.target.closest('div')?.querySelector('input');
     if (input) input.value = '';
     setIsSearchActive(false);
-  };
-
-  const handleSearchButtonClick = (e) => {
-    const searchInput = e.target.closest('div')?.querySelector('input');
-    handleSearch(searchInput);
   };
 
   const languageFlags = {
@@ -68,7 +57,7 @@ export default function Header({ title = 'Synergy Humanity', showBackButton = fa
   const FlagIcon = languageFlags[i18n.language] || Flags.GB;
 
   return (
-    <header className='fixed top-0 left-0 right-0 bg-background z-50 '>
+    <header className='fixed top-0 left-0 right-0 bg-background z-50 bg-white'>
       <div className='max-w-md mx-auto px-4 h-16 flex items-center justify-between bg-gradient-to-br from-white to-slate-50'>
         <div className='flex items-center gap-2'>
           {showBackButton ? (
@@ -91,7 +80,7 @@ export default function Header({ title = 'Synergy Humanity', showBackButton = fa
                 height={40}
                 className='rounded-lg object-contain'
               />
-              <span className='text-lg font-semibold text-blue-500 sm:block'>{title}</span>
+              <span className='text-lg font-semibold text-blue-500 hidden sm:block'>{title}</span>
             </Link>
           )}
         </div>
@@ -104,13 +93,12 @@ export default function Header({ title = 'Synergy Humanity', showBackButton = fa
                 placeholder={t('Search...')}
                 className='bg-transparent border-none outline-none text-sm w-40 placeholder-gray-500 text-gray-800'
                 autoFocus
-                onKeyPress={handleKeyPress}
               />
               <Button
                 variant='ghost'
                 size='icon'
                 className='p-1 hover:bg-gray-200 transition-colors'
-                onClick={handleSearchButtonClick}>
+                onClick={handleSearch}>
                 <Search className='h-4 w-4 text-gray-600' />
               </Button>
               <Button

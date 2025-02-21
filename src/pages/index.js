@@ -122,7 +122,7 @@ export default function CharityHome() {
   if (loadingSelectedCampaign) return <LoadingScreen />;
   return (
     <div>
-      {/* <Header /> */}
+      <Header />
       <main className='mt-16'>
         <HeaderSlider campaignsSelected={campaignCard1?.article || []} />
         <ProgramNavigation
