@@ -305,7 +305,7 @@ export default function DonationPage() {
 
       const data = {
         format: 'stripe',
-        isProduction: false,
+        isProduction: true,
         payload: {
           companyId: 'vrWcmcy7wEw1BUkQP3l9',
           projectId: 'HWMHbyA6S12FXzVwcru7',
