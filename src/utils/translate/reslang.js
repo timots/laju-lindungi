@@ -26,7 +26,7 @@ const resLang = {
         footer3: 'Info Selengkapnya',
         organization: 'adalah Organisasi Sosial yang lahir dari semangat kepedulian untuk membantu masalah kemanusiaan di Indonesia dan juga di dunia Islam khususnya Palestina.',
         organization2:
-          'Laju Peduli berkomitmen menerapkan Sistem Manajemen Anti Penyuapan sehingga tidak membolehkan segala bentuk penyuapan dan gratifikasi, serta tidak akan mendukung atau menyediakan dana/material untuk individu maupun organisasi yang dapat menganjurkan, mendukung, atau terlibat dalam aktivitas melanggar hukum, kekerasan, pencucian uang ataupun terorisme.',
+          'Synergy Humanity berkomitmen menerapkan Sistem Manajemen Anti Penyuapan sehingga tidak membolehkan segala bentuk penyuapan dan gratifikasi, serta tidak akan mendukung atau menyediakan dana/material untuk individu maupun organisasi yang dapat menganjurkan, mendukung, atau terlibat dalam aktivitas melanggar hukum, kekerasan, pencucian uang ataupun terorisme.',
       },
       'galang page': {
         'header title': 'Galang Dana di Lajupeduli.org',
@@ -68,7 +68,7 @@ const resLang = {
         footer3: 'More Info',
         organization: 'is a Social Organization born from the spirit of compassion to address humanitarian issues in Indonesia and the Islamic world, particularly Palestine.',
         organization2:
-          'Laju Peduli is committed to implementing an Anti-Bribery Management System, prohibiting any form of bribery and gratuity, and will not support or provide funds/materials for individuals or organizations that promote, support, or engage in illegal activities, violence, money laundering, or terrorism.',
+          'Synergy Humanity is committed to implementing an Anti-Bribery Management System, prohibiting any form of bribery and gratuity, and will not support or provide funds/materials for individuals or organizations that promote, support, or engage in illegal activities, violence, money laundering, or terrorism.',
       },
       'galang page': {
         'header title': 'Fundraising on Lajupeduli.org',
@@ -109,7 +109,7 @@ const resLang = {
         footer3: 'Info Lanjut',
         organization: 'adalah Organisasi Sosial yang lahir daripada semangat kepedulian untuk membantu masalah kemanusiaan di Indonesia dan dunia Islam, khususnya Palestin.',
         organization2:
-          'Laju Peduli berkomitmen untuk melaksanakan Sistem Pengurusan Anti Rasuah, melarang segala bentuk rasuah dan gratifikasi, serta tidak akan menyokong atau menyediakan dana/bahan kepada individu atau organisasi yang menyokong, terlibat, atau menggalakkan aktiviti haram, keganasan, pengubahan wang haram atau keganasan.',
+          'Synergy Humanity berkomitmen untuk melaksanakan Sistem Pengurusan Anti Rasuah, melarang segala bentuk rasuah dan gratifikasi, serta tidak akan menyokong atau menyediakan dana/bahan kepada individu atau organisasi yang menyokong, terlibat, atau menggalakkan aktiviti haram, keganasan, pengubahan wang haram atau keganasan.',
       },
       'galang page': {
         'header title': 'Pengumpulan Dana di Lajupeduli.org',
@@ -150,7 +150,7 @@ const resLang = {
         footer2: '其他数字渠道',
         footer3: '更多信息',
         organization: '是一个社会组织，源于关注的精神，致力于解决印度尼西亚和特别是巴勒斯坦在伊斯兰世界的人道主义问题。',
-        organization2: 'Laju Peduli承诺实施反贿赂管理系统，禁止任何形式的贿赂和回扣，并且不会支持或提供资金/物资给任何个人或组织，这些个人或组织参与、支持或鼓励非法活动、暴力、洗钱或恐怖主义。',
+        organization2: 'Synergy Humanity承诺实施反贿赂管理系统，禁止任何形式的贿赂和回扣，并且不会支持或提供资金/物资给任何个人或组织，这些个人或组织参与、支持或鼓励非法活动、暴力、洗钱或恐怖主义。',
       },
       'galang page': {
         'header title': '在 Lajupeduli.org 筹款',
@@ -191,7 +191,7 @@ const resLang = {
         footer3: 'مزيد من المعلومات',
         organization: 'هي منظمة اجتماعية نشأت من روح التعاطف للمساعدة في معالجة القضايا الإنسانية في إندونيسيا والعالم الإسلامي، خاصة فلسطين.',
         organization2:
-          'تلتزم Laju Peduli بتطبيق نظام إدارة مكافحة الرشوة، ومنع أي شكل من أشكال الرشوة أو الإكراميات، ولن تدعم أو تقدم الأموال/المواد للأفراد أو المنظمات التي تشجع أو تدعم أو تشارك في الأنشطة غير القانونية أو العنف أو غسيل الأموال أو الإرهاب.',
+          'تلتزم Synergy Humanity بتطبيق نظام إدارة مكافحة الرشوة، ومنع أي شكل من أشكال الرشوة أو الإكراميات، ولن تدعم أو تقدم الأموال/المواد للأفراد أو المنظمات التي تشجع أو تدعم أو تشارك في الأنشطة غير القانونية أو العنف أو غسيل الأموال أو الإرهاب.',
       },
       'galang page': {
         'header title': 'جمع التبرعات في Lajupeduli.org',
